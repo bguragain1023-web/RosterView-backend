@@ -1,0 +1,15 @@
+### testing API
+
+### user
+
+### post new user
+
+post http://localhost:8000/api/v1/users
+Content-Type: application/json
+
+{
+"name" : "Brazzy",
+"email": "b@sq.cmj",
+"password": "hello",
+"role" : "coordinator"
+}
