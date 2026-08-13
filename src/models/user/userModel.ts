@@ -4,4 +4,9 @@ import userSchema, {IUser} from "./userSchema";
 
 export const addUser = (userObj: IUser ): Promise<IUser> =>{
     return new userSchema(userObj).save();
+
+}
+
+export const getUserbyEmail = (email: string): Promise<IUser | null > => {
+    return  userSchema.findOne({email})
 }

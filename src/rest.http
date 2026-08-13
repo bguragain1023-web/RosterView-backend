@@ -13,3 +13,13 @@ Content-Type: application/json
 "password": "hello",
 "role" : "coordinator"
 }
+
+
+### login
+post http://localhost:8000/api/v1/users/login
+Content-Type: application/json
+
+{
+"email": "b@sq.cmj",
+"password": "hello"
+}
