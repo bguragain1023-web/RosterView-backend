@@ -9,8 +9,8 @@ Content-Type: application/json
 
 {
 "name" : "Brazzy",
-"email": "b@sq.cmj",
-"password": "hello",
+"email": "a@a",
+"password": "aaasss",
 "role" : "coordinator"
 }
 

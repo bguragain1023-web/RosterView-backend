@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { StringSchemaDefinition } from "mongoose";
+
 
 interface JwtPayload {
   id: string;
@@ -21,3 +21,13 @@ console.log(secretKey)
     console.log(token)
     return token
 } 
+
+export const verifyJwt = (token:string): JwtPayload =>{
+if (!secretKey) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
+
+ return jwt.verify(token, secretKey) as JwtPayload;
+
+
+}
