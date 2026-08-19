@@ -4,6 +4,9 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/dbconfig";
 import userRouter from "./routers/userRouter";
+import coordinatorRouter from "./routers/coordinatorRouter";
+import { requireCoordinate } from "./middleware/coordinatorAuth";
+import { auth } from "./middleware/authMiddleware";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -15,6 +18,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/cooridinator", auth, requireCoordinate, coordinatorRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

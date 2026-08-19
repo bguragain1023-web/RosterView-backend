@@ -4,14 +4,16 @@
 
 ### post new user
 
-post http://localhost:8000/api/v1/users
+post http://localhost:8000/api/v1/cooridinator
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYSIsImlkIjoiNmE3ZGEzYzIzZmFjOTNlNWI1Y2YwYmZlIiwicm9sZSI6ImNvb3JkaW5hdG9yIiwiaWF0IjoxNzg3MTAxNjQ3LCJleHAiOjE3ODcxODgwNDd9.ucmOOVIXxaRfxODrLxDhqT2Br9hRz5rxSwhUpE8V2yY
+
 
 {
-"name" : "Brazzy",
-"email": "a@a",
+"name" : "NAms",
+"email": "n@n",
 "password": "aaasss",
-"role" : "coordinator"
+"role" : "worker"
 }
 
 
@@ -20,6 +22,6 @@ post http://localhost:8000/api/v1/users/login
 Content-Type: application/json
 
 {
-"email": "b@sq.cmj",
-"password": "hello"
+"email": "a@a",
+"password": "aaasss"
 }
