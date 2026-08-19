@@ -1,6 +1,6 @@
 import express from "express";
 import { hashedPassword } from "../utlis/bcrypt";
-import { addUser } from "../models/user/userModel";
+import { addUser, getAllUsers } from "../models/user/userModel";
 
 const router = express.Router();
 
@@ -16,7 +16,6 @@ router.post("/", async (req, res) => {
       ? res.status(200).json({
           status: "success",
           message: " New worker added",
-          user,
         })
       : res.json({
           status: "error",
@@ -26,6 +25,26 @@ router.post("/", async (req, res) => {
     res.json({
       status: "error",
       message: error,
+    });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    res.json({
+      status: "success",
+      message: users.length ? "All user fetched" : "No staffs found",
+      users,
+    });
+    //get all user
+    // send all users to frontend
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "something went wrong";
+    res.status(500).json({
+      status: "error",
+      message: message,
     });
   }
 });
