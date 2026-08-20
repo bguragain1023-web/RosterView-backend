@@ -1,6 +1,8 @@
 import express from "express";
 import { hashedPassword } from "../utlis/bcrypt";
 import { addUser, getAllUsers, updateUser } from "../models/user/userModel";
+import { addNewShift } from "../models/shift/shiftModel";
+import { calculateTotalHours } from "../helper/calculation";
 
 const router = express.Router();
 
@@ -29,6 +31,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+//get all the staff
 router.get("/", async (req, res) => {
   try {
     const users = await getAllUsers();
@@ -48,7 +51,7 @@ router.get("/", async (req, res) => {
     });
   }
 });
-
+// update staff
 router.patch("/:id", async (req, res) => {
   try {
     const updatedUser = await updateUser(req.params.id, req.body);
