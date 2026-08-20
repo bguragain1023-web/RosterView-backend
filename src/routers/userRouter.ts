@@ -16,7 +16,7 @@ router.post("/login", async (req, res) => {
       const user = await getUserbyEmail(email);
       console.log(user);
       if (user) {
-        const isMatched: Boolean = await comparePassword(
+        const isMatched: boolean = await comparePassword(
           password,
           user.password,
         );

@@ -21,6 +21,22 @@ post http://localhost:8000/api/v1/users/login
 Content-Type: application/json
 
 {
-"email": "a@a",
+"email": "b@b",
 "password": "aaasss"
+}
+
+### create shift 
+post http://localhost:8000/api/v1/coordinator/shift
+Content-Type: application/json
+Authorization: `Bearer' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJAYiIsImlkIjoiNmE4NjM3NDQ2ZDRkYTMwMzM4MjkxZTE0Iiwicm9sZSI6ImNvb3JkaW5hdG9yIiwiaWF0IjoxNzg3MjA4OTIwLCJleHAiOjE3ODcyOTUzMjB9.Nu4US07sntDCYyYb7T2f02r_WatC2uVTyP47vznO9AA
+
+
+{
+  "workerId": "66a1234567890abcdef12345",
+  "date": "2026-08-25T00:00:00.000Z",
+  "startTime": "09:00",
+  "endTime": "17:00",
+  "breakMinutes": 30,
+  "status": "assigned",
+  "notes": "Morning shift at main reception"
 }
