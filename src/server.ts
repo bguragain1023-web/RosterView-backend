@@ -18,7 +18,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/coordinator", auth, requireCoordinate, coordinatorRouter);
+app.use("/api/v1/coordinator", coordinatorRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

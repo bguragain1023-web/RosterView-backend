@@ -1,6 +1,6 @@
 import express from "express";
 import { hashedPassword } from "../utlis/bcrypt";
-import { addUser, getAllUsers } from "../models/user/userModel";
+import { addUser, getAllUsers, updateUser } from "../models/user/userModel";
 
 const router = express.Router();
 
@@ -39,6 +39,30 @@ router.get("/", async (req, res) => {
     });
     //get all user
     // send all users to frontend
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "something went wrong";
+    res.status(500).json({
+      status: "error",
+      message: message,
+    });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const updatedUser = await updateUser(req.params.id, req.body);
+    if (!updateUser) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found!!",
+      });
+    }
+    res.json({
+      status: "success",
+      message: " User Updated successfully",
+      user: updatedUser,
+    });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "something went wrong";
