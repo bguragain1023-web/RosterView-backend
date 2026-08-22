@@ -14,11 +14,11 @@ export const getAllUsers = (): Promise<IUser[]> => {
   return userSchema.find().select("-password");
 };
 
-export const updateUser = (
-  id: string,
-  updates: Partial<Pick<IUser, "name" | "email" | "role" | "phone">>,
-): Promise<IUser | null> => {
-  return userSchema
-    .findByIdAndUpdate(id, updates, { new: true })
-    .select("password");
-};
+// export const updateUser = (
+//   id: string,
+//   updates: Partial<Pick<IUser, "name" | "email" | "role" | "phone">>,
+// ): Promise<IUser | null> => {
+//   return userSchema
+//     .findByIdAndUpdate(id, updates, { new: true })
+//     .select("password");
+// };

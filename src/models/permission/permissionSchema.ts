@@ -6,7 +6,8 @@ export type PermissionAction =
   | "update"
   | "delete"
   | "approve"
-  | "assign";
+  | "assign"
+  | "review";
 
 export interface IPermission extends Document {
   name: string;
@@ -31,7 +32,15 @@ const permissionSchema = new Schema<IPermission>(
 
     action: {
       type: String,
-      enum: ["create", "read", "update", "delete", "approve", "assign"],
+      enum: [
+        "create",
+        "read",
+        "update",
+        "delete",
+        "approve",
+        "assign",
+        "review",
+      ],
       required: true,
     },
 

@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export type UserRole = "admin" | "coordinator" | "teamLeader" | "worker";
 
@@ -9,9 +9,11 @@ export interface IUser extends Document {
   email: string;
   password: string;
   phone: string;
-  role: UserRole;
+  roleId: mongoose.Types.ObjectId;
   status: UserStatus;
   teamId?: mongoose.Types.ObjectId;
+  mustChangePassword: boolean;
+  passwordChangedAt?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -32,11 +34,10 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      enum: ["admin", "coordinator", "teamLeader", "worker"],
+    roleId: {
+      type: Schema.Types.ObjectId,
+      ref: "Role",
       required: true,
-      default: "worker",
     },
     phone: {
       type: String,
@@ -54,6 +55,13 @@ const userSchema = new mongoose.Schema<IUser>(
     teamId: {
       type: mongoose.Types.ObjectId,
       ref: "Team",
+    },
+    mustChangePassword: {
+      type: Boolean,
+      default: true,
+    },
+    passwordChangedAt: {
+      type: Date,
     },
   },
 
