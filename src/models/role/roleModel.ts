@@ -1,14 +1,13 @@
+import mongoose from "mongoose";
 import roleSchema, { IRole } from "./roleSchema";
 
 export interface RoleInput {
   name: string;
   description?: string;
-  permissions: string[] | "ALL";
+  permissions: mongoose.Types.ObjectId[];
 }
 
-export const addRoles = async (
-  roleObj: Omit<IRole, "_id" | "createdAt" | "updatedAt">,
-): Promise<IRole | null> => {
+export const addRoles = async (roleObj: RoleInput): Promise<IRole | null> => {
   return roleSchema.findOneAndUpdate({ name: roleObj.name }, roleObj, {
     upsert: true,
     returnDocument: "after",

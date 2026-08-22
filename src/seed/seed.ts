@@ -4,8 +4,14 @@ import {
   PermissisonInput,
 } from "../models/permission/permissionModel";
 import dotenv from "dotenv";
-import { addRoles, RoleInput } from "../models/role/roleModel";
+import { addRoles } from "../models/role/roleModel";
 import Permission from "../models/permission/permissionSchema";
+
+interface RoleSeedInput {
+  name: string;
+  description?: string;
+  permissions: string[] | "ALL";
+}
 
 dotenv.config();
 
@@ -123,7 +129,7 @@ const permissions: PermissisonInput[] = [
     description: "Review Incident report",
   },
 ];
-const roles: RoleInput[] = [
+const roles: RoleSeedInput[] = [
   {
     name: "admin",
     description: "Full access to all system features",
@@ -205,10 +211,49 @@ const seedPermissions = async () => {
   }
 };
 
+const seedRoles = async () => {
+  try {
+    for (const r of roles) {
+      if (r.permissions === "ALL") {
+        const allPermissions = await Permission.find();
+
+        const permissionIds = allPermissions.map((p) => p._id);
+
+        const { permissions, ...rest } = r;
+
+        const roleObj = {
+          ...rest,
+          permissions: permissionIds,
+        };
+        await addRoles(roleObj);
+      } else {
+        const allowedPermission = await Permission.find({
+          name: { $in: r.permissions },
+        });
+
+        const permissionIds = allowedPermission.map((p) => p._id);
+
+        const { permissions, ...rest } = r;
+
+        const roleObj = {
+          ...rest,
+          permissions: permissionIds,
+        };
+        await addRoles(roleObj);
+      }
+    }
+    console.log("seeding roles completed");
+  } catch (error) {
+    console.error("error seeding roles:", error);
+    process.exit(1);
+  }
+};
+
 const seed = async () => {
   try {
     await connectDB();
     await seedPermissions();
+    await seedRoles();
 
     console.log("Database seeding completed");
     process.exit(0);
