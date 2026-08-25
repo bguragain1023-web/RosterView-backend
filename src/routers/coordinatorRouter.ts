@@ -1,6 +1,6 @@
 import express from "express";
 import { hashedPassword } from "../utlis/bcrypt";
-import { addUser, getAllUsers, updateUser } from "../models/user/userModel";
+import { addUser, getAllUsers } from "../models/user/userModel";
 import { addNewShift } from "../models/shift/shiftModel";
 import { calculateTotalHours } from "../helper/calculation";
 

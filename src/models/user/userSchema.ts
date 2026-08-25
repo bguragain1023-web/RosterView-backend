@@ -1,7 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export type UserRole = "admin" | "coordinator" | "teamLeader" | "worker";
-
 export type UserStatus = "active" | "inactive";
 
 export interface IUser extends Document {

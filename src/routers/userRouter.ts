@@ -1,6 +1,6 @@
 import express from "express";
 import { comparePassword, hashedPassword } from "../utlis/bcrypt";
-import { addUser, getUserbyEmail } from "../models/user/userModel";
+import { getUserbyEmail } from "../models/user/userModel";
 import { signJwt } from "../utlis/jwt";
 import { auth } from "../middleware/authMiddleware";
 
@@ -10,26 +10,22 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email);
 
     if (email && password) {
       const user = await getUserbyEmail(email);
-      console.log(user);
       if (user) {
         const isMatched: boolean = await comparePassword(
           password,
           user.password,
         );
-        console.log(isMatched);
+
         if (isMatched) {
           const accessJWT: string = signJwt({
             email: user.email,
             id: user._id.toString(),
-            role: user.role,
+            roleId: user.roleId.toString(),
           });
-          console.log(accessJWT);
           const { password, ...userDetail } = user.toObject();
-          console.log(userDetail);
           res.json({
             status: "success",
             message: " login succeefull",

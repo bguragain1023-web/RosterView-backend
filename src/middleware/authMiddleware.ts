@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { getUserbyEmail } from "../models/user/userModel";
+
 import { verifyJwt } from "../utlis/jwt";
+import { getUserById } from "../models/user/userModel";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,8 +15,8 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(403).json({ error: "unauthorized" });
     }
     const result = verifyJwt(token);
-    if (result?.email) {
-      const user = await getUserbyEmail(result.email);
+    if (result?.id) {
+      const user = await getUserById(result.id);
       if (user?._id) {
         const { password, ...rest } = user.toObject();
         req.userInfo = rest;

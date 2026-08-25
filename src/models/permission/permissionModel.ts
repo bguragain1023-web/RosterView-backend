@@ -19,3 +19,7 @@ export const addPermissions = async (
     { upsert: true, returnDocument: "after" },
   );
 };
+
+export const getPermissionById = (ids: string[]) => {
+  return permissionSchema.find({ _id: { $in: ids } });
+};

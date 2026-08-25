@@ -13,3 +13,7 @@ export const addRoles = async (roleObj: RoleInput): Promise<IRole | null> => {
     returnDocument: "after",
   });
 };
+
+export const getRoleById = (id: string): Promise<IRole | null> => {
+  return roleSchema.findById(id);
+};
