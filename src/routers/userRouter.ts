@@ -1,10 +1,53 @@
 import express from "express";
 import { comparePassword, hashedPassword } from "../utlis/bcrypt";
-import { getUserbyEmail } from "../models/user/userModel";
+import { addUser, getUserbyEmail } from "../models/user/userModel";
 import { signJwt } from "../utlis/jwt";
 import { auth } from "../middleware/authMiddleware";
+import { getRoleByName } from "../models/role/roleModel";
 
 const router = express.Router();
+
+//create temp post method for admin
+
+router.post("/", async (req, res) => {
+  try {
+    const hashPassword = await hashedPassword(req.body.password);
+    const { password: _, ...rest } = req.body;
+    const role = await getRoleByName("admin");
+    if (!role) {
+      return res.json({
+        status: "error",
+        message: "role not found",
+      });
+    }
+    const userObj = {
+      ...rest,
+      password: hashPassword,
+      roleId: role._id,
+    };
+
+    const user = await addUser(userObj);
+
+    if (!user._id) {
+      return res.json({
+        status: "error",
+        message: "something went wrong",
+      });
+    }
+
+    const { password, ...userDetail } = user.toObject();
+
+    res.json({
+      status: "success",
+      message: "user created",
+      userDetail,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ status: "error", message });
+  }
+});
 
 //login
 router.post("/login", async (req, res) => {

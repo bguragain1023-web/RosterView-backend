@@ -7,6 +7,7 @@ import userRouter from "./routers/userRouter";
 import coordinatorRouter from "./routers/coordinatorRouter";
 import { requireCoordinate } from "./middleware/coordinatorAuth";
 import { auth } from "./middleware/authMiddleware";
+import { requirePermission } from "./middleware/permissionMiddleware";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -18,7 +19,12 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/coordinator", auth, requireCoordinate, coordinatorRouter);
+app.use(
+  "/api/v1/coordinator",
+  auth,
+  requirePermission("shift", "create"),
+  coordinatorRouter,
+);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

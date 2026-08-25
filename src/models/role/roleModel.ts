@@ -17,3 +17,7 @@ export const addRoles = async (roleObj: RoleInput): Promise<IRole | null> => {
 export const getRoleById = (id: string): Promise<IRole | null> => {
   return roleSchema.findById(id);
 };
+
+export const getRoleByName = (roleName: string): Promise<IRole | null> => {
+  return roleSchema.findOne({ name: roleName });
+};
