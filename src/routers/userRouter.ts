@@ -4,21 +4,20 @@ import { addUser, getUserbyEmail } from "../models/user/userModel";
 import { signJwt } from "../utlis/jwt";
 import { auth } from "../middleware/authMiddleware";
 import { getRoleByName } from "../models/role/roleModel";
+import { AppError } from "../utlis/AppError";
+import { validateCreateUser } from "../middleware/validation/userValidation";
 
 const router = express.Router();
 
 //create temp post method for admin
 
-router.post("/", async (req, res) => {
+router.post("/", validateCreateUser, async (req, res, next) => {
   try {
     const hashPassword = await hashedPassword(req.body.password);
     const { password: _, ...rest } = req.body;
     const role = await getRoleByName("admin");
     if (!role) {
-      return res.json({
-        status: "error",
-        message: "role not found",
-      });
+      throw new AppError("Role Not Found", 404);
     }
     const userObj = {
       ...rest,
@@ -28,13 +27,6 @@ router.post("/", async (req, res) => {
 
     const user = await addUser(userObj);
 
-    if (!user._id) {
-      return res.json({
-        status: "error",
-        message: "something went wrong",
-      });
-    }
-
     const { password, ...userDetail } = user.toObject();
 
     res.json({
@@ -43,9 +35,7 @@ router.post("/", async (req, res) => {
       userDetail,
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong";
-    res.status(500).json({ status: "error", message });
+    next(error);
   }
 });
 
@@ -105,6 +95,11 @@ router.get("/", auth, async (req, res) => {
       error instanceof Error ? error.message : "Something went wrong";
     res.status(500).json({ status: "error", message });
   }
+});
+
+// get error
+router.get("/testerror", (req, res) => {
+  throw new AppError("This is a test Error", 400);
 });
 
 export default router;

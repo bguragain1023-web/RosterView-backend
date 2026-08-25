@@ -4,7 +4,10 @@ const router = express.Router();
 
 router.get("/test", (req, res) => {
   try {
-    console.log("permissions passed");
+    res.json({
+      status: "success",
+      message: "tested and passed",
+    });
   } catch (error) {
     res.json({
       status: "error",
