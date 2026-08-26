@@ -12,6 +12,7 @@ export interface IUser extends Document {
   teamId?: mongoose.Types.ObjectId;
   mustChangePassword: boolean;
   passwordChangedAt?: Date;
+  additionalPermissions: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -60,6 +61,11 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     passwordChangedAt: {
       type: Date,
+    },
+    additionalPermissions: {
+      type: [Schema.Types.ObjectId],
+      ref: "Permission",
+      default: [],
     },
   },
 

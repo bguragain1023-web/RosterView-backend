@@ -1,11 +1,13 @@
+import "./types/express";
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/dbconfig";
 import userRouter from "./routers/userRouter";
 import coordinatorRouter from "./routers/coordinatorRouter";
-import { requireCoordinate } from "./middleware/coordinatorAuth";
+import adminRouter from "./routers/adminRouter";
+
 import { auth } from "./middleware/authMiddleware";
-import { requirePermission } from "./middleware/permissionMiddleware";
+
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -21,9 +23,10 @@ app.use("/api/v1/users", userRouter);
 app.use(
   "/api/v1/coordinator",
   auth,
-  requirePermission("user", "approve"),
+
   coordinatorRouter,
 );
+app.use("/api/v1/admin", auth, adminRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

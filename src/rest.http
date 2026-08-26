@@ -40,3 +40,53 @@ Authorization: `Bearer' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJAYiI
   "status": "assigned",
   "notes": "Morning shift at main reception"
 }
+
+
+### admin
+POST http://localhost:8000/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "sasa",
+  "email": "",
+  "password": "ssad",
+  "phone": "0400000001"
+}
+
+### Login as admin
+POST http://localhost:8000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "Admin123!"
+}
+
+### Get current user
+GET http://localhost:8000/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc2NTc1MzMsImV4cCI6MTc4Nzc0MzkzM30.BSHdJhUvWCS2UZNAjhJNxjOSXzyPSZ7X8y7PRtevsM4
+
+
+### permission test 
+
+GET http://localhost:8000/api/v1/coordinator/test
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc2NTc1MzMsImV4cCI6MTc4Nzc0MzkzM30.BSHdJhUvWCS2UZNAjhJNxjOSXzyPSZ7X8y7PRtevsM4
+
+
+### test centralized error
+
+GET http://localhost:8000/api/v1/users/testerror
+
+
+### admin create user endpoint test
+
+POST http://localhost:8000/api/v1/admin/createuser
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+
+{
+   "name": "John Smith",
+  "email": "john@test.com",
+  "phone": "0400000004",
+  "role": "teamLeader"
+}

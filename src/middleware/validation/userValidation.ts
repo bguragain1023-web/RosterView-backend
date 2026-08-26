@@ -12,7 +12,6 @@ export const validateCreateUser = (
   if (typeof name !== "string")
     throw new AppError("Name format didn't match ", 400);
 
-  if (!password) throw new AppError("Password not Provided", 400);
   if (!phone) throw new AppError("phone not Provided", 400);
 
   if (!email) throw new AppError("email not Provided", 400);
