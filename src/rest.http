@@ -90,3 +90,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   "phone": "0400000004",
   "role": "teamLeader"
 }
+
+###get all the users
+
+GET http://localhost:8000/api/v1/admin/readuser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+
+### patch request
+
+Patch http://localhost:8000/api/v1/admin/updateuser/6a8f69e8243d8766e6b2b9a3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+
+{
+   "name": "John Guragain",
+  "email": "johntest@2com",
+  "phone": "0420000014",
+  "role": "worker",
+  "status": "inactive",
+  "team": "team North"
+}
