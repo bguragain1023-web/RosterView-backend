@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import userSchema, { IUser } from "./userSchema";
 
 //create
@@ -46,4 +47,14 @@ export const updateUserDetailById = (id: string, data: UpdatePayLoad) => {
     console.log("Update user error:", error);
     throw error;
   }
+};
+export const updateAdditionalPermission = (
+  userId: string,
+  permissionIDs: mongoose.Types.ObjectId[],
+) => {
+  return userSchema.findByIdAndUpdate(
+    userId,
+    { additionalPermissions: permissionIDs },
+    { new: true },
+  );
 };

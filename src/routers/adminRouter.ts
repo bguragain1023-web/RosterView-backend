@@ -11,9 +11,12 @@ import { AppError } from "../utlis/AppError";
 import {
   addUser,
   getAllUsers,
+  updateAdditionalPermission,
   updateUserDetailById,
 } from "../models/user/userModel";
 import { getTeamByName } from "../models/team/teamModel";
+import { getPermissionsByName } from "../models/permission/permissionModel";
+import { validatePermissions } from "../middleware/validation/permissionValidation";
 
 const router = express.Router();
 
@@ -120,6 +123,41 @@ router.patch<{ id: string }>(
       res.json({
         status: "success",
         message: "user update successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+router.patch<{ id: string }>(
+  "/updateuser/:id/permissions",
+  requirePermission("user", "update"),
+  validatePermissions,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { permissionNames } = req.body;
+
+      const additionalPermissions = await getPermissionsByName(permissionNames);
+      if (additionalPermissions.length !== permissionNames.length) {
+        throw new AppError("One or more permissions not found", 404);
+      }
+
+      const additonalPermissionIds = additionalPermissions.map((p) => p._id);
+
+      const addPermissions = await updateAdditionalPermission(
+        id,
+        additonalPermissionIds,
+      );
+
+      if (!addPermissions) {
+        throw new AppError("User not found ", 404);
+      }
+
+      res.json({
+        status: "success",
+        message: "Successfully added additional permissions",
       });
     } catch (error) {
       next(error);

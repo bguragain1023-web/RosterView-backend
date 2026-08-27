@@ -142,7 +142,6 @@ const roles: RoleSeedInput[] = [
       "Manages rosters, staff assignments, conflicts and shift swaps",
     permissions: [
       "user:read",
-      "user:update",
 
       "roster:read",
       "roster:create",

@@ -23,3 +23,7 @@ export const addPermissions = async (
 export const getPermissionById = (ids: string[]) => {
   return permissionSchema.find({ _id: { $in: ids } });
 };
+
+export const getPermissionsByName = (name: string[]) => {
+  return permissionSchema.find({ name: { $in: name } });
+};
