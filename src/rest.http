@@ -1,57 +1,5 @@
 ### testing API
 
-### user
-
-### post new user
-
-post http://localhost:8000/api/v1/coordinator
-Content-Type: application/json
-
-{
-"name" : "Brazzy",
-"email": "b@b",
-"password": "aaasss",
-"role" : "coordinator",
-"phone":"0422429599"
-}
-
-
-### login
-post http://localhost:8000/api/v1/users/login
-Content-Type: application/json
-
-{
-"email": "b@b",
-"password": "aaasss"
-}
-
-### create shift 
-post http://localhost:8000/api/v1/coordinator/shift
-Content-Type: application/json
-Authorization: `Bearer' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJAYiIsImlkIjoiNmE4NjM3NDQ2ZDRkYTMwMzM4MjkxZTE0Iiwicm9sZSI6ImNvb3JkaW5hdG9yIiwiaWF0IjoxNzg3MjA4OTIwLCJleHAiOjE3ODcyOTUzMjB9.Nu4US07sntDCYyYb7T2f02r_WatC2uVTyP47vznO9AA
-
-
-{
-  "workerId": "66a1234567890abcdef12345",
-  "date": "2026-08-25T00:00:00.000Z",
-  "startTime": "09:00",
-  "endTime": "17:00",
-  "breakMinutes": 30,
-  "status": "assigned",
-  "notes": "Morning shift at main reception"
-}
-
-
-### admin
-POST http://localhost:8000/api/v1/users
-Content-Type: application/json
-
-{
-  "name": "sasa",
-  "email": "",
-  "password": "ssad",
-  "phone": "0400000001"
-}
 
 ### Login as admin
 POST http://localhost:8000/api/v1/users/login
@@ -62,64 +10,50 @@ Content-Type: application/json
   "password": "Admin123!"
 }
 
-### Get current user
-GET http://localhost:8000/api/v1/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc2NTc1MzMsImV4cCI6MTc4Nzc0MzkzM30.BSHdJhUvWCS2UZNAjhJNxjOSXzyPSZ7X8y7PRtevsM4
 
+###  create user endpoint test
 
-### permission test 
-
-GET http://localhost:8000/api/v1/coordinator/test
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc2NTc1MzMsImV4cCI6MTc4Nzc0MzkzM30.BSHdJhUvWCS2UZNAjhJNxjOSXzyPSZ7X8y7PRtevsM4
-
-
-### test centralized error
-
-GET http://localhost:8000/api/v1/users/testerror
-
-
-### admin create user endpoint test
-
-POST http://localhost:8000/api/v1/admin/createuser
+POST http://localhost:8000/api/v1/users/createuser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
 
 {
-   "name": "John Smith",
-  "email": "john@test.com",
-  "phone": "0400000004",
-  "role": "teamLeader"
+   "name": "Brazesh",
+  "email": "b@b.com",
+  "phone": "0422429511",
+  "role": "admin"
 }
 
 ###get all the users
 
-GET http://localhost:8000/api/v1/admin/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+GET http://localhost:8000/api/v1/users/readuser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
+
 
 ### patch request
 
-Patch http://localhost:8000/api/v1/admin/updateuser/6a8f69e8243d8766e6b2b9a3
+Patch http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
 
 {
-   "name": "John Guragain",
+   "name": "Jogn Cena",
   "email": "johntest@2com",
   "phone": "0420000014",
-  "role": "worker",
-  "status": "inactive",
-  "team": "team North"
+  "role": "teamLeader",
+  "status": "inactive"
+  
 }
 
 
 ### update permission
-PATCH http://localhost:8000/api/v1/admin/updateuser/6a8f69e8243d8766e6b2b9a3/permissions
+PATCH http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3/permissions
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc3ODI1ODMsImV4cCI6MTc4Nzg2ODk4M30.4SgcE_YWr-jD7uG0HWt0zOYpuBp6S3EIoeYUCPvP2oo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
 
 
 {
-  "permissionNames": [
+  "permissionNames": [ "user:update"
    
   ]
 }
