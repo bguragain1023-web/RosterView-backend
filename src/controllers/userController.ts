@@ -45,7 +45,7 @@ export const createUser = async (
     const { password, ...userDetail } = user.toObject();
     res.json({
       status: "success",
-      message: " New staff added successfully with following detail : userName",
+      message: " New staff added successfully with following detail:",
       userDetail,
       tempPassword,
     });
