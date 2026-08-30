@@ -6,7 +6,7 @@ export const validateCreateClient = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { name, phone, address } = req.body;
+  const { name, phone, address, email } = req.body;
 
   if (!name || typeof name !== "string" || !name.trim()) {
     throw new AppError("Please provide a valid name", 400);
@@ -21,6 +21,14 @@ export const validateCreateClient = (
 
   if (!address || typeof address !== "string")
     throw new AppError("Please provide valid address", 400);
+
+  if (!email) {
+    throw new AppError("Email is missing", 400);
+  }
+
+  if (typeof email !== "string" || !email.includes("@")) {
+    throw new AppError("Please provide a valid email", 400);
+  }
 
   next();
 };

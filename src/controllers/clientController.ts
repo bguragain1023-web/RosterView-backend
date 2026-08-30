@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utlis/AppError";
-import { addClient, getAllClients } from "../models/client/clientModel";
+import {
+  addClient,
+  getAllClients,
+  getClientById,
+} from "../models/client/clientModel";
 
 export const createClient = async (
   req: Request,
@@ -11,12 +15,13 @@ export const createClient = async (
     if (!req.userInfo) {
       throw new AppError("Unauthorized", 401);
     }
-    const { name, address, phone, notes } = req.body;
+    const { name, address, phone, email, notes } = req.body;
 
     const obj = {
       name,
       address,
       phone,
+      email,
       notes,
       createdBy: req.userInfo._id,
     };
@@ -44,6 +49,29 @@ export const getClients = async (
       status: "success",
       message: "Fetched all clients",
       clients,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSingleClient = async (
+  req: Request<{ id: string }, {}, {}>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const client = await getClientById(id);
+
+    if (!client) {
+      throw new AppError("Client doesn't exist", 400);
+    }
+
+    res.status(201).json({
+      status: "success",
+      message: "Client detail fetched successfully",
+      client,
     });
   } catch (error) {
     next(error);

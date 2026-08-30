@@ -68,10 +68,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 {
    "name": "xavi alosnso",
-  "phone": "0433298736",
+  "phone": "0433298721",
   "address": "fsdfsdfsd",
   "createdBy": "6a8d7cbade764f74d0d3abc3",
-  "notes":"Dementia"
+  "notes":"Dementia",
+  "email":"client@ss"
 
 
 }

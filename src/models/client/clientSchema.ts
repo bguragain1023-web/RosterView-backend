@@ -4,6 +4,7 @@ export interface IClient extends Document {
   name: string;
   phone: string;
   address: string;
+  email: string;
   notes?: string;
   isActive: boolean;
   createdBy: mongoose.Types.ObjectId;
@@ -27,6 +28,13 @@ const clientSchema = new Schema<IClient>(
       type: String,
       required: true,
       trim: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
     },
 
     notes: {
