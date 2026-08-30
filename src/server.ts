@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./config/dbconfig";
 import userRouter from "./routers/userRouter";
 import { errorHandler } from "./middleware/errorHandler";
+import clientRouter from "./routers/clientRouter";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -15,6 +16,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/clients", clientRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

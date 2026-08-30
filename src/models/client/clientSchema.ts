@@ -5,7 +5,7 @@ export interface IClient extends Document {
   phone: string;
   address: string;
   notes?: string;
-  isActive: Boolean;
+  isActive: boolean;
   createdBy: mongoose.Types.ObjectId;
 }
 
@@ -21,6 +21,7 @@ const clientSchema = new Schema<IClient>(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     address: {
       type: String,

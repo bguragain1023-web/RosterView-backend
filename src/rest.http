@@ -57,3 +57,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
    
   ]
 }
+
+
+###  create Clients endpoint test
+
+POST http://localhost:8000/api/v1/clients/createclient
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+
+
+{
+   "name": "xavi alosnso",
+  "phone": "0433298736",
+  "address": "fsdfsdfsd",
+  "createdBy": "6a8d7cbade764f74d0d3abc3",
+  "notes":"Dementia"
+
+
+}
+
+
+###  Get Clients endpoint test
+
+GET http://localhost:8000/api/v1/clients
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
