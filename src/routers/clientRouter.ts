@@ -5,8 +5,12 @@ import {
   createClient,
   getClients,
   getSingleClient,
+  updateClient,
 } from "../controllers/clientController";
-import { validateCreateClient } from "../middleware/validation/clientValidation";
+import {
+  validateCreateClient,
+  ValidateUpdateClient,
+} from "../middleware/validation/clientValidation";
 
 const router = express.Router();
 
@@ -23,5 +27,13 @@ router.post(
 router.get("/", auth, requirePermission("user", "read"), getClients);
 
 router.get("/:id", auth, requirePermission("user", "read"), getSingleClient);
+
+router.patch(
+  "/updateclient/:id",
+  auth,
+  requirePermission("user", "update"),
+  ValidateUpdateClient,
+  updateClient,
+);
 
 export default router;

@@ -83,3 +83,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 GET http://localhost:8000/api/v1/clients
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+
+
+### get single client
+GET http://localhost:8000/api/v1/clients/6a94186d43fd0d7581573e74
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+
+####update client
+
+patch http://localhost:8000/api/v1/clients/updateclient/6a94186d43fd0d7581573e74
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+
+
+  {
+   "name": "sundari ",
+  "phone": "0422429500",
+  "address": "fsdfsdfsd",
+  "notes":"Depression",
+  "email":"client@ssa",
+  "status": "inactive"
+
+
+}

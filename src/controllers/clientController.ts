@@ -4,6 +4,7 @@ import {
   addClient,
   getAllClients,
   getClientById,
+  updateClientById,
 } from "../models/client/clientModel";
 
 export const createClient = async (
@@ -72,6 +73,29 @@ export const getSingleClient = async (
       status: "success",
       message: "Client detail fetched successfully",
       client,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateClient = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+
+    const updatePayload = req.body;
+
+    const result = await updateClientById(id, updatePayload);
+
+    if (result.matchedCount === 0) throw new AppError("User not found ", 404);
+
+    res.json({
+      status: "success",
+      message: " Client detal updated successfully",
     });
   } catch (error) {
     next(error);
