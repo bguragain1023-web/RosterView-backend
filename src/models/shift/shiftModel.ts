@@ -14,6 +14,19 @@ export interface ShiftInput {
   notes?: string;
   createdBy: mongoose.Types.ObjectId;
 }
+export interface updateShiftPayLoad {
+  workerId: string;
+  clientId: string;
+  location: string;
+  date: Date;
+  startTime: string;
+  endTime: string;
+  breakTime: number;
+  totalHours: number;
+  status: ShiftStatus;
+  notes?: string;
+  createdBy: string;
+}
 
 export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
   return new shiftSchema(shiftObj).save();
@@ -25,4 +38,8 @@ export const getAllShifts = (): Promise<IShift[]> => {
 
 export const getShiftById = async (id: string): Promise<IShift | null> => {
   return await shiftSchema.findById(id);
+};
+
+export const updateShiftById = async (id: string, data: ShiftInput) => {
+  return shiftSchema.updateOne({ _id: id }, { $set: data });
 };

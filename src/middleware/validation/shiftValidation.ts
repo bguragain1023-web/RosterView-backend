@@ -144,3 +144,126 @@ export const createShiftValidation = async (
 
   next();
 };
+
+export const updateShiftValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (Object.keys(req.body).length === 0)
+    throw new AppError("The requesting body is empty", 400);
+
+  const allowedFields = [
+    "workerId",
+    "clientId",
+    "location",
+    "startTime",
+    "endTime",
+    "date",
+    "breakMinutes",
+    "notes",
+  ];
+
+  const requestedFields = Object.keys(req.body);
+
+  const hasUnexpectedFields = requestedFields.some(
+    (fields) => !allowedFields.includes(fields),
+  );
+  if (hasUnexpectedFields)
+    throw new AppError("unexpected field(s) are requested for update ", 400);
+
+  const {
+    workerId,
+    clientId,
+    location,
+    startTime,
+    endTime,
+    date,
+    breakMinutes,
+    notes,
+  } = req.body;
+
+  if (workerId !== undefined) {
+    if (typeof workerId !== "string" || !mongoose.isValidObjectId(workerId)) {
+      throw new AppError("Invalid worker ID", 400);
+    }
+  }
+
+  if (clientId !== undefined) {
+    if (typeof clientId !== "string" || !mongoose.isValidObjectId(clientId)) {
+      throw new AppError("Invalid client ID", 400);
+    }
+  }
+
+  if (location !== undefined && typeof location !== "string")
+    throw new AppError("location format didn't match ", 400);
+
+  const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+  if (
+    startTime !== undefined &&
+    (typeof startTime !== "string" || !timeRegex.test(startTime))
+  ) {
+    throw new AppError("startTime format didn't match ", 400);
+  }
+
+  if (
+    endTime !== undefined &&
+    (typeof endTime !== "string" || !timeRegex.test(endTime))
+  ) {
+    throw new AppError("End time format didn't match ", 400);
+  }
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (date !== undefined) {
+    if (typeof date !== "string" || !dateRegex.test(date)) {
+      throw new AppError("Date must be in YYYY-MM-DD format", 400);
+    }
+
+    const [year, month, day] = date.split("-").map(Number);
+
+    if (year === undefined || month === undefined || day === undefined) {
+      throw new AppError("Invalid date", 400);
+    }
+
+    const dateObj = new Date(year, month - 1, day);
+
+    if (
+      dateObj.getFullYear() !== year ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getDate() !== day
+    ) {
+      throw new AppError("Please provide a valid date", 400);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 60);
+
+    if (dateObj < today) {
+      throw new AppError("Shift date cannot be in the past", 400);
+    }
+
+    if (dateObj > maxDate) {
+      throw new AppError("Cannot update a shift more than 60 days ahead", 400);
+    }
+  }
+
+  if (breakMinutes !== undefined) {
+    if (
+      typeof breakMinutes !== "number" ||
+      !Number.isInteger(breakMinutes) ||
+      breakMinutes < 0
+    ) {
+      throw new AppError("Break time must not be less than 0 minutes", 400);
+    }
+  }
+
+  if (notes !== undefined && typeof notes !== "string")
+    throw new AppError("notes format didn't match ", 400);
+
+  next();
+};

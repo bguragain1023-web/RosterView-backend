@@ -5,6 +5,7 @@ import {
   addNewShift,
   getAllShifts,
   getShiftById,
+  updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
 
@@ -90,6 +91,54 @@ export const getSingleShift = async (
       status: "success",
       message: "Shift detail fetched successfully",
       shift,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const id = req.params.id as string;
+    const {
+      workerId,
+      clientId,
+      location,
+      startTime,
+      endTime,
+      date,
+      breakMinutes,
+      notes,
+    } = req.body;
+
+    const totalHours = calculateTotalHours(startTime, endTime, breakMinutes);
+    const status: ShiftStatus = workerId ? "assigned" : "unassigned";
+
+    const createObj = {
+      workerId,
+      clientId,
+      location,
+      startTime,
+      endTime,
+      date,
+      breakMinutes,
+      notes,
+      status,
+      totalHours,
+      createdBy: req.userInfo._id,
+    };
+
+    const result = await updateShiftById(id, createObj);
+    if (result.matchedCount === 0) throw new AppError("Shift not found", 404);
+
+    res.json({
+      status: "success",
+      message: "shift has been modified",
     });
   } catch (error) {
     next(error);
