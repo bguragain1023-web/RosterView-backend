@@ -21,7 +21,7 @@ const shiftSchema = new Schema<IShift>(
     workerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      dafault: null,
+      default: null,
     },
     clientId: {
       type: Schema.Types.ObjectId,

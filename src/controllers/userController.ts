@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { generatePassword } from "../helper/generatePassword";
 import { comparePassword, hashedPassword } from "../utlis/bcrypt";
 import { getRoleByName } from "../models/role/roleModel";

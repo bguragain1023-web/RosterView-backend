@@ -10,7 +10,7 @@ export const calculateTotalHours = (
   let endInMinutes = endHour * 60 + endMins;
 
   if (endInMinutes < startInMinutes) {
-    endInMinutes += 24 * 6;
+    endInMinutes += 24 * 60;
   }
   const totalWorkedMinutes = endInMinutes - startInMinutes - breakMinutes;
 

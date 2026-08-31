@@ -15,20 +15,19 @@ Content-Type: application/json
 
 POST http://localhost:8000/api/v1/users/createuser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
 
 {
-   "name": "Brazesh",
-  "email": "b@b.com",
-  "phone": "0422429511",
-  "role": "admin"
+   "name": "Demo",
+  "email": "demo@d.com",
+  "phone": "0422429544",
+  "role": "worker"
 }
 
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
 
 ### patch request
 
@@ -82,13 +81,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 GET http://localhost:8000/api/v1/clients
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
 
 
 ### get single client
 GET http://localhost:8000/api/v1/clients/6a94186d43fd0d7581573e74
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
 
 ####update client
 
@@ -100,10 +99,28 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   {
    "name": "sundari ",
   "phone": "0422429500",
-  "address": "fsdfsdfsd",
+  "address": " 7 sdfsdfsd ",
   "notes":"Depression",
   "email":"client@ssa",
-  "status": "inactive"
+  "status": "active"
 
 
 }
+
+
+####update client
+
+post http://localhost:8000/api/v1/shifts/createshift
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+
+{
+  "workerId": "6a9521312b8ab61de518a537",
+    "clientId": "6a94186d43fd0d7581573e74" ,
+    "location": "8 behhhdy road",
+    "date": "2026-09-10",
+    "startTime": "07:00",
+   "endTime":"17:00",
+    "breakMinutes": 30,
+    "notes":" taking for shopping"
+    }
