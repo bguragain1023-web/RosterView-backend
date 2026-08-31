@@ -22,3 +22,7 @@ export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
 export const getAllShifts = (): Promise<IShift[]> => {
   return shiftSchema.find();
 };
+
+export const getShiftById = async (id: string): Promise<IShift | null> => {
+  return await shiftSchema.findById(id);
+};

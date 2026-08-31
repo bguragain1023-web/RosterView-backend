@@ -1,7 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utlis/AppError";
 import { calculateTotalHours } from "../helper/calculation";
-import { addNewShift, getAllShifts } from "../models/shift/shiftModel";
+import {
+  addNewShift,
+  getAllShifts,
+  getShiftById,
+} from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
 
 export const createShift = async (
@@ -64,6 +68,29 @@ export const fetchAllShifts = async (
         allShifts,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSingleShift = async (
+  req: Request<{ id: string }, {}, {}>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const shift = await getShiftById(id);
+
+    if (!shift) {
+      throw new AppError("Shift doesn't exist", 400);
+    }
+
+    res.status(201).json({
+      status: "success",
+      message: "Shift detail fetched successfully",
+      shift,
+    });
   } catch (error) {
     next(error);
   }

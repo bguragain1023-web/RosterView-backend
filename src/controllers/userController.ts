@@ -105,7 +105,6 @@ export const getUsers = async (
 ) => {
   try {
     const allUsers = await getAllUsers();
-    console.log(allUsers);
 
     res.json({
       status: "success",
