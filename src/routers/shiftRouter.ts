@@ -2,10 +2,10 @@ import express from "express";
 import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
 import { createShiftValidation } from "../middleware/validation/shiftValidation";
-import { createShift } from "../controllers/shiftController";
+import { createShift, fetchAllShifts } from "../controllers/shiftController";
 const router = express.Router();
 
-//create user
+//create shift
 
 router.post(
   "/createshift",
@@ -15,4 +15,7 @@ router.post(
   createShift,
 );
 
+//get all shifts
+
+router.get("/", auth, requirePermission("shift", "create"), fetchAllShifts);
 export default router;

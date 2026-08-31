@@ -108,7 +108,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 }
 
 
-####update client
+### create shift
 
 post http://localhost:8000/api/v1/shifts/createshift
 Content-Type: application/json
@@ -124,3 +124,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
     "breakMinutes": 30,
     "notes":" taking for shopping"
     }
+
+  
+  ### get all shifts
+  GET http://localhost:8000/api/v1/shifts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU

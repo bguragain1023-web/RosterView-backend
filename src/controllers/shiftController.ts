@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utlis/AppError";
 import { calculateTotalHours } from "../helper/calculation";
-import { addNewShift } from "../models/shift/shiftModel";
+import { addNewShift, getAllShifts } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
 
 export const createShift = async (
@@ -45,6 +45,25 @@ export const createShift = async (
       message: "New shift created successfully",
       shift,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const fetchAllShifts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const allShifts = await getAllShifts();
+    if (allShifts) {
+      res.json({
+        status: "successs",
+        message: " All shift fetched successfully",
+        allShifts,
+      });
+    }
   } catch (error) {
     next(error);
   }

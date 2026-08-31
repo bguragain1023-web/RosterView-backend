@@ -18,3 +18,7 @@ export interface ShiftInput {
 export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
   return new shiftSchema(shiftObj).save();
 };
+
+export const getAllShifts = (): Promise<IShift[]> => {
+  return shiftSchema.find();
+};
