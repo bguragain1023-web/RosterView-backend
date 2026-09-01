@@ -8,6 +8,9 @@ import {
   updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
+import { getUserById } from "../models/user/userModel";
+import { getClientById } from "../models/client/clientModel";
+import { getRoleById } from "../models/role/roleModel";
 
 export const createShift = async (
   req: Request,
@@ -105,6 +108,9 @@ export const updateShift = async (
   try {
     if (!req.userInfo) throw new AppError("Unauthorized", 401);
     const id = req.params.id as string;
+    const shiftToUpdate = await getShiftById(id);
+    if (!shiftToUpdate) throw new AppError("shift doesn't exist", 404);
+
     const {
       workerId,
       clientId,
@@ -115,19 +121,43 @@ export const updateShift = async (
       breakMinutes,
       notes,
     } = req.body;
+    if (workerId !== undefined) {
+      const existWorker = await getUserById(workerId);
+      if (!existWorker) throw new AppError("worker doesn't exist", 400);
+      if (existWorker.status !== "active")
+        throw new AppError("This worker is not active right now", 400);
+      const workerRole = await getRoleById(existWorker.roleId.toString());
+      if (!workerRole) throw new AppError("worker role not found", 404);
+      if (workerRole.name !== "worker")
+        throw new AppError("Only worker should be assigned to a shift", 400);
+    }
 
-    const totalHours = calculateTotalHours(startTime, endTime, breakMinutes);
-    const status: ShiftStatus = workerId ? "assigned" : "unassigned";
+    if (clientId !== undefined) {
+      const existClient = await getClientById(clientId);
+      if (!existClient) throw new AppError("Client doesn't exist", 400);
+      if (!existClient.isActive)
+        throw new AppError("Client is not avtive anymore", 400);
+    }
+
+    const totalHours = calculateTotalHours(
+      startTime === undefined ? shiftToUpdate.startTime : startTime,
+      endTime === undefined ? shiftToUpdate.endTime : endTime,
+      breakMinutes === undefined ? shiftToUpdate.breakMinutes : breakMinutes,
+    );
+    const finalWorker =
+      workerId === undefined ? shiftToUpdate.workerId : workerId;
+    const status: ShiftStatus = finalWorker ? "assigned" : "unassigned";
 
     const createObj = {
-      workerId,
-      clientId,
-      location,
-      startTime,
-      endTime,
-      date,
-      breakMinutes,
-      notes,
+      workerId: finalWorker,
+      clientId: clientId === undefined ? shiftToUpdate.clientId : clientId,
+      location: location === undefined ? shiftToUpdate.location : location,
+      startTime: startTime === undefined ? shiftToUpdate.startTime : startTime,
+      endTime: endTime === undefined ? shiftToUpdate.endTime : endTime,
+      date: date === undefined ? shiftToUpdate.date : date,
+      breakMinutes:
+        breakMinutes === undefined ? shiftToUpdate.breakMinutes : breakMinutes,
+      notes: notes === undefined ? shiftToUpdate.notes : notes,
       status,
       totalHours,
       createdBy: req.userInfo._id,

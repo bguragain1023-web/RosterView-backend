@@ -1,11 +1,15 @@
 import express from "express";
 import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
-import { createShiftValidation } from "../middleware/validation/shiftValidation";
+import {
+  createShiftValidation,
+  updateShiftValidation,
+} from "../middleware/validation/shiftValidation";
 import {
   createShift,
   fetchAllShifts,
   getSingleShift,
+  updateShift,
 } from "../controllers/shiftController";
 const router = express.Router();
 
@@ -22,6 +26,15 @@ router.post(
 //get all shifts
 
 router.get("/", auth, requirePermission("shift", "read"), fetchAllShifts);
-export default router;
 
 router.get("/:id", auth, requirePermission("shift", "read"), getSingleShift);
+
+router.patch(
+  "/:id",
+  auth,
+  requirePermission("shift", "update"),
+  updateShiftValidation,
+  updateShift,
+);
+
+export default router;

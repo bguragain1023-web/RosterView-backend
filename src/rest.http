@@ -133,6 +133,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 ### get single shift
 GET  http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
+### patch shift
 
+Patch http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
+
+{
+
+    "location": "8 launceston tasmania",
+    "date": "2026-09-10",
+   
+   "endTime":"17:00",
+   
+    "notes":" going to hospital"
+    }

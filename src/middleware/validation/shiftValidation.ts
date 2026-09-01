@@ -183,11 +183,14 @@ export const updateShiftValidation = async (
     notes,
   } = req.body;
 
+  console.log("workerid validation start");
   if (workerId !== undefined) {
     if (typeof workerId !== "string" || !mongoose.isValidObjectId(workerId)) {
       throw new AppError("Invalid worker ID", 400);
     }
   }
+
+  console.log("workerid validation passed");
 
   if (clientId !== undefined) {
     if (typeof clientId !== "string" || !mongoose.isValidObjectId(clientId)) {
