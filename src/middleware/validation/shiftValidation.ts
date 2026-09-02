@@ -4,6 +4,7 @@ import { getClientById } from "../../models/client/clientModel";
 import { getUserById } from "../../models/user/userModel";
 import { getRoleById } from "../../models/role/roleModel";
 import mongoose from "mongoose";
+import { getShiftById } from "../../models/shift/shiftModel";
 
 export const createShiftValidation = async (
   req: Request,
@@ -268,5 +269,31 @@ export const updateShiftValidation = async (
   if (notes !== undefined && typeof notes !== "string")
     throw new AppError("notes format didn't match ", 400);
 
+  next();
+};
+
+export const deleteShiftValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (Object.keys(req.body).length === 0)
+    throw new AppError("The requesting body is empty", 400);
+  const { shiftIds } = req.body;
+
+  if (!shiftIds) throw new AppError("requesting body is empty ", 400);
+
+  if (!Array.isArray(shiftIds))
+    throw new AppError("Shifts must be an array", 400);
+
+  for (const id of shiftIds) {
+    if (typeof id !== "string" || !mongoose.isValidObjectId(id))
+      throw new AppError("Shift Id is not valid", 400);
+    const isExist = await getShiftById(id);
+    if (!isExist) {
+      throw new AppError("One of more shifts doesn't exist ", 404);
+    }
+  }
+  console.log("Delete validation passsed");
   next();
 };

@@ -27,7 +27,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 ### patch request
 
@@ -81,19 +81,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 GET http://localhost:8000/api/v1/clients
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 
 ### get single client
 GET http://localhost:8000/api/v1/clients/6a94186d43fd0d7581573e74
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 ####update client
 
 patch http://localhost:8000/api/v1/clients/updateclient/6a94186d43fd0d7581573e74
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 
   {
@@ -102,7 +102,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   "address": " 7 sdfsdfsd ",
   "notes":"Depression",
   "email":"client@ssa",
-  "status": "active"
+  "isActive": false
 
 
 }
@@ -128,7 +128,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   
 ### get all shifts
 GET http://localhost:8000/api/v1/shifts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 
 ### get single shift
@@ -142,11 +142,24 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
 
 {
-
-    "location": "8 launceston tasmania",
+  "workerId": "6a8f69e8243d8766e6b2b9a3",
+    "clientId": "6a9418ea7482e4d3c8c49ec4" ,
+    "location": "8 behhhdy road",
     "date": "2026-09-10",
-   
+    "startTime": "07:00",
    "endTime":"17:00",
-   
-    "notes":" going to hospital"
+    "breakMinutes": 30,
+    "notes":" taking for shopping"
     }
+
+
+### Delete shift
+
+Delete http://localhost:8000/api/v1/shifts
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
+
+{
+  "shiftIds":
+  ["6a952bce2b8ab61de518a539", "6a9522122b8ab61de518a538"]
+}

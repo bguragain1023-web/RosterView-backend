@@ -43,3 +43,7 @@ export const getShiftById = async (id: string): Promise<IShift | null> => {
 export const updateShiftById = async (id: string, data: ShiftInput) => {
   return shiftSchema.updateOne({ _id: id }, { $set: data });
 };
+
+export const deleteManyShifts = async (ids: string[]) => {
+  return shiftSchema.deleteMany({ _id: { $in: ids } });
+};

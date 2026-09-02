@@ -3,6 +3,7 @@ import { AppError } from "../utlis/AppError";
 import { calculateTotalHours } from "../helper/calculation";
 import {
   addNewShift,
+  deleteManyShifts,
   getAllShifts,
   getShiftById,
   updateShiftById,
@@ -169,6 +170,29 @@ export const updateShift = async (
     res.json({
       status: "success",
       message: "shift has been modified",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { shiftIds } = req.body;
+    console.log(shiftIds);
+    const result = await deleteManyShifts(shiftIds);
+    console.log("successfully");
+    if (result.deletedCount !== shiftIds.length) {
+      throw new AppError("One or more shifts don't exist", 404);
+    }
+
+    res.json({
+      status: "success",
+      message: `${result.deletedCount} item deleted`,
     });
   } catch (error) {
     next(error);

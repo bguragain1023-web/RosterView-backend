@@ -45,7 +45,7 @@ export const ValidateUpdateClient = (
     "name",
     "email",
     "phone",
-    "status",
+    "isActive",
     "address",
     "notes",
   ];

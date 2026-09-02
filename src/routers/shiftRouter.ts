@@ -3,10 +3,12 @@ import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
 import {
   createShiftValidation,
+  deleteShiftValidation,
   updateShiftValidation,
 } from "../middleware/validation/shiftValidation";
 import {
   createShift,
+  deleteShift,
   fetchAllShifts,
   getSingleShift,
   updateShift,
@@ -38,3 +40,11 @@ router.patch(
 );
 
 export default router;
+
+router.delete(
+  "/",
+  auth,
+  requirePermission("shift", "update"),
+  deleteShiftValidation,
+  deleteShift,
+);
