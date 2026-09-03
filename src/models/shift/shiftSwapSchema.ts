@@ -8,7 +8,8 @@ export type ShiftSwapStatus =
   | "cancelled";
 
 export interface IShiftSwap extends Document {
-  shiftId: mongoose.Types.ObjectId;
+  requestedShiftId: mongoose.Types.ObjectId;
+  targetedShiftId: mongoose.Types.ObjectId;
   requestedBy: mongoose.Types.ObjectId;
   requestedTo: mongoose.Types.ObjectId;
   status: ShiftSwapStatus;
@@ -19,7 +20,12 @@ export interface IShiftSwap extends Document {
 
 const shiftSwapSchema = new Schema(
   {
-    shiftId: {
+    requestedShiftId: {
+      type: Schema.Types.ObjectId,
+      ref: "Shift",
+      required: true,
+    },
+    targetedShiftId: {
       type: Schema.Types.ObjectId,
       ref: "Shift",
       required: true,

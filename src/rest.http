@@ -27,8 +27,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzOTcxMzUsImV4cCI6MTc4ODQ4MzUzNX0.YurORp0FMjm26A_EzjWXM-UBDxfl43irmJVupyjCkhs
 ### patch request
 
 Patch http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3
@@ -128,13 +127,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   
 ### get all shifts
 GET http://localhost:8000/api/v1/shifts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzOTcxMzUsImV4cCI6MTc4ODQ4MzUzNX0.YurORp0FMjm26A_EzjWXM-UBDxfl43irmJVupyjCkhs
 
 
 ### get single shift
 GET  http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
-
+Authorization: Bearer 
 ### patch shift
 
 Patch http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
@@ -161,5 +159,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 {
   "shiftIds":
-  ["6a952bce2b8ab61de518a539", "6a9522122b8ab61de518a538"]
+  ["6a952d9109ad74f304e04e17"]
 }

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import shiftSchema, { IShift, ShiftStatus } from "./shiftSchema";
 
 export interface ShiftInput {
@@ -46,4 +46,36 @@ export const updateShiftById = async (id: string, data: ShiftInput) => {
 
 export const deleteManyShifts = async (ids: string[]) => {
   return shiftSchema.deleteMany({ _id: { $in: ids } });
+};
+
+export const getTargetShifts = async (
+  workerId: string,
+  requestedDate: string,
+  targetedDate: string,
+): Promise<IShift[]> => {
+  const requestedStart = new Date(`${requestedDate}T00:00:00.000Z`);
+  const requestedEnd = new Date(`${requestedDate}T23:59:59.999Z`);
+
+  const targetedStart = new Date(`${targetedDate}T00:00:00.000Z`);
+  const targetedEnd = new Date(`${targetedDate}T23:59:59.999Z`);
+
+  // Workers who already have a shift on the requested date
+  const workersOnRequestedDate = await shiftSchema.distinct("workerId", {
+    workerId: { $ne: null },
+    date: {
+      $gte: requestedStart,
+      $lte: requestedEnd,
+    },
+  });
+
+  // Find target-date shifts belonging to eligible workers
+  return shiftSchema.find({
+    workerId: {
+      $nin: [...workersOnRequestedDate, new mongoose.Types.ObjectId(workerId)],
+    },
+    date: {
+      $gte: targetedStart,
+      $lte: targetedEnd,
+    },
+  });
 };
