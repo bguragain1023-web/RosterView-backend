@@ -41,3 +41,23 @@ export const createTeam = async (
     next(error);
   }
 };
+
+export const fetchAllTeams = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const allTeams = await getAllTeams();
+    res.json({
+      status: "success",
+      message:
+        allTeams.length === 0
+          ? "No teams available now "
+          : " Team fetched successfully",
+      allTeams,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

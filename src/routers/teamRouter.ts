@@ -2,7 +2,7 @@ import express from "express";
 import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
 import { createTeamValidation } from "../middleware/validation/teamValidation";
-import { createTeam } from "../controllers/teamController";
+import { createTeam, fetchAllTeams } from "../controllers/teamController";
 
 const router = express.Router();
 
@@ -13,5 +13,7 @@ router.post(
   createTeamValidation,
   createTeam,
 );
+
+router.get("/getteams", auth, requirePermission("team", "read"), fetchAllTeams);
 
 export default router;

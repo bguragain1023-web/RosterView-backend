@@ -202,9 +202,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 
 post http://localhost:8000/api/v1/teams/createteam
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODg0ODEwODcsImV4cCI6MTc4ODU2NzQ4N30.mYwoGhbfRCPYxF3neMLpfkzbdZNCIW3z2fEmIGYH_RU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg1MTA3NTksImV4cCI6MTc4ODU5NzE1OX0.m991lIVulNvJfSVxLwwdnujk9Sg4OuyRQo3Yz582jC4
 
 {
-  "name": "NorTh "
+  "name": "East "
  
 }
+
+
+
+### get all teams 
+
+get http://localhost:8000/api/v1/teams/getteams
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg1MTA3NTksImV4cCI6MTc4ODU5NzE1OX0.m991lIVulNvJfSVxLwwdnujk9Sg4OuyRQo3Yz582jC4
+
+
