@@ -10,29 +10,38 @@ Content-Type: application/json
   "password": "Admin123!"
 }
 
+### Login as worker
+POST http://localhost:8000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "worker3@com",
+  "password": "UudGm#7NEc7"
+}
+
 
 ###  create user endpoint test
 
 POST http://localhost:8000/api/v1/users/createuser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 
 {
-   "name": "Demo",
-  "email": "demo@d.com",
-  "phone": "0422429544",
+   "name": "Test3 worker",
+  "email": "worker3@com",
+  "phone": "0422429549",
   "role": "worker"
 }
 
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzOTcxMzUsImV4cCI6MTc4ODQ4MzUzNX0.YurORp0FMjm26A_EzjWXM-UBDxfl43irmJVupyjCkhs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 ### patch request
 
 Patch http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 
 {
    "name": "Jogn Cena",
@@ -47,7 +56,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 ### update permission
 PATCH http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3/permissions
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODc4OTU4NTcsImV4cCI6MTc4Nzk4MjI1N30.haV8mx5aW2mczKD1mj1WW9KSHXPMnB6U3zIdu-WJ0TY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 
 
 {
@@ -61,16 +70,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 POST http://localhost:8000/api/v1/clients/createclient
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgwOTAzNjIsImV4cCI6MTc4ODE3Njc2Mn0.8cYHVvBzaJ7lMK3CcfCsrCLgwCGOo2PTI-uyfxBBCfE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 
 
 {
-   "name": "xavi alosnso",
-  "phone": "0433298721",
+   "name": "test1 client",
+  "phone": "0433298722",
   "address": "fsdfsdfsd",
   "createdBy": "6a8d7cbade764f74d0d3abc3",
   "notes":"Dementia",
-  "email":"client@ss"
+  "email":"client@s"
 
 
 }
@@ -111,13 +120,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 post http://localhost:8000/api/v1/shifts/createshift
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgxNTc4OTgsImV4cCI6MTc4ODI0NDI5OH0.tG_BHbjTat5LFMSCxdppChI1uoha8OkwnM8BiNPBeiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
 
 {
-  "workerId": "6a9521312b8ab61de518a537",
-    "clientId": "6a94186d43fd0d7581573e74" ,
-    "location": "8 behhhdy road",
-    "date": "2026-09-10",
+  "workerId": "6a9a0d2dfdafb723f4e73de7",
+    "clientId": "6a991090feece244b35fcc62" ,
+    "location": "9 derwent park",
+    "date": "2026-09-11",
     "startTime": "07:00",
    "endTime":"17:00",
     "breakMinutes": 30,
@@ -161,3 +170,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   "shiftIds":
   ["6a952d9109ad74f304e04e17"]
 }
+
+
+### Eligible check for swapShift
+
+post http://localhost:8000/api/v1/swapShift/eligibileshift
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODg0ODEwODcsImV4cCI6MTc4ODU2NzQ4N30.mYwoGhbfRCPYxF3neMLpfkzbdZNCIW3z2fEmIGYH_RU
+
+{
+  "targetedDate": "2026-09-16",
+  "shiftId": "6a9a0dd5fdafb723f4e73de8"
+  
+    }

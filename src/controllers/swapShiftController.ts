@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utlis/AppError";
 import { getShiftById, getTargetShifts } from "../models/shift/shiftModel";
+import { addSwaprequest } from "../models/shift/shiftSwapModel";
 
 export const fetchSwapEligibleWorker = async (
   req: Request,
@@ -8,12 +9,12 @@ export const fetchSwapEligibleWorker = async (
   next: NextFunction,
 ) => {
   try {
-    const { shiftId, targetedDate } = req.body;
+    const { requestedshiftId, targetedDate } = req.body;
     if (!req.userInfo)
       throw new AppError("Not authorized to request swapShift", 404);
     const { _id } = req.userInfo;
 
-    const requestedShift = await getShiftById(shiftId);
+    const requestedShift = await getShiftById(requestedshiftId);
     if (!requestedShift) throw new AppError("Shift doesn't exist", 404);
 
     if (
@@ -62,4 +63,56 @@ export const fetchSwapEligibleWorker = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const createSwapShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { requestedShiftId, targetedShiftId } = req.body;
+  if (!req.userInfo) throw new AppError("Unauthorized", 401);
+
+  const { _id } = req.userInfo;
+
+  const requestedShift = await getShiftById(requestedShiftId);
+  const targetedShift = await getShiftById(targetedShiftId);
+
+  if (!requestedShift) throw new AppError("Shift Doesn't exist", 404);
+
+  if (!requestedShift.workerId)
+    throw new AppError("Requested shift must be assigned to a worker", 400);
+
+  if (requestedShift.workerId.toString() !== _id.toString()) {
+    throw new AppError("Requested shift must belong to you", 403);
+  }
+
+  if (!targetedShift) throw new AppError("Shift doesn't exist", 404);
+  if (!targetedShift.workerId)
+    throw new AppError("This shift doesn't have worker assigned", 400);
+
+  if (targetedShift.workerId.toString() === _id.toString()) {
+    throw new AppError("You cannot request a swap with your own shift", 400);
+  }
+
+  const swapRequestObj = {
+    requestedShiftId,
+    targetedShiftId,
+    requestedBy: _id,
+    requestedTo: targetedShift.workerId,
+  };
+
+  const swapRequest = await addSwaprequest(swapRequestObj);
+
+  if (!swapRequest)
+    throw new AppError(
+      "something went wrong while creating a swap request, try again later",
+      500,
+    );
+
+  res.json({
+    status: "success",
+    message: " Swap request created successfully",
+    swapRequest,
+  });
 };
