@@ -43,3 +43,30 @@ export const fetchedEligibleSwapWorkerValidation = async (
 
   next();
 };
+
+export const createShiftSwapValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (Object.keys(req.body).length === 0) {
+    throw new AppError("Requesting body is empty", 400);
+  }
+
+  const { requestedShiftId, targetedShiftId } = req.body;
+
+  if (
+    typeof requestedShiftId !== "string" ||
+    !mongoose.isValidObjectId(requestedShiftId)
+  ) {
+    throw new AppError("Invalid Requested shift Id ", 400);
+  }
+
+  if (
+    typeof targetedShiftId !== "string" ||
+    !mongoose.isValidObjectId(targetedShiftId)
+  ) {
+    throw new AppError("Invalid targeted ShiftId", 400);
+  }
+  next();
+};
