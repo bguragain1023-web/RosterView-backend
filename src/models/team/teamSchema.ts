@@ -2,8 +2,9 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ITeam extends Document {
   name: string;
+  normalizedName: string;
   description: string;
-  teamLeaderId: mongoose.Types.ObjectId;
+  teamLeaderId: mongoose.Types.ObjectId | null;
   isActive: boolean;
 }
 
@@ -15,6 +16,11 @@ const teamSchema = new Schema<ITeam>(
       unique: true,
       trim: true,
     },
+    normalizedName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
 
     description: {
       type: String,
@@ -24,8 +30,8 @@ const teamSchema = new Schema<ITeam>(
 
     teamLeaderId: {
       type: Schema.Types.ObjectId,
-      required: true,
       ref: "User",
+      default: null,
     },
     isActive: {
       type: Boolean,

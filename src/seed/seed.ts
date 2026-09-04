@@ -34,6 +34,23 @@ const permissions: PermissisonInput[] = [
     action: "update",
     description: "Update user detail ",
   },
+
+  {
+    name: "team:create",
+    resource: "team",
+    action: "create",
+  },
+  {
+    name: "team:read",
+    resource: "team",
+    action: "read",
+  },
+  {
+    name: "team:update",
+    resource: "team",
+    action: "update",
+  },
+
   {
     name: "roster:read",
     resource: "shift",
@@ -142,6 +159,8 @@ const roles: RoleSeedInput[] = [
       "Manages rosters, staff assignments, conflicts and shift swaps",
     permissions: [
       "user:read",
+
+      "team:read",
 
       "roster:read",
       "roster:create",

@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import clientRouter from "./routers/clientRouter";
 import shiftRouter from "./routers/shiftRouter";
 import swapShiftRouter from "./routers/swapShiftRouter";
+import teamRouter from "./routers/teamRouter";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -21,6 +22,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/clients", clientRouter);
 app.use("/api/v1/shifts", shiftRouter);
 app.use("/api/v1/swapShift", swapShiftRouter);
+app.use("/api/v1/teams", teamRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

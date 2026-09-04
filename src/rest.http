@@ -195,3 +195,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
  "targetedShiftId" : "6a9a0c8ffdafb723f4e73de5"
   
     }
+
+
+### createTeam
+
+
+post http://localhost:8000/api/v1/teams/createteam
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODg0ODEwODcsImV4cCI6MTc4ODU2NzQ4N30.mYwoGhbfRCPYxF3neMLpfkzbdZNCIW3z2fEmIGYH_RU
+
+{
+  "name": "NorTh "
+ 
+}
