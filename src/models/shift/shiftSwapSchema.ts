@@ -49,11 +49,9 @@ const shiftSwapSchema = new Schema(
     reviewedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     reviewedAt: {
       type: Date,
-      required: true,
     },
     reviewComment: {
       type: String,

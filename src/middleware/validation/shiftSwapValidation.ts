@@ -9,11 +9,14 @@ export const fetchedEligibleSwapWorkerValidation = async (
 ) => {
   if (Object.keys(req.body).length === 0)
     throw new AppError("Requesting Boy is empty", 400);
-  const { shiftId, targetedDate } = req.body;
-  if (!shiftId || !targetedDate)
+  const { requestedShiftId, targetedDate } = req.body;
+  if (!requestedShiftId || !targetedDate)
     throw new AppError("Both shift and swap date is required", 400);
 
-  if (typeof shiftId !== "string" || !mongoose.isValidObjectId(shiftId))
+  if (
+    typeof requestedShiftId !== "string" ||
+    !mongoose.isValidObjectId(requestedShiftId)
+  )
     throw new AppError(" Invalid shift Id", 400);
 
   if (typeof targetedDate !== "string") {

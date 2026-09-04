@@ -11,5 +11,21 @@ interface SwapCreate {
 export const addSwaprequest = async (
   swapRequestObj: SwapCreate,
 ): Promise<IShiftSwap> => {
-  return new shiftSwapSchema(swapRequestObj).save();
+  try {
+    return new shiftSwapSchema(swapRequestObj).save();
+  } catch (error) {
+    console.error("SWAP SAVE ERROR:", error);
+    throw error;
+  }
+};
+
+export const findPendingSwap = async (
+  requestedShiftId: string,
+  targetedShiftId: string,
+): Promise<IShiftSwap | null> => {
+  return await shiftSwapSchema.findOne({
+    requestedShiftId,
+    targetedShiftId,
+    status: "pending",
+  });
 };

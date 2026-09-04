@@ -136,8 +136,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   
 ### get all shifts
 GET http://localhost:8000/api/v1/shifts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzOTcxMzUsImV4cCI6MTc4ODQ4MzUzNX0.YurORp0FMjm26A_EzjWXM-UBDxfl43irmJVupyjCkhs
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0ODc3NjgsImV4cCI6MTc4ODU3NDE2OH0.tSohFv1I4HnvOG9juaDsmA2kZMJn-Enr-fkIBER6yHs
 
 ### get single shift
 GET  http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
@@ -180,6 +179,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 
 {
   "targetedDate": "2026-09-16",
-  "shiftId": "6a9a0dd5fdafb723f4e73de8"
+  "requestedShiftId": "6a9a0dd5fdafb723f4e73de8"
+  
+    }
+
+
+###create swap request
+
+post http://localhost:8000/api/v1/swapShift/createSwapShift
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODg0ODEwODcsImV4cCI6MTc4ODU2NzQ4N30.mYwoGhbfRCPYxF3neMLpfkzbdZNCIW3z2fEmIGYH_RU
+
+{
+ "requestedShiftId" : "6a9a0dd5fdafb723f4e73de8",
+ "targetedShiftId" : "6a9a0c8ffdafb723f4e73de5"
   
     }

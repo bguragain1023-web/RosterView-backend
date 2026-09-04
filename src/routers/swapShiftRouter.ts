@@ -27,7 +27,17 @@ router.post(
 router.post(
   "/createSwapShift",
   auth,
+  (req, res, next) => {
+    console.log("authPassed");
+    next();
+  },
   requirePermission("shiftSwap", "create"),
+
+  (req, res, next) => {
+    console.log("permission passed");
+    next();
+  },
+
   createShiftSwapValidation,
   createSwapShift,
 );

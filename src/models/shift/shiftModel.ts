@@ -37,7 +37,12 @@ export const getAllShifts = (): Promise<IShift[]> => {
 };
 
 export const getShiftById = async (id: string): Promise<IShift | null> => {
-  return await shiftSchema.findById(id);
+  console.log("ID received by getShiftById:", id);
+  console.log("Database:", mongoose.connection.name);
+  console.log("Collection:", shiftSchema.collection.name);
+  const shift = await shiftSchema.findById(id);
+  console.log("Result:", shift);
+  return shift;
 };
 
 export const updateShiftById = async (id: string, data: ShiftInput) => {

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { PermissionAction } from "../models/permission/permissionSchema";
 import { getRoleById } from "../models/role/roleModel";
 import { getPermissionById } from "../models/permission/permissionModel";
+import { AppError } from "../utlis/AppError";
 
 export const requirePermission = (
   resource: string,
@@ -9,20 +10,16 @@ export const requirePermission = (
 ) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userRoleId = req.userInfo?.roleId;
+      console.log("permission started");
+      if (!req.userInfo) throw new AppError("Unauthorized", 401);
+      const userRoleId = req.userInfo.roleId;
       if (!userRoleId) {
-        return res.status(403).json({
-          status: "error",
-          message: "User Role not found",
-        });
+        throw new AppError("User Role not found", 404);
       }
-
+      console.log("userrole found ", userRoleId);
       const role = await getRoleById(userRoleId.toString());
       if (!role) {
-        return res.status(403).json({
-          status: "error",
-          message: "Role not found",
-        });
+        throw new AppError(" Role not found", 403);
       }
       if (role._id) {
         const permissionsID = role.permissions.map((p) => p.toString());
@@ -32,10 +29,10 @@ export const requirePermission = (
           (item) => item.resource === resource && item.action === action,
         );
         if (!hasPermission) {
-          return res.status(403).json({
-            status: "error",
-            message: "You do not have permission to perform this action",
-          });
+          throw new AppError(
+            "You do not have permission to perform this action",
+            403,
+          );
         }
         next();
       }
