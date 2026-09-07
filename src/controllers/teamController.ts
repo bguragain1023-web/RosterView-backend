@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import {
   addTeam,
+  getActiveTeamById,
   getActiveTeams,
   getAllTeams,
   getTeamById,
@@ -105,6 +106,63 @@ export const fetchAllTeams = async (
         ownTeam,
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSingleTeam = async (
+  req: Request<{ teamId: string }, {}, {}>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const user = req.userInfo;
+    const { teamId } = req.params;
+    const role = await getRoleById(user.roleId.toString());
+    if (!role) {
+      throw new AppError("User Role not found", 404);
+    }
+
+    if (role.name === "worker" || role.name === "teamLeader") {
+      if (!user.teamId) {
+        throw new AppError("you are not assigned to any team", 400);
+      }
+      if (user.teamId.toString() !== teamId) {
+        throw new AppError(
+          "Permission Denied!! you can only view your team",
+          403,
+        );
+      }
+    }
+
+    if (role.name === "coordinator") {
+      const activeTeam = await getActiveTeamById(teamId);
+      if (!activeTeam) {
+        throw new AppError(" Team doesn't exist or not active", 404);
+      }
+
+      return res.json({
+        status: "success",
+        message: "Requested Team found",
+        activeTeam,
+      });
+    }
+    const team = await getTeamById(teamId);
+
+    if (!team) {
+      throw new AppError("Team doesn't exist", 400);
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Requested Team found",
+      team,
+    });
   } catch (error) {
     next(error);
   }
