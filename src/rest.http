@@ -16,27 +16,48 @@ Content-Type: application/json
 
 {
   "email": "worker3@com",
-  "password": "UudGm#7NEc7"
+  "password":"UudGm#7NEc7"
 }
+
+### Login as teamleader
+POST http://localhost:8000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "teamleader1@com",
+  "password": "vIOUvI&skVT"
+}
+### login as coordinator
+post http://localhost:8000/api/v1/users/login
+Content-Type: application/json
+
+{
+"email": "cooord@com",
+"password" : "Km18#&5uPGG"
+}
+
+
 
 
 ###  create user endpoint test
 
 POST http://localhost:8000/api/v1/users/createuser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4MTc5MzksImV4cCI6MTc4ODkwNDMzOX0.d2y0BUy2NF0GwP9_p9Ya31e_BEOx3j0aMFPDUMJl4Ak
 
 {
-   "name": "Test3 worker",
-  "email": "worker3@com",
-  "phone": "0422429549",
-  "role": "worker"
+   "name": "coordinator test",
+  "email": "cooord@com",
+  "phone": "0453329229",
+  "role": "coordinator"
 }
 
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
+
+
 ### patch request
 
 Patch http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3
@@ -202,10 +223,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 
 post http://localhost:8000/api/v1/teams/createteam
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg1MTA3NTksImV4cCI6MTc4ODU5NzE1OX0.m991lIVulNvJfSVxLwwdnujk9Sg4OuyRQo3Yz582jC4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4MTc5MzksImV4cCI6MTc4ODkwNDMzOX0.d2y0BUy2NF0GwP9_p9Ya31e_BEOx3j0aMFPDUMJl4Ak
 
 {
-  "name": "East "
+  "name": "Nepal ",
+  
  
 }
 
@@ -215,6 +237,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 get http://localhost:8000/api/v1/teams/getteams
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg1MTA3NTksImV4cCI6MTc4ODU5NzE1OX0.m991lIVulNvJfSVxLwwdnujk9Sg4OuyRQo3Yz582jC4
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
 

@@ -188,6 +188,8 @@ const roles: RoleSeedInput[] = [
 
       "availability:read",
 
+      "team:read",
+
       "leave:read",
       "leave:approve",
 
@@ -208,6 +210,7 @@ const roles: RoleSeedInput[] = [
 
       "availability:read",
       "availability:update",
+      "team:read",
 
       "swap:create",
 

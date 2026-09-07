@@ -21,3 +21,7 @@ export const getAllTeams = (): Promise<ITeam[]> => {
 export const getTeamById = (teamId: string): Promise<ITeam | null> => {
   return teamSchema.findById(teamId);
 };
+
+export const getActiveTeams = (): Promise<ITeam[]> => {
+  return teamSchema.find({ isActive: true });
+};
