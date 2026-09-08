@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../../utlis/AppError";
+import mongoose from "mongoose";
 
 export const createTeamValidation = async (
   req: Request,
@@ -26,6 +27,28 @@ export const createTeamValidation = async (
   if (description !== undefined && typeof description !== "string") {
     throw new AppError("Description must be string", 400);
   }
+
+  next();
+};
+
+export const assignTeamValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  console.log("🔥 VALIDATION HIT");
+  const { teamId, userId } = req.body;
+  console.log(teamId, userId);
+
+  if (typeof teamId !== "string" || !mongoose.isValidObjectId(teamId)) {
+    throw new AppError("teamId is not valid", 400);
+  }
+
+  if (typeof userId !== "string" || !mongoose.isValidObjectId(userId)) {
+    throw new AppError("teamId is not valid", 400);
+  }
+
+  console.log("validation completed");
 
   next();
 };

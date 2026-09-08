@@ -55,21 +55,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 ###get all the users
 
 GET http://localhost:8000/api/v1/users/readuser
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4NTY4NDIsImV4cCI6MTc4ODk0MzI0Mn0.0ElQhi_CHXdRHECmiQ5AU43TaSQBr8uZc-7x-ycNUIM
 
 
 ### patch request
 
-Patch http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3
+Patch http://localhost:8000/api/v1/users/updateuser/6a9521312b8ab61de518a537
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4NTY4NDIsImV4cCI6MTc4ODk0MzI0Mn0.0ElQhi_CHXdRHECmiQ5AU43TaSQBr8uZc-7x-ycNUIM
 
 {
-   "name": "Jogn Cena",
-  "email": "johntest@2com",
-  "phone": "0420000014",
+   
+  
+  
   "role": "teamLeader",
-  "status": "inactive"
+  "status": "active"
   
 }
 
@@ -161,7 +161,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 ### get single shift
 GET  http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
 ### patch shift
 
 Patch http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
@@ -236,6 +236,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 ### get all teams 
 
 get http://localhost:8000/api/v1/teams/getteams
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4MTc5MzksImV4cCI6MTc4ODkwNDMzOX0.d2y0BUy2NF0GwP9_p9Ya31e_BEOx3j0aMFPDUMJl4Ak
 
+
+
+###get single Team
+
+get  http://localhost:8000/api/v1/teams/6a9a8240e59dd61def277521
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZEBjb20iLCJpZCI6IjZhOWYzMjI1YWJiZmRkN2ZlYTM2YjdhOSIsInJvbGVJZCI6IjZhODk4NTJkODZlOGJhNGFlNzNmZTZjOCIsImlhdCI6MTc4ODgyMTU3MSwiZXhwIjoxNzg4OTA3OTcxfQ.mknJvvCfwe4uGDlXZ-p0GzRLxn6-WlbNQWMEFOqjq0k
+
+### Assign team validation
+
+patch http://localhost:8000/api/v1/teams/assignteamleader
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4MTc5MzksImV4cCI6MTc4ODkwNDMzOX0.d2y0BUy2NF0GwP9_p9Ya31e_BEOx3j0aMFPDUMJl4Ak
+
+{
+  "teamId":"6a9a73e79fc535805e9721ff",
+  "userId":"6a9a875dbd343953ed572969"
+}

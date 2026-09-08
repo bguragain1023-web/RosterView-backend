@@ -3,10 +3,11 @@ import userSchema, { IUser } from "./userSchema";
 
 //create
 interface UpdatePayLoad {
-  role: string;
-  email: string;
-  phone: string;
-  status: string;
+  roleId?: mongoose.Types.ObjectId;
+  teamId?: mongoose.Types.ObjectId;
+  email?: string;
+  phone?: string;
+  status?: string;
 }
 
 export const addUser = async (userObj: IUser): Promise<IUser> => {

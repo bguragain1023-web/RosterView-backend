@@ -29,3 +29,9 @@ export const getActiveTeams = (): Promise<ITeam[]> => {
 export const getActiveTeamById = (teamId: string): Promise<ITeam | null> => {
   return teamSchema.findOne({ _id: teamId, isActive: true });
 };
+
+export const assignLeader = (teamId: string, userId: string) => {
+  return teamSchema.findByIdAndUpdate(teamId, {
+    teamLeaderId: userId,
+  });
+};

@@ -34,6 +34,7 @@ export const requirePermission = (
             403,
           );
         }
+        console.log("permission Completed");
         next();
       }
     } catch (error) {
