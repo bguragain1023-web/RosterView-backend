@@ -245,7 +245,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 get  http://localhost:8000/api/v1/teams/6a9a8240e59dd61def277521
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZEBjb20iLCJpZCI6IjZhOWYzMjI1YWJiZmRkN2ZlYTM2YjdhOSIsInJvbGVJZCI6IjZhODk4NTJkODZlOGJhNGFlNzNmZTZjOCIsImlhdCI6MTc4ODgyMTU3MSwiZXhwIjoxNzg4OTA3OTcxfQ.mknJvvCfwe4uGDlXZ-p0GzRLxn6-WlbNQWMEFOqjq0k
 
-### Assign team validation
+### Assign team leader
 
 patch http://localhost:8000/api/v1/teams/assignteamleader
 Content-Type: application/json
@@ -254,4 +254,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 {
   "teamId":"6a9a73e79fc535805e9721ff",
   "userId":"6a9a875dbd343953ed572969"
+}
+
+
+### Assign team to worker
+
+patch http://localhost:8000/api/v1/teams/assignworkerteam
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4MTc5MzksImV4cCI6MTc4ODkwNDMzOX0.d2y0BUy2NF0GwP9_p9Ya31e_BEOx3j0aMFPDUMJl4Ak
+
+{
+  "teamId":"6a9a73e79fc535805e9721f5",
+  "userId":"6a9521312b8ab61de518a539"
 }

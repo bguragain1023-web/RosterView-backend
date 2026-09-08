@@ -7,6 +7,7 @@ import {
 } from "../middleware/validation/teamValidation";
 import {
   assignTeamLeader,
+  assignWorkerTeam,
   createTeam,
   fetchAllTeams,
   getSingleTeam,
@@ -32,6 +33,8 @@ router.get(
   getSingleTeam,
 );
 
+//assign teamleader
+
 router.patch(
   "/assignteamleader",
   auth,
@@ -43,6 +46,21 @@ router.patch(
   },
   assignTeamValidation,
   assignTeamLeader,
+);
+
+//assign team to worker
+
+router.patch(
+  "/assignworkerteam",
+  auth,
+  requirePermission("team", "create"),
+
+  (req, res, next) => {
+    console.log("🔥 permission passed");
+    next();
+  },
+  assignTeamValidation,
+  assignWorkerTeam,
 );
 
 export default router;

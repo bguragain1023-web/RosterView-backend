@@ -186,6 +186,10 @@ export const assignTeamLeader = async (
       throw new AppError("Teamleader already existed in this team", 409);
     }
 
+    if (!team.isActive) {
+      throw new AppError("Selected team is not active", 409);
+    }
+
     const user = await getUserById(userId);
     if (!user) {
       throw new AppError("User not found!!", 404);
@@ -217,6 +221,56 @@ export const assignTeamLeader = async (
     res.json({
       status: "success",
       message: "Team Leader assigned",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const assignWorkerTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { teamId, userId } = req.body;
+
+    const team = await getTeamById(teamId);
+    if (!team) {
+      throw new AppError("Team not found", 404);
+    }
+
+    if (!team.isActive) {
+      throw new AppError("Selected team is not active", 400);
+    }
+
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new AppError("User not found!!", 404);
+    }
+    if (user.teamId) {
+      throw new AppError("This user has team assigned already ", 409);
+    }
+
+    if (user.status !== "active") {
+      throw new AppError("user must be active", 409);
+    }
+    const role = await getRoleById(user.roleId.toString());
+    if (!role) {
+      throw new AppError("ROle not found", 404);
+    }
+    if (role.name !== "worker") {
+      throw new AppError("User Role must be worker", 400);
+    }
+
+    const updateUser = await updateUserDetailById(userId, { teamId });
+    if (updateUser.matchedCount === 0) {
+      throw new AppError("User not found ", 404);
+    }
+
+    res.json({
+      status: "success",
+      message: "User has assigned to a team",
     });
   } catch (error) {
     next(error);
