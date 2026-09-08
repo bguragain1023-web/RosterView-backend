@@ -4,7 +4,10 @@ import { getShiftById, getTargetShifts } from "../models/shift/shiftModel";
 import {
   addSwaprequest,
   findPendingSwap,
+  getSwapShiftById,
+  updateSwapShift,
 } from "../models/shift/shiftSwapModel";
+import { getUserById } from "../models/user/userModel";
 
 export const fetchSwapEligibleWorker = async (
   req: Request,
@@ -103,6 +106,29 @@ export const createSwapShift = async (
       throw new AppError("You cannot request a swap with your own shift", 400);
     }
 
+    const requestedWorker = await getUserById(
+      requestedShift.workerId.toString(),
+    );
+
+    const targetedWorker = await getUserById(targetedShift.workerId.toString());
+
+    if (!requestedWorker || !targetedWorker) {
+      throw new AppError("Worker not found", 404);
+    }
+
+    if (!requestedWorker.teamId || !targetedWorker.teamId) {
+      throw new AppError("Both workers must be assigned to a team", 409);
+    }
+
+    if (
+      requestedWorker.teamId.toString() !== targetedWorker.teamId.toString()
+    ) {
+      throw new AppError(
+        "You can only request a swap with a worker from your team",
+        403,
+      );
+    }
+
     const hasExistingSwap = await findPendingSwap(
       requestedShiftId,
       targetedShiftId,
@@ -134,6 +160,103 @@ export const createSwapShift = async (
       status: "success",
       message: " Swap request created successfully",
       swapRequest,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const swapShiftActionByWorker = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const { _id, teamId } = req.userInfo;
+    const swapShiftId = req.params.swapShiftId as string;
+    const { action } = req.body;
+    if (!swapShiftId) {
+      throw new AppError("Please provide the shift Swap Id", 404);
+    }
+
+    const swapShift = await getSwapShiftById(swapShiftId.toString());
+
+    if (!swapShift) {
+      throw new AppError("Shift request not found", 404);
+    }
+    if (swapShift.status !== "pending") {
+      throw new AppError("This swap request is no longer pending", 409);
+    }
+
+    if (_id.toString() !== swapShift.requestedTo.toString()) {
+      throw new AppError("The shift is not requested to logged-in user", 403);
+    }
+
+    const requestedShift = await getShiftById(
+      swapShift.requestedShiftId.toString(),
+    );
+    const targetedShift = await getShiftById(
+      swapShift.targetedShiftId.toString(),
+    );
+
+    if (!requestedShift || !targetedShift) {
+      throw new AppError("One or both shifts no longer exist", 404);
+    }
+
+    if (
+      targetedShift.workerId?.toString() !== swapShift.requestedTo.toString()
+    ) {
+      throw new AppError(
+        "The targeted shift is no longer assigned to you",
+        409,
+      );
+    }
+
+    if (
+      requestedShift.workerId?.toString() !== swapShift.requestedBy.toString()
+    ) {
+      throw new AppError(
+        "The requested shift is no longer assigned to the requester",
+        409,
+      );
+    }
+
+    const requestedWorker = await getUserById(swapShift.requestedBy.toString());
+    if (!requestedWorker) {
+      throw new AppError("this user doesn't exist anymore", 404);
+    }
+
+    if (
+      !teamId ||
+      !requestedWorker.teamId ||
+      teamId.toString() !== requestedWorker.teamId.toString()
+    ) {
+      throw new AppError(
+        "Both worker must be in a same team to complete this request",
+        409,
+      );
+    }
+
+    const status = action === "accept" ? "workerAccepted" : "rejected";
+    const result = await updateSwapShift(swapShiftId, status);
+
+    if (!result) {
+      throw new AppError(
+        "Somethning went wrong, please try again later!!",
+        500,
+      );
+    }
+
+    res.json({
+      status: "success",
+      message:
+        action === "accept"
+          ? "Swap request accepted! waiting from managers approval"
+          : "swap request reejected",
     });
   } catch (error) {
     next(error);

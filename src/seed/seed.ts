@@ -213,6 +213,7 @@ const roles: RoleSeedInput[] = [
       "team:read",
 
       "swap:create",
+      "swap:read",
 
       "incident:create",
     ],

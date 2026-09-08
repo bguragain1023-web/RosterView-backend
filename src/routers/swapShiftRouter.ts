@@ -4,10 +4,12 @@ import { requirePermission } from "../middleware/permissionMiddleware";
 import {
   createShiftSwapValidation,
   fetchedEligibleSwapWorkerValidation,
+  swapShiftActionValidation,
 } from "../middleware/validation/shiftSwapValidation";
 import {
   createSwapShift,
   fetchSwapEligibleWorker,
+  swapShiftActionByWorker,
 } from "../controllers/swapShiftController";
 
 const router = express.Router();
@@ -40,6 +42,15 @@ router.post(
 
   createShiftSwapValidation,
   createSwapShift,
+);
+
+// accept or reject swapShift by worker
+router.patch(
+  "/:swapShiftId/accept",
+  auth,
+  requirePermission("swap", "read"),
+  swapShiftActionValidation,
+  swapShiftActionByWorker,
 );
 
 export default router;

@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import shiftSwapSchema, { IShiftSwap } from "./shiftSwapSchema";
+import shiftSwapSchema, {
+  IShiftSwap,
+  ShiftSwapStatus,
+} from "./shiftSwapSchema";
 
 interface SwapCreate {
   requestedShiftId: mongoose.Types.ObjectId;
@@ -28,4 +31,21 @@ export const findPendingSwap = async (
     targetedShiftId,
     status: "pending",
   });
+};
+
+export const getSwapShiftById = async (
+  id: string,
+): Promise<IShiftSwap | null> => {
+  return shiftSwapSchema.findById(id);
+};
+
+export const updateSwapShift = async (
+  shiftSwapId: string,
+  status: ShiftSwapStatus,
+) => {
+  return shiftSwapSchema.findByIdAndUpdate(
+    shiftSwapId,
+    { status },
+    { new: true },
+  );
 };

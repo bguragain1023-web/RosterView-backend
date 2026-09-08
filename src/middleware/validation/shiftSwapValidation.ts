@@ -73,3 +73,27 @@ export const createShiftSwapValidation = async (
   }
   next();
 };
+
+export const swapShiftActionValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const swapShiftId = req.params.swapShiftId as string;
+  const { action } = req.body;
+
+  if (
+    typeof swapShiftId !== "string" ||
+    !mongoose.isValidObjectId(swapShiftId)
+  ) {
+    throw new AppError("Invalid Swap Shift Id ", 400);
+  }
+
+  if (
+    typeof action !== "string" ||
+    (action !== "accept" && action !== "reject")
+  ) {
+    throw new AppError("Action must be accept or reject only", 400);
+  }
+  next();
+};
