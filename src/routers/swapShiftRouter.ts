@@ -9,6 +9,7 @@ import {
 import {
   createSwapShift,
   fetchSwapEligibleWorker,
+  shiftReviewByManagers,
   swapShiftActionByWorker,
 } from "../controllers/swapShiftController";
 
@@ -48,9 +49,17 @@ router.post(
 router.patch(
   "/:swapShiftId/accept",
   auth,
-  requirePermission("swap", "read"),
+  requirePermission("shiftSwap", "read"),
   swapShiftActionValidation,
   swapShiftActionByWorker,
+);
+
+router.patch(
+  "/:swapShiftId/review",
+  auth,
+  requirePermission("shiftSwap", "approve"),
+  swapShiftActionValidation,
+  shiftReviewByManagers,
 );
 
 export default router;

@@ -5,9 +5,12 @@ import {
   addSwaprequest,
   findPendingSwap,
   getSwapShiftById,
+  reviewSwapShift,
+  swapWorkersBetweenShifts,
   updateSwapShift,
 } from "../models/shift/shiftSwapModel";
 import { getUserById } from "../models/user/userModel";
+import { getRoleById } from "../models/role/roleModel";
 
 export const fetchSwapEligibleWorker = async (
   req: Request,
@@ -257,6 +260,121 @@ export const swapShiftActionByWorker = async (
         action === "accept"
           ? "Swap request accepted! waiting from managers approval"
           : "swap request reejected",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const shiftReviewByManagers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  //swapShiftId
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const user = req.userInfo;
+    const userRole = await getRoleById(user.roleId.toString());
+
+    if (!userRole) {
+      throw new AppError("User doesn;t have a role", 409);
+    }
+
+    if (userRole.name === "worker") {
+      throw new AppError(
+        "Permission Denied! User must be TeamLeader, Coordinator or Admin",
+        403,
+      );
+    }
+
+    const { action } = req.body;
+    const swapShiftId = req.params.swapShiftId as string;
+    const swapShift = await getSwapShiftById(swapShiftId);
+    if (!swapShift) {
+      throw new AppError("Shift Not found", 404);
+    }
+    const requestingUser = await getUserById(swapShift.requestedBy.toString());
+    const requestedUser = await getUserById(swapShift.requestedTo.toString());
+    if (!requestingUser || !requestedUser) {
+      throw new AppError(
+        "One or more worker in swapshift doesn't exist anymore",
+        404,
+      );
+    }
+    if (
+      requestedUser.status !== "active" ||
+      requestingUser.status !== "active"
+    ) {
+      throw new AppError(
+        "One or more staff in swapShift is not active anymore",
+        409,
+      );
+    }
+
+    if (userRole.name === "teamLeader") {
+      if (
+        requestingUser.teamId?.toString() !== user.teamId?.toString() ||
+        requestedUser.teamId?.toString() !== user.teamId?.toString()
+      ) {
+        throw new AppError("Both worker must be in your team", 409);
+      }
+    }
+
+    if (swapShift.status !== "workerAccepted") {
+      throw new AppError("Shift must be approved by both worker first", 409);
+    }
+    if (action === "reject") {
+      const result = await reviewSwapShift(swapShiftId, "rejected", user._id);
+
+      if (!result) {
+        throw new AppError(
+          "someThing went wrong while rejecting the swap",
+          500,
+        );
+      }
+      res.json({
+        status: "success",
+        message: "swap request rejected",
+      });
+    }
+
+    if (action === "accept") {
+      const swapResult = await swapWorkersBetweenShifts(
+        swapShift.requestedShiftId.toString(),
+        swapShift.targetedShiftId.toString(),
+      );
+
+      if (!swapResult) {
+        throw new AppError(
+          "something went wrong while accepting the swap request",
+          500,
+        );
+      }
+      const result = await reviewSwapShift(swapShiftId, "accepted", user._id);
+      if (!result) {
+        throw new AppError(
+          "shift were swapped but the request couldn't be updated",
+          500,
+        );
+      }
+      res.json({
+        status: "success",
+        message: "Swap request approved and shift swapped successfully ",
+      });
+    }
+
+    const status = action === "accept" ? "accepted" : "rejected";
+
+    const result = await reviewSwapShift(swapShiftId, status, user._id);
+    if (!result) {
+      throw new AppError("Something went while performing the action", 500);
+    }
+    res.json({
+      status: "success",
+      message: "shift updated",
     });
   } catch (error) {
     next(error);
