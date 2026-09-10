@@ -3,6 +3,8 @@ import shiftSwapSchema, {
   IShiftSwap,
   ShiftSwapStatus,
 } from "./shiftSwapSchema";
+import { AppError } from "../../utlis/AppError";
+import shiftSchema from "./shiftSchema";
 
 interface SwapCreate {
   requestedShiftId: mongoose.Types.ObjectId;

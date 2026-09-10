@@ -1,19 +1,17 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export type AvaiabilityType = "recurring" | "specific";
-export type AvaiabilityStatus = "available" | "unavailable";
+export type AvailabilityType = "recurring" | "specific";
+export type AvailabilityStatus = "available" | "unavailable";
 
-export interface IAvaiability extends Document {
+export interface IAvailability extends Document {
   workerId: mongoose.Types.ObjectId;
-  type: AvaiabilityType;
+  type: AvailabilityType;
   dayOfWeek?: number;
   date?: Date;
-  startTime?: string;
-  endTime?: string;
-  status: AvaiabilityStatus;
+  status: AvailabilityStatus;
 }
 
-const availabilitySchema = new Schema<IAvaiability>(
+const availabilitySchema = new Schema<IAvailability>(
   {
     workerId: {
       type: Schema.Types.ObjectId,
@@ -34,13 +32,6 @@ const availabilitySchema = new Schema<IAvaiability>(
     date: {
       type: Date,
     },
-    startTime: {
-      type: String,
-    },
-
-    endTime: {
-      type: String,
-    },
 
     status: {
       type: String,
@@ -51,4 +42,7 @@ const availabilitySchema = new Schema<IAvaiability>(
   { timestamps: true },
 );
 
-export default mongoose.model<IAvaiability>("Availability", availabilitySchema);
+export default mongoose.model<IAvailability>(
+  "Availability",
+  availabilitySchema,
+);
