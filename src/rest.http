@@ -267,3 +267,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   "teamId":"6a9a73e79fc535805e9721f5",
   "userId":"6a9521312b8ab61de518a539"
 }
+
+
+
+###  Create availability
+
+POST http://localhost:8000/api/v1/availability/addavailability
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkwNzc2MDcsImV4cCI6MTc4OTE2NDAwN30.llRG_LRZM4mhV22OtqygnCJQAn4oxmy48q-6mAGIQEM
+
+{
+ 
+  "type": "recurring",
+  "dayOfWeek": 6,
+  "status": "unavailable",
+}

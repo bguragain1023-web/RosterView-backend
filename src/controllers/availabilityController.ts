@@ -3,6 +3,8 @@ import { AppError } from "../utlis/AppError";
 import {
   AddAvailabilityPayload,
   addAvailabilty,
+  getAvailabilityByDate,
+  getAvailabilityByDay,
 } from "../models/user/availabilityModel";
 
 export const createAvailability = async (
@@ -24,6 +26,14 @@ export const createAvailability = async (
           400,
         );
       }
+      const existAvailability = await getAvailabilityByDay(
+        workerId.toString(),
+        dayOfWeek,
+      );
+      if (existAvailability) {
+        throw new AppError("Availability already exists for this day ", 409);
+      }
+
       availabilityObj = {
         workerId,
         dayOfWeek,
@@ -37,16 +47,28 @@ export const createAvailability = async (
           400,
         );
       }
+      const availabilityDate = new Date(date);
+      availabilityDate.setHours(0, 0, 0, 0);
+
+      const existAvailability = await getAvailabilityByDate(
+        workerId.toString(),
+        availabilityDate,
+      );
+
+      if (existAvailability) {
+        throw new AppError("Availability already exist for this day ", 409);
+      }
 
       availabilityObj = {
         workerId,
-        date,
+        date: availabilityDate,
         status,
         type,
       };
     } else {
       throw new AppError("Invalid availability type", 400);
     }
+
     const result = await addAvailabilty(availabilityObj);
     if (!result) {
       throw new AppError(

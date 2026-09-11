@@ -26,3 +26,11 @@ export const getAvailabilityByDay = (workerId: string, dayOfWeek: number) => {
     type: "recurring",
   });
 };
+
+export const getAvailabilityByDate = (workerId: string, date: Date) => {
+  return availabilitySchema.findOne({
+    workerId,
+    type: "specific",
+    date,
+  });
+};
