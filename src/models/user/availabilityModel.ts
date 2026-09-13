@@ -54,3 +54,14 @@ export const getAvailabilityByDate = (workerId: string, date: Date) => {
     date,
   });
 };
+
+export const getAvailabilityById = (id: string) => {
+  return availabilitySchema.findById(id);
+};
+
+export const updateAvailabilityById = (
+  id: string,
+  status: AvailabilityStatus,
+) => {
+  return availabilitySchema.findByIdAndUpdate(id, { status }, { new: true });
+};

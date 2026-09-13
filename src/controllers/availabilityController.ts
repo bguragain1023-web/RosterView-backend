@@ -8,6 +8,8 @@ import {
   fetchAvailabilityByUserId,
   getAvailabilityByDate,
   getAvailabilityByDay,
+  getAvailabilityById,
+  updateAvailabilityById,
 } from "../models/user/availabilityModel";
 import { getRoleById } from "../models/role/roleModel";
 import { getUsersByTeam } from "../models/user/userModel";
@@ -148,6 +150,54 @@ export const getAllAvailability = async (
       status: "success",
       message: "Here are all the availability",
       availability,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const workerId = req.userInfo._id;
+    const { availabilityId } = req.params;
+    const { status } = req.body;
+    if (!availabilityId || Array.isArray(availabilityId)) {
+      throw new AppError("Availability ID is required", 400);
+    }
+
+    const availability = await getAvailabilityById(availabilityId);
+
+    if (!availability) {
+      throw new AppError("Availability not found", 404);
+    }
+
+    if (availability.workerId.toString() !== workerId.toString()) {
+      throw new AppError(
+        "You are not allowed to update this availability",
+        403,
+      );
+    }
+
+    const result = await updateAvailabilityById(availabilityId, status);
+
+    if (!result) {
+      throw new AppError(
+        "Something went wrong while updating availability",
+        500,
+      );
+    }
+
+    res.json({
+      status: "success",
+      message: "Availability updated",
     });
   } catch (error) {
     next(error);
