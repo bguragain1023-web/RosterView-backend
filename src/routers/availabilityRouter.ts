@@ -1,10 +1,14 @@
 import express from "express";
 import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
-import { createAvailabilityValidation } from "../middleware/validation/availabilityValidation";
+import {
+  createAvailabilityValidation,
+  updateAvailabilityValidation,
+} from "../middleware/validation/availabilityValidation";
 import {
   createAvailability,
   getAllAvailability,
+  updateAvailability,
 } from "../controllers/availabilityController";
 
 const router = express.Router();
@@ -30,6 +34,14 @@ router.get(
   auth,
   requirePermission("availability", "read"),
   getAllAvailability,
+);
+
+router.patch(
+  "/:availabilityId",
+  auth,
+  requirePermission("availability", "update"),
+  updateAvailabilityValidation,
+  updateAvailability,
 );
 
 export default router;

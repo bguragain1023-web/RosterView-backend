@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../../utlis/AppError";
+import mongoose from "mongoose";
 
 export const createAvailabilityValidation = (
   req: Request,
@@ -74,4 +75,34 @@ export const createAvailabilityValidation = (
   }
 
   next();
+};
+
+export const updateAvailabilityValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { availabilityId } = req.params;
+    const { status } = req.body;
+
+    if (!availabilityId || Array.isArray(availabilityId)) {
+      throw new AppError("Availability ID is required", 400);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(availabilityId)) {
+      throw new AppError("Invalid availability ID", 400);
+    }
+
+    if (
+      typeof status !== "string" ||
+      (status !== "available" && status !== "unavailable")
+    ) {
+      throw new AppError("Status must be available or unavailable", 400);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
