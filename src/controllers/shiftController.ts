@@ -12,6 +12,8 @@ import { ShiftStatus } from "../models/shift/shiftSchema";
 import { getUserById } from "../models/user/userModel";
 import { getClientById } from "../models/client/clientModel";
 import { getRoleById } from "../models/role/roleModel";
+import { fetchAvailabilityByUserId } from "../models/user/availabilityModel";
+import { checkWorkerAvailability } from "../helper/checkAvailibility";
 
 export const createShift = async (
   req: Request,
@@ -32,6 +34,13 @@ export const createShift = async (
     if (!req.userInfo) throw new AppError("Unauthorized", 401);
     const createdBy = req.userInfo._id;
     const totalHours = calculateTotalHours(startTime, endTime, breakMinutes);
+
+    if (workerId) {
+      const isAvailable = await checkWorkerAvailability(workerId, date);
+      if (!isAvailable) {
+        throw new AppError("The worker is not available on this day", 400);
+      }
+    }
     const status: ShiftStatus = workerId ? "assigned" : "unassigned";
 
     const shiftObj = {
@@ -147,6 +156,20 @@ export const updateShift = async (
     );
     const finalWorker =
       workerId === undefined ? shiftToUpdate.workerId : workerId;
+
+    const finalDate = date === undefined ? shiftToUpdate.date : date;
+
+    if ((finalWorker && workerId !== undefined) || date !== undefined) {
+      const isAvailable = await checkWorkerAvailability(
+        finalWorker.toString(),
+        finalDate,
+      );
+
+      if (!isAvailable) {
+        throw new AppError("Worker is not available on this day", 400);
+      }
+    }
+
     const status: ShiftStatus = finalWorker ? "assigned" : "unassigned";
 
     const createObj = {
