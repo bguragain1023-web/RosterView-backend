@@ -278,7 +278,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 
 {
  
-  "type": "recurring",
-  "dayOfWeek": 6,
-  "status": "unavailable",
+  "type": "specific",
+  "date": "2026-10-20",
+  "status": "available"
+}
+
+###  Get All Availability
+
+GET  http://localhost:8000/api/v1/availability/getallavailability
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZEBjb20iLCJpZCI6IjZhOWYzMjI1YWJiZmRkN2ZlYTM2YjdhOSIsInJvbGVJZCI6IjZhODk4NTJkODZlOGJhNGFlNzNmZTZjOCIsImlhdCI6MTc4OTI4Mjc4MiwiZXhwIjoxNzg5MzY5MTgyfQ.FJHIpz3kdLdSQcOA6Ma324bQsFCyM6kbqcWfcfMRyks
+
+### update Availability
+
+PATCH  http://localhost:8000/api/v1/availability/6aa32d1195df8046ab3120a8
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkyOTE4NDQsImV4cCI6MTc4OTM3ODI0NH0.kRY62yAZMIpn3raWbTUg-jlLycUxRaj0FT0jaYscpm8
+
+{
+  "status" : "available"
 }

@@ -3,6 +3,7 @@ import { AppError } from "../utlis/AppError";
 import {
   AddAvailabilityPayload,
   addAvailabilty,
+  deleteAvailabilityById,
   fetchAllAvailability,
   fetchAllAvailabilityByteam,
   fetchAvailabilityByUserId,
@@ -198,6 +199,55 @@ export const updateAvailability = async (
     res.json({
       status: "success",
       message: "Availability updated",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//delete availability
+
+export const deleteAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const workerId = req.userInfo._id;
+    const { availabilityId } = req.params;
+    if (!availabilityId) {
+      throw new AppError("Availability ID is missing", 400);
+    }
+
+    const availability = await getAvailabilityById(availabilityId.toString());
+
+    if (!availability) {
+      throw new AppError("Availability not found", 404);
+    }
+
+    if (availability.workerId.toString() !== workerId.toString()) {
+      throw new AppError(
+        "You are not allowed to delete this availability",
+        403,
+      );
+    }
+
+    const result = await deleteAvailabilityById(availabilityId?.toString());
+
+    if (!result) {
+      throw new AppError(
+        "Something went wrong while deleting availability",
+        500,
+      );
+    }
+
+    res.json({
+      status: "success",
+      message: "Availability deleted",
     });
   } catch (error) {
     next(error);

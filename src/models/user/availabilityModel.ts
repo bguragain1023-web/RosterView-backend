@@ -65,3 +65,7 @@ export const updateAvailabilityById = (
 ) => {
   return availabilitySchema.findByIdAndUpdate(id, { status }, { new: true });
 };
+
+export const deleteAvailabilityById = (id: string) => {
+  return availabilitySchema.findByIdAndDelete(id);
+};

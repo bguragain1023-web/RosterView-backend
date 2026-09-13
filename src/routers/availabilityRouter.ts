@@ -39,8 +39,16 @@ router.get(
 router.patch(
   "/:availabilityId",
   auth,
+  (req, res, next) => {
+    console.log("authPassed");
+    next();
+  },
   requirePermission("availability", "update"),
   updateAvailabilityValidation,
+  (req, res, next) => {
+    console.log("Validation passed");
+    next();
+  },
   updateAvailability,
 );
 
