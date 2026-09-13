@@ -3,10 +3,12 @@ import { auth } from "../middleware/authMiddleware";
 import { requirePermission } from "../middleware/permissionMiddleware";
 import {
   createAvailabilityValidation,
+  deleteAvailabilityValidation,
   updateAvailabilityValidation,
 } from "../middleware/validation/availabilityValidation";
 import {
   createAvailability,
+  deleteAvailability,
   getAllAvailability,
   updateAvailability,
 } from "../controllers/availabilityController";
@@ -50,6 +52,16 @@ router.patch(
     next();
   },
   updateAvailability,
+);
+
+// delete availability
+
+router.delete(
+  "/:availabilityId",
+  auth,
+  requirePermission("availability", "update"),
+  deleteAvailabilityValidation,
+  deleteAvailability,
 );
 
 export default router;

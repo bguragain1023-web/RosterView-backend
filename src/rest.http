@@ -290,10 +290,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZ
 
 ### update Availability
 
-PATCH  http://localhost:8000/api/v1/availability/6aa32d1195df8046ab3120a8
+PATCH  http://localhost:8000/api/v1/availability/6aa32d1195df8046ab3120a
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkyOTE4NDQsImV4cCI6MTc4OTM3ODI0NH0.kRY62yAZMIpn3raWbTUg-jlLycUxRaj0FT0jaYscpm8
 
 {
   "status" : "available"
 }
+
+### Delete Availability
+
+DELETE http://localhost:8000/api/v1/availability/6aa32d5495df8046ab3120a9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkyOTE4NDQsImV4cCI6MTc4OTM3ODI0NH0.kRY62yAZMIpn3raWbTUg-jlLycUxRaj0FT0jaYscpm8

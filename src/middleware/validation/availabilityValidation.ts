@@ -106,3 +106,25 @@ export const updateAvailabilityValidation = (
     next(error);
   }
 };
+
+export const deleteAvailabilityValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { availabilityId } = req.params;
+
+    if (!availabilityId || Array.isArray(availabilityId)) {
+      throw new AppError("Availability ID is required", 400);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(availabilityId)) {
+      throw new AppError("Invalid availability ID", 400);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
