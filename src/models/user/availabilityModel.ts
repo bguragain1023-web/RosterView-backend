@@ -19,6 +19,26 @@ export const addAvailabilty = (
   return new availabilitySchema(availabilityObj).save();
 };
 
+export const fetchAllAvailability = (): Promise<IAvailability[] | null> => {
+  return availabilitySchema.find();
+};
+
+export const fetchAllAvailabilityByteam = (
+  workerIds: string[],
+): Promise<IAvailability[] | null> => {
+  return availabilitySchema.find({
+    workerId: { $in: workerIds },
+  });
+};
+
+export const fetchAvailabilityByUserId = (
+  workerId: string,
+): Promise<IAvailability[] | null> => {
+  return availabilitySchema.find({
+    workerId,
+  });
+};
+
 export const getAvailabilityByDay = (workerId: string, dayOfWeek: number) => {
   return availabilitySchema.findOne({
     workerId,

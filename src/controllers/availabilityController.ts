@@ -3,9 +3,14 @@ import { AppError } from "../utlis/AppError";
 import {
   AddAvailabilityPayload,
   addAvailabilty,
+  fetchAllAvailability,
+  fetchAllAvailabilityByteam,
+  fetchAvailabilityByUserId,
   getAvailabilityByDate,
   getAvailabilityByDay,
 } from "../models/user/availabilityModel";
+import { getRoleById } from "../models/role/roleModel";
+import { getUsersByTeam } from "../models/user/userModel";
 
 export const createAvailability = async (
   req: Request,
@@ -79,6 +84,70 @@ export const createAvailability = async (
     res.json({
       status: "success",
       message: "Availability added",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllAvailability = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const user = req.userInfo;
+    const role = await getRoleById(user.roleId.toString());
+    if (!role) {
+      throw new AppError("Role not found ", 404);
+    }
+    if (role.name === "teamLeader") {
+      if (!user.teamId) {
+        throw new AppError("Team not found", 404);
+      }
+
+      const workers = await getUsersByTeam(user.teamId.toString());
+      if (!workers) {
+        throw new AppError("workers nor found", 404);
+      }
+
+      const workerIds = workers.map((worker) => worker._id.toString());
+      const availability = await fetchAllAvailabilityByteam(workerIds);
+      if (!availability) {
+        throw new AppError("Availability not found", 404);
+      }
+      return res.json({
+        status: "success",
+        message: "Fetched your team's availability",
+        availability,
+      });
+    }
+
+    if (role.name === "worker") {
+      const availability = await fetchAvailabilityByUserId(user._id.toString());
+
+      if (!availability) {
+        throw new AppError("Availability not found", 404);
+      }
+      return res.json({
+        status: "success",
+        message: "fetched your availability",
+        availability,
+      });
+    }
+
+    const availability = await fetchAllAvailability();
+    if (!availability) {
+      throw new AppError("Availability not found", 404);
+    }
+    return res.json({
+      status: "success",
+      message: "Here are all the availability",
+      availability,
     });
   } catch (error) {
     next(error);

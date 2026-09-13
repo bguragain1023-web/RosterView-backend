@@ -33,6 +33,12 @@ export const getAllUsers = (): Promise<IUser[]> => {
   return userSchema.find().select("-password");
 };
 
+export const getUsersByTeam = (teamId: string): Promise<IUser[] | null> => {
+  return userSchema.find({
+    teamId,
+  });
+};
+
 export const updateUserDetailById = (id: string, data: UpdatePayLoad) => {
   try {
     const updatedUser = userSchema.updateOne(
