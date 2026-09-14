@@ -6,6 +6,7 @@ import {
   deleteManyShifts,
   getAllShifts,
   getShiftById,
+  getWorkerShiftsOnDate,
   updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
@@ -39,6 +40,21 @@ export const createShift = async (
       const isAvailable = await checkWorkerAvailability(workerId, date);
       if (!isAvailable) {
         throw new AppError("The worker is not available on this day", 400);
+      }
+      const existingShifts = await getWorkerShiftsOnDate(workerId, date);
+
+      const newStart = startTime;
+      const newEnd = endTime;
+
+      const hasConflict = existingShifts.some((shift) => {
+        return newStart < shift.endTime && newEnd > shift.startTime;
+      });
+
+      if (hasConflict) {
+        throw new AppError(
+          "The worker already has a shift during this time",
+          409,
+        );
       }
     }
     const status: ShiftStatus = workerId ? "assigned" : "unassigned";
@@ -167,6 +183,34 @@ export const updateShift = async (
 
       if (!isAvailable) {
         throw new AppError("Worker is not available on this day", 400);
+      }
+    }
+
+    if (finalWorker) {
+      const finalStartTime =
+        startTime === undefined ? shiftToUpdate.startTime : startTime;
+
+      const finalEndTime =
+        endTime === undefined ? shiftToUpdate.endTime : endTime;
+
+      const existingShifts = await getWorkerShiftsOnDate(
+        finalWorker.toString(),
+        finalDate,
+      );
+
+      const hasConflict = existingShifts.some((shift) => {
+        if (shift._id.toString() === id) {
+          return false;
+        }
+
+        return finalStartTime < shift.endTime && finalEndTime > shift.startTime;
+      });
+
+      if (hasConflict) {
+        throw new AppError(
+          "The worker already has a shift during this time",
+          409,
+        );
       }
     }
 

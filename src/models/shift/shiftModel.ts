@@ -84,3 +84,22 @@ export const getTargetShifts = async (
     },
   });
 };
+
+export const getWorkerShiftsOnDate = async (
+  workerId: string,
+  date: Date,
+): Promise<IShift[]> => {
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return shiftSchema.find({
+    workerId,
+    date: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    },
+  });
+};
