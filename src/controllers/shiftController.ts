@@ -228,7 +228,6 @@ export const updateShift = async (
       notes: notes === undefined ? shiftToUpdate.notes : notes,
       status,
       totalHours,
-      createdBy: req.userInfo._id,
     };
 
     const result = await updateShiftById(id, createObj);

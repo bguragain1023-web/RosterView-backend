@@ -21,11 +21,10 @@ export interface updateShiftPayLoad {
   date: Date;
   startTime: string;
   endTime: string;
-  breakTime: number;
+  breakMinutes: number;
   totalHours: number;
   status: ShiftStatus;
   notes?: string;
-  createdBy: string;
 }
 
 export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
@@ -45,7 +44,7 @@ export const getShiftById = async (id: string): Promise<IShift | null> => {
   return shift;
 };
 
-export const updateShiftById = async (id: string, data: ShiftInput) => {
+export const updateShiftById = async (id: string, data: updateShiftPayLoad) => {
   return shiftSchema.updateOne({ _id: id }, { $set: data });
 };
 
@@ -100,6 +99,20 @@ export const getWorkerShiftsOnDate = async (
     date: {
       $gte: startOfDay,
       $lte: endOfDay,
+    },
+  });
+};
+
+export const getWorkerShiftsForWeek = async (
+  workerId: string,
+  weekStart: Date,
+  weekEnd: Date,
+): Promise<IShift[]> => {
+  return shiftSchema.find({
+    workerId,
+    date: {
+      $gte: weekStart,
+      $lte: weekEnd,
     },
   });
 };
