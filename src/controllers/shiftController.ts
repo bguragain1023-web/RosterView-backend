@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import { AppError } from "../utlis/AppError";
-import { calculateTotalHours } from "../helper/calculation";
+import {
+  calculateTotalHours,
+  calculateWeeklyHours,
+} from "../helper/calculation";
 import {
   addNewShift,
   deleteManyShifts,
@@ -36,6 +39,10 @@ export const createShift = async (
     const createdBy = req.userInfo._id;
     const totalHours = calculateTotalHours(startTime, endTime, breakMinutes);
 
+    let weeklyHoursAfter = 0;
+    let overtimeHours = 0;
+    let normalHours = 0;
+
     if (workerId) {
       const isAvailable = await checkWorkerAvailability(workerId, date);
       if (!isAvailable) {
@@ -56,6 +63,14 @@ export const createShift = async (
           409,
         );
       }
+
+      const weeklyHoursBefore = await calculateWeeklyHours(workerId, date);
+
+      weeklyHoursAfter = weeklyHoursBefore + totalHours;
+
+      overtimeHours = Math.max(0, weeklyHoursAfter - 38);
+
+      normalHours = totalHours - overtimeHours;
     }
     const status: ShiftStatus = workerId ? "assigned" : "unassigned";
 
@@ -78,6 +93,9 @@ export const createShift = async (
       status: "success",
       message: "New shift created successfully",
       shift,
+      weeklHours: weeklyHoursAfter,
+      normalHours,
+      overtimeHours,
     });
   } catch (error) {
     next(error);

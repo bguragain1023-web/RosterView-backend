@@ -1,3 +1,6 @@
+import { getWorkerShiftsForWeek } from "../models/shift/shiftModel";
+import { getWeekRange } from "./getWeekRange";
+
 export const calculateTotalHours = (
   startTime: string,
   endTime: string,
@@ -17,4 +20,16 @@ export const calculateTotalHours = (
   if (totalWorkedMinutes < 0) return 0;
 
   return Number((totalWorkedMinutes / 60).toFixed(2));
+};
+
+export const calculateWeeklyHours = async (workerId: string, date: Date) => {
+  const { weekStart, weekEnd } = getWeekRange(date);
+
+  const shifts = getWorkerShiftsForWeek(workerId, weekStart, weekEnd);
+
+  const weeklyHours = (await shifts).reduce(
+    (total, shift) => total + shift.totalHours,
+    0,
+  );
+  return weeklyHours;
 };
