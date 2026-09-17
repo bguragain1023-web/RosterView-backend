@@ -70,7 +70,7 @@ export const createShift = async (
 
       overtimeHours = Math.max(0, weeklyHoursAfter - 38);
 
-      normalHours = totalHours - overtimeHours;
+      normalHours = Math.min(weeklyHoursAfter, 38);
     }
     const status: ShiftStatus = workerId ? "assigned" : "unassigned";
 
@@ -204,6 +204,10 @@ export const updateShift = async (
       }
     }
 
+    let weeklyHoursAfter = 0;
+    let overtimeHours = 0;
+    let normalHours = 0;
+
     if (finalWorker) {
       const finalStartTime =
         startTime === undefined ? shiftToUpdate.startTime : startTime;
@@ -230,6 +234,20 @@ export const updateShift = async (
           409,
         );
       }
+
+      const weeklyHoursBefore = await calculateWeeklyHours(
+        finalWorker.toString(),
+        finalDate,
+      );
+
+      const weeklyHoursWithoutCurrentShift =
+        weeklyHoursBefore - shiftToUpdate.totalHours;
+
+      weeklyHoursAfter = weeklyHoursWithoutCurrentShift + totalHours;
+
+      overtimeHours = Math.max(0, weeklyHoursAfter - 38);
+
+      normalHours = Math.min(weeklyHoursAfter, 38);
     }
 
     const status: ShiftStatus = finalWorker ? "assigned" : "unassigned";
@@ -254,6 +272,9 @@ export const updateShift = async (
     res.json({
       status: "success",
       message: "shift has been modified",
+      weeklyHours: weeklyHoursAfter,
+      normalHours,
+      overtimeHours,
     });
   } catch (error) {
     next(error);
