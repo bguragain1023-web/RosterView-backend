@@ -12,9 +12,6 @@ export interface CreateRequestInput {
   type: LeaveType;
   reason?: string;
   status: LeaveStatus;
-  reviewedBy?: mongoose.Types.ObjectId;
-  reviewedAt?: Date;
-  reviewComment?: string;
 }
 
 export const addLeaveRequest = (
