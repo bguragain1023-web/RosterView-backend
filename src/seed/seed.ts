@@ -126,25 +126,6 @@ const permissions: PermissisonInput[] = [
     action: "approve",
     description: "Approve/Reject shift swap request",
   },
-
-  {
-    name: "incident:create",
-    resource: "incidentReport",
-    action: "create",
-    description: "Create Incident report",
-  },
-  {
-    name: "incident:read",
-    resource: "incidentReport",
-    action: "read",
-    description: "Read Incident report",
-  },
-  {
-    name: "incident:review",
-    resource: "incidentReport",
-    action: "review",
-    description: "Review Incident report",
-  },
 ];
 const roles: RoleSeedInput[] = [
   {
@@ -174,9 +155,6 @@ const roles: RoleSeedInput[] = [
 
       "swap:read",
       "swap:approve",
-
-      "incident:read",
-      "incident:review",
     ],
   },
 
@@ -195,9 +173,6 @@ const roles: RoleSeedInput[] = [
 
       "swap:read",
       "swap:approve",
-
-      "incident:create",
-      "incident:read",
     ],
   },
 
@@ -215,7 +190,7 @@ const roles: RoleSeedInput[] = [
       "swap:create",
       "swap:read",
 
-      "incident:create",
+      "leave:create",
     ],
   },
 ];
