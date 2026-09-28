@@ -37,3 +37,11 @@ export const updateLeaveRequest = (requestId: string, status: LeaveStatus) => {
     { new: true },
   );
 };
+
+export const getLeaveRequestsByWorkers = (
+  workerIds: string[],
+): Promise<ILeaveRequest[]> => {
+  return leaveRequestSchema.find({
+    workerId: { $in: workerIds },
+  });
+};

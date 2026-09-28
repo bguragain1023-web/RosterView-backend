@@ -141,13 +141,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 post http://localhost:8000/api/v1/shifts/createshift
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0MTU4NDksImV4cCI6MTc4ODUwMjI0OX0.zHI9osICiY-5M6fVnkogLNN8w-au5mhNyH61AfkrVtU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
 
 {
   "workerId": "6a9a0d2dfdafb723f4e73de7",
     "clientId": "6a991090feece244b35fcc62" ,
     "location": "9 derwent park",
-    "date": "2026-09-11",
+    "date": "2026-09-27",
     "startTime": "07:00",
    "endTime":"17:00",
     "breakMinutes": 30,
@@ -157,24 +157,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   
 ### get all shifts
 GET http://localhost:8000/api/v1/shifts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg0ODc3NjgsImV4cCI6MTc4ODU3NDE2OH0.tSohFv1I4HnvOG9juaDsmA2kZMJn-Enr-fkIBER6yHs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
 
 ### get single shift
-GET  http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzg4ODE4NTY3LCJleHAiOjE3ODg5MDQ5Njd9.C-Ys7ietShKAJbsaGT0AR7BdUMkFQggzU6nAWfaPCGE
+GET  http://localhost:8000/api/v1/shifts/6a9a0c09fdafb723f4e73de4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
+
 ### patch shift
 
-Patch http://localhost:8000/api/v1/shifts/6a9522122b8ab61de518a538
+Patch http://localhost:8000/api/v1/shifts/6aa9b7ef72ba3b4ec63e29c3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODgzMDQ1NzYsImV4cCI6MTc4ODM5MDk3Nn0.KTzQ2DNMC6Ti0-NkxfgSxTdvoL8tGgmfsMNzZEh_mek
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
 
 {
-  "workerId": "6a8f69e8243d8766e6b2b9a3",
-    "clientId": "6a9418ea7482e4d3c8c49ec4" ,
-    "location": "8 behhhdy road",
-    "date": "2026-09-10",
-    "startTime": "07:00",
-   "endTime":"17:00",
+  "workerId": "6a9a0d2dfdafb723f4e73de7",
+    "clientId": "6a991090feece244b35fcc62" ,
+    "location": "8 derwent park",
+    "startTime": "05:00",
+   "endTime":"18:00",
     "breakMinutes": 30,
     "notes":" taking for shopping"
     }
@@ -199,7 +199,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODg0ODEwODcsImV4cCI6MTc4ODU2NzQ4N30.mYwoGhbfRCPYxF3neMLpfkzbdZNCIW3z2fEmIGYH_RU
 
 {
-  "targetedDate": "2026-09-16",
+  "targetedDate": "2026-10-16",
   "requestedShiftId": "6a9a0dd5fdafb723f4e73de8"
   
     }
@@ -274,13 +274,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 POST http://localhost:8000/api/v1/availability/addavailability
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkwNzc2MDcsImV4cCI6MTc4OTE2NDAwN30.llRG_LRZM4mhV22OtqygnCJQAn4oxmy48q-6mAGIQEM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkzNDAzNjEsImV4cCI6MTc4OTQyNjc2MX0.J3RtltOKvMAQERN9J_zSQ0hBvlkAqXsJQDY5BksIlHo
 
 {
  
-  "type": "specific",
-  "date": "2026-10-20",
-  "status": "available"
+  "type": "recurring",
+  "dayOfWeek": 3,
+  "status": "unavailable"
 }
 
 ###  Get All Availability
@@ -290,7 +290,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZ
 
 ### update Availability
 
-PATCH  http://localhost:8000/api/v1/availability/6aa32d1195df8046ab3120a
+PATCH  http://localhost:8000/api/v1/availability/6aa32d1195df8046ab3120a8
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkyOTE4NDQsImV4cCI6MTc4OTM3ODI0NH0.kRY62yAZMIpn3raWbTUg-jlLycUxRaj0FT0jaYscpm8
 
@@ -302,3 +302,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 
 DELETE http://localhost:8000/api/v1/availability/6aa32d5495df8046ab3120a9
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3ODkyOTE4NDQsImV4cCI6MTc4OTM3ODI0NH0.kRY62yAZMIpn3raWbTUg-jlLycUxRaj0FT0jaYscpm8
+
+
+
+### Create leave request
+POST http://localhost:8000/api/v1/leaverequest/createLeaveRequest
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzkwNjMzMzgzLCJleHAiOjE3OTA3MTk3ODN9.zw99psgKwmSt5Mib0sv3FIdAZJ-f5AhOlmQB_N0iBY8
+
+{
+  "startDate": "2026-10-05",
+  "endDate": "2026-10-07",
+  "type": "annual",
+  "reason": "Family holiday"
+}

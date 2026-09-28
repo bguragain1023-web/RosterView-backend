@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   "/createLeaveRequest",
   auth,
-  requirePermission("leave", "create"),
+  requirePermission("leaveRequest", "create"),
   createLeaveRequestValidation,
   createLeaveRequest,
 );
