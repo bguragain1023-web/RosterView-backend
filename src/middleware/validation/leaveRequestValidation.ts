@@ -48,3 +48,28 @@ export const createLeaveRequestValidation = (
     next(error);
   }
 };
+
+export const reviewLeaveRequestValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { status, reviewComment } = req.body;
+
+    if (
+      typeof status !== "string" ||
+      !["approved", "rejected"].includes(status)
+    ) {
+      throw new AppError("Status must be approved or rejected", 400);
+    }
+
+    if (reviewComment !== undefined && typeof reviewComment !== "string") {
+      throw new AppError("Review comment must be a string", 400);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

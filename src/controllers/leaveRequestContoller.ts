@@ -5,13 +5,15 @@ import {
   addLeaveRequest,
   getAllLeaveRequest,
   getLeaveRequestsByWorkers,
+  getOverlappingLeaveRequest,
   getSingleLeaveRequest,
+  reviewLeaveRequest,
   updateLeaveRequest,
 } from "../models/user/leaveRequestModel";
 ``;
 import { LeaveStatus } from "../models/user/leaveRequestSchema";
 import { getTeamByLeaderId } from "../models/team/teamModel";
-import { getUsersByTeam } from "../models/user/userModel";
+import { getUserById, getUsersByTeam } from "../models/user/userModel";
 
 export const createLeaveRequest = async (
   req: Request,
@@ -35,6 +37,20 @@ export const createLeaveRequest = async (
         400,
       );
     }
+
+    const existingLeaveRequest = await getOverlappingLeaveRequest(
+      userId.toString(),
+      startDate,
+      endDate,
+    );
+
+    if (existingLeaveRequest) {
+      throw new AppError(
+        "You already have a leave request that overlaps these dates",
+        409,
+      );
+    }
+
     const role = await getRoleById(req.userInfo.roleId.toString());
 
     if (!role) {
@@ -161,6 +177,88 @@ export const cancelLeaveRequest = async (
       status: "success",
       message: "Leave request cancelled successfully",
       leaveRequest: cancelledRequest,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reviewLeaveRequests = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    const requestId = req.params.id as string;
+    const { status, reviewComment } = req.body;
+
+    const leaveRequest = await getSingleLeaveRequest(requestId);
+
+    if (!leaveRequest) {
+      throw new AppError("Leave request not found", 404);
+    }
+
+    if (leaveRequest.status !== "pending") {
+      throw new AppError("Only pending leave requests can be reviewed", 400);
+    }
+
+    const role = await getRoleById(req.userInfo.roleId.toString());
+
+    if (!role) {
+      throw new AppError("Role not found", 404);
+    }
+
+    if (
+      role.name !== "admin" &&
+      role.name !== "coordinator" &&
+      role.name !== "teamLeader"
+    ) {
+      throw new AppError(
+        "You don't have permission to review leave requests",
+        403,
+      );
+    }
+
+    if (status !== "approved" && status !== "rejected") {
+      throw new AppError("Status must be approved or rejected", 400);
+    }
+
+    if (role.name === "teamLeader") {
+      const team = await getTeamByLeaderId(req.userInfo._id.toString());
+
+      if (!team) {
+        throw new AppError("Team not found", 404);
+      }
+
+      const worker = await getUserById(leaveRequest.workerId.toString());
+
+      if (!worker) {
+        throw new AppError("Worker not found", 404);
+      }
+
+      if (!worker.teamId || worker.teamId.toString() !== team._id.toString()) {
+        throw new AppError(
+          "You can only review leave requests from your team",
+          403,
+        );
+      }
+    }
+
+    const reviewedRequest = await reviewLeaveRequest(requestId, {
+      status,
+      reviewedBy: req.userInfo._id,
+      reviewedAt: new Date(),
+      reviewComment,
+    });
+
+    res.json({
+      status: "success",
+      message: `Leave request ${status} successfully`,
+      leaveRequest: reviewedRequest,
     });
   } catch (error) {
     next(error);

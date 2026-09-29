@@ -308,10 +308,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Indvcmtlc
 ### Create leave request
 POST http://localhost:8000/api/v1/leaverequest/createLeaveRequest
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZWFkZXIxQGNvbSIsImlkIjoiNmE5YWE3MTFhYmJmZGQ3ZmVhMzZiN2E4Iiwicm9sZUlkIjoiNmE4OTg1MmQ4NmU4YmE0YWU3M2ZlNmNiIiwiaWF0IjoxNzkwNjMzMzgzLCJleHAiOjE3OTA3MTk3ODN9.zw99psgKwmSt5Mib0sv3FIdAZJ-f5AhOlmQB_N0iBY8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3OTA2MzgzMjksImV4cCI6MTc5MDcyNDcyOX0.M8GAlDwA1-LGmSvl3tZWNDe9TBSR2mNAWaMhiIfVFyU
 
 {
-  "startDate": "2026-10-05",
+  "startDate": "2026-10-06",
   "endDate": "2026-10-07",
   "type": "annual",
   "reason": "Family holiday"
@@ -320,4 +320,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZ
 
 ### get leave request
 
-Get http://localhost:8000/api/v1/leaverequest
+GET http://localhost:8000/api/v1/leaverequest
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3OTA2MzgzMjksImV4cCI6MTc5MDcyNDcyOX0.M8GAlDwA1-LGmSvl3tZWNDe9TBSR2mNAWaMhiIfVFyU
+
+### cancel Leave request 
+PATCH http://localhost:8000/api/v1/leaverequest/6abae5960ca21ce45c7241dd/cancel
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3OTA2MzgzMjksImV4cCI6MTc5MDcyNDcyOX0.M8GAlDwA1-LGmSvl3tZWNDe9TBSR2mNAWaMhiIfVFyU
+
+
+### approve leave request
+
+PATCH http://localhost:8000/api/v1/leaverequest/6abaf9db642b3d8b9ecb4563/review
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvb29yZEBjb20iLCJpZCI6IjZhOWYzMjI1YWJiZmRkN2ZlYTM2YjdhOSIsInJvbGVJZCI6IjZhODk4NTJkODZlOGJhNGFlNzNmZTZjOCIsImlhdCI6MTc5MDY0MjA1MSwiZXhwIjoxNzkwNzI4NDUxfQ.QErqL3PkIHRffFM82gvv0alw6AjaSuAMvd1-aZv1Q1g
+Content-Type: application/json
+
+{
+  "status": "approved",
+  "reviewComment": "Leave approved."
+}

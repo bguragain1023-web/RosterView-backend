@@ -61,3 +61,16 @@ export const reviewLeaveRequest = (
     new: true,
   });
 };
+
+export const getOverlappingLeaveRequest = (
+  workerId: string,
+  startDate: Date,
+  endDate: Date,
+) => {
+  return leaveRequestSchema.findOne({
+    workerId,
+    status: { $in: ["pending", "approved"] },
+    startDate: { $lte: endDate },
+    endDate: { $gte: startDate },
+  });
+};
