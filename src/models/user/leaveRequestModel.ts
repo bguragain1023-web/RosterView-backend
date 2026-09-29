@@ -14,6 +14,13 @@ export interface CreateRequestInput {
   status: LeaveStatus;
 }
 
+export interface ReviewLeaveRequestInput {
+  status: "approved" | "rejected";
+  reviewedBy: mongoose.Types.ObjectId;
+  reviewedAt: Date;
+  reviewComment?: string;
+}
+
 export const addLeaveRequest = (
   addObj: CreateRequestInput,
 ): Promise<ILeaveRequest> => {
@@ -43,5 +50,14 @@ export const getLeaveRequestsByWorkers = (
 ): Promise<ILeaveRequest[]> => {
   return leaveRequestSchema.find({
     workerId: { $in: workerIds },
+  });
+};
+
+export const reviewLeaveRequest = (
+  requestId: string,
+  reviewObj: ReviewLeaveRequestInput,
+) => {
+  return leaveRequestSchema.findByIdAndUpdate(requestId, reviewObj, {
+    new: true,
   });
 };

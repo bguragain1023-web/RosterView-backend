@@ -103,6 +103,13 @@ const permissions: PermissisonInput[] = [
   },
 
   {
+    name: "leave:update",
+    resource: "leaveRequest",
+    action: "update",
+    description: "update status",
+  },
+
+  {
     name: "leave:approve",
     resource: "leaveRequest",
     action: "approve",
@@ -191,6 +198,8 @@ const roles: RoleSeedInput[] = [
       "swap:read",
 
       "leave:create",
+      "leave:read",
+      "leave:update",
     ],
   },
 ];

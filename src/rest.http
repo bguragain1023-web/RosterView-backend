@@ -316,3 +316,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlYW1sZ
   "type": "annual",
   "reason": "Family holiday"
 }
+
+
+### get leave request
+
+Get http://localhost:8000/api/v1/leaverequest

@@ -35,3 +35,7 @@ export const assignLeader = (teamId: string, userId: string) => {
     teamLeaderId: userId,
   });
 };
+
+export const getTeamByLeaderId = (userId: string): Promise<ITeam | null> => {
+  return teamSchema.findOne({ teamLeaderId: userId });
+};
