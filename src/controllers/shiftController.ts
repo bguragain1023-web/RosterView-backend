@@ -18,6 +18,7 @@ import { getClientById } from "../models/client/clientModel";
 import { getRoleById } from "../models/role/roleModel";
 import { fetchAvailabilityByUserId } from "../models/user/availabilityModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
+import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 
 export const createShift = async (
   req: Request,
@@ -48,6 +49,16 @@ export const createShift = async (
       if (!isAvailable) {
         throw new AppError("The worker is not available on this day", 400);
       }
+
+      const approvedLeave = await getApprovedLeaveOnDate(
+        workerId,
+        new Date(date),
+      );
+
+      if (approvedLeave) {
+        throw new AppError("The worker is on approved leave on this day", 400);
+      }
+
       const existingShifts = await getWorkerShiftsOnDate(workerId, date);
 
       const newStart = startTime;
@@ -93,7 +104,7 @@ export const createShift = async (
       status: "success",
       message: "New shift created successfully",
       shift,
-      weeklHours: weeklyHoursAfter,
+      weeklyHours: weeklyHoursAfter,
       normalHours,
       overtimeHours,
     });
@@ -192,6 +203,17 @@ export const updateShift = async (
       workerId === undefined ? shiftToUpdate.workerId : workerId;
 
     const finalDate = date === undefined ? shiftToUpdate.date : date;
+
+    if (finalWorker && (workerId !== undefined || date !== undefined)) {
+      const approvedLeave = await getApprovedLeaveOnDate(
+        finalWorker.toString(),
+        new Date(finalDate),
+      );
+
+      if (approvedLeave) {
+        throw new AppError("The worker is on approved leave on this day", 400);
+      }
+    }
 
     if ((finalWorker && workerId !== undefined) || date !== undefined) {
       const isAvailable = await checkWorkerAvailability(

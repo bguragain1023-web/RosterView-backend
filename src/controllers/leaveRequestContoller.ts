@@ -38,6 +38,18 @@ export const createLeaveRequest = async (
       );
     }
 
+    const role = await getRoleById(req.userInfo.roleId.toString());
+
+    if (!role) {
+      throw new AppError("role not found", 404);
+    }
+    if (role.name !== "worker") {
+      throw new AppError(
+        "Only worker can apply for leaveRequest for now ",
+        403,
+      );
+    }
+
     const existingLeaveRequest = await getOverlappingLeaveRequest(
       userId.toString(),
       startDate,
@@ -51,17 +63,6 @@ export const createLeaveRequest = async (
       );
     }
 
-    const role = await getRoleById(req.userInfo.roleId.toString());
-
-    if (!role) {
-      throw new AppError("role not found", 404);
-    }
-    if (role.name !== "worker") {
-      throw new AppError(
-        "Only worker can apply for leaveRequest for now ",
-        403,
-      );
-    }
     const status: LeaveStatus = "pending";
 
     const leaveReqObj = {

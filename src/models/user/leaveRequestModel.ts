@@ -74,3 +74,15 @@ export const getOverlappingLeaveRequest = (
     endDate: { $gte: startDate },
   });
 };
+
+export const getApprovedLeaveOnDate = (
+  workerId: string,
+  date: Date,
+): Promise<ILeaveRequest | null> => {
+  return leaveRequestSchema.findOne({
+    workerId,
+    status: "approved",
+    startDate: { $lte: date },
+    endDate: { $gte: date },
+  });
+};
