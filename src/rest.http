@@ -74,6 +74,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 }
 
 
+### change password
+
+Patch http://localhost:8000/api/v1/users/change-password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4NTY4NDIsImV4cCI6MTc4ODk0MzI0Mn0.0ElQhi_CHXdRHECmiQ5AU43TaSQBr8uZc-7x-ycNUIM
+
+{
+   
+  
+  
+  "role": "teamLeader",
+  "status": "active"
+  
+}
+
+
+
 ### update permission
 PATCH http://localhost:8000/api/v1/users/updateuser/6a8f69e8243d8766e6b2b9a3/permissions
 Content-Type: application/json

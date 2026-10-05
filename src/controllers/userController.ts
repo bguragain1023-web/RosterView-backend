@@ -106,6 +106,38 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const userId = req.userInfo._id.toString();
+    const { newPassword } = req.body;
+    if (!newPassword) {
+      throw new AppError("New password is required", 400);
+    }
+    const hashPassword = await hashedPassword(newPassword);
+
+    const obj = {
+      password: hashPassword,
+      mustChangePassword: false,
+      passwordChangedAt: new Date(),
+    };
+
+    await updateUserDetailById(userId, obj);
+
+    res.json({
+      status: "success",
+      message: "password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 //Get User
 
 export const getUsers = async (

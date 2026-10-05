@@ -5,6 +5,7 @@ import {
   validateUpdateUser,
 } from "../middleware/validation/userValidation";
 import {
+  changePassword,
   createUser,
   getUsers,
   loginUser,
@@ -37,6 +38,9 @@ router.patch<{ id: string }>(
   validateUpdateUser,
   updateUser,
 );
+
+//chnage password
+router.patch("/change-password", auth, changePassword);
 
 //update Additional Permissions
 router.patch<{ id: string }>(

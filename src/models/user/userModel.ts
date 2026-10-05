@@ -8,6 +8,9 @@ interface UpdatePayLoad {
   email?: string;
   phone?: string;
   status?: string;
+  password?: string;
+  mustChangePassword?: boolean;
+  passwordChangedAt?: Date;
 }
 
 export const addUser = async (userObj: IUser): Promise<IUser> => {
@@ -55,6 +58,7 @@ export const updateUserDetailById = (id: string, data: UpdatePayLoad) => {
     throw error;
   }
 };
+
 export const updateAdditionalPermission = (
   userId: string,
   permissionIDs: mongoose.Types.ObjectId[],
