@@ -141,13 +141,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 post http://localhost:8000/api/v1/shifts/createshift
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3OTA2NDY0NzMsImV4cCI6MTc5MDczMjg3M30.iTO4ufoEWNC9vCYIjTRokF--56_VChV-_L-Xq1qGgsI
 
 {
   "workerId": "6a9a0d2dfdafb723f4e73de7",
     "clientId": "6a991090feece244b35fcc62" ,
     "location": "9 derwent park",
-    "date": "2026-09-27",
+    "date": "2026-10-05",
     "startTime": "07:00",
    "endTime":"17:00",
     "breakMinutes": 30,
@@ -157,7 +157,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
   
 ### get all shifts
 GET http://localhost:8000/api/v1/shifts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3OTA2NDY0NzMsImV4cCI6MTc5MDczMjg3M30.iTO4ufoEWNC9vCYIjTRokF--56_VChV-_L-Xq1qGgsI
 
 ### get single shift
 GET  http://localhost:8000/api/v1/shifts/6a9a0c09fdafb723f4e73de4
@@ -165,14 +165,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 ### patch shift
 
-Patch http://localhost:8000/api/v1/shifts/6aa9b7ef72ba3b4ec63e29c3
+Patch http://localhost:8000/api/v1/shifts/6aa72f0e3b587716faa77f3e
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODk1MDc1MDAsImV4cCI6MTc4OTU5MzkwMH0.F838CnVIp_bxJCmUxyX7s71VCOSPIxZtM5G5Drln0N8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3OTA2NDY0NzMsImV4cCI6MTc5MDczMjg3M30.iTO4ufoEWNC9vCYIjTRokF--56_VChV-_L-Xq1qGgsI
 
 {
-  "workerId": "6a9a0d2dfdafb723f4e73de7",
-    "clientId": "6a991090feece244b35fcc62" ,
-    "location": "8 derwent park",
+     "date": "2026-10-09",
     "startTime": "05:00",
    "endTime":"18:00",
     "breakMinutes": 30,

@@ -39,8 +39,6 @@ router.patch(
   updateShift,
 );
 
-export default router;
-
 router.delete(
   "/",
   auth,
@@ -48,3 +46,5 @@ router.delete(
   deleteShiftValidation,
   deleteShift,
 );
+
+export default router;

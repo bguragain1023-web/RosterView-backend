@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { generatePassword } from "../helper/generatePassword";
 import { comparePassword, hashedPassword } from "../utlis/bcrypt";
-import { getRoleByName } from "../models/role/roleModel";
+import { getRoleById, getRoleByName } from "../models/role/roleModel";
 import { AppError } from "../utlis/AppError";
 import {
   addUser,
@@ -73,11 +73,21 @@ export const loginUser = async (req: Request, res: Response) => {
             id: user._id.toString(),
             roleId: user.roleId.toString(),
           });
+          const role = await getRoleById(user.roleId.toString());
+
+          if (!role) {
+            throw new AppError("role not found", 404);
+          }
+
           const { password, ...userDetail } = user.toObject();
           res.json({
             status: "success",
-            message: " login succeefull",
-            userDetail,
+            message: " login successfull",
+            userDetail: {
+              ...userDetail,
+              role: role.name,
+            },
+
             accessJWT,
           });
           return;
