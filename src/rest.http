@@ -16,7 +16,7 @@ Content-Type: application/json
 
 {
   "email": "worker3@com",
-  "password":"UudGm#7NEc7"
+  "password":"workerPassword"
 }
 
 ### Login as teamleader
@@ -78,15 +78,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQ
 
 Patch http://localhost:8000/api/v1/users/change-password
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwiaWQiOiI2YThkN2NiYWRlNzY0Zjc0ZDBkM2FiYzMiLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2YzUiLCJpYXQiOjE3ODg4NTY4NDIsImV4cCI6MTc4ODk0MzI0Mn0.0ElQhi_CHXdRHECmiQ5AU43TaSQBr8uZc-7x-ycNUIM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndvcmtlcjNAY29tIiwiaWQiOiI2YTlhMGQyZGZkYWZiNzIzZjRlNzNkZTciLCJyb2xlSWQiOiI2YTg5ODUyZDg2ZThiYTRhZTczZmU2Y2UiLCJpYXQiOjE3OTEyMzAzMjEsImV4cCI6MTc5MTMxNjcyMX0.Iv_QUjumh2iSpySBtwbB7LbqP4qixbBmyV0_biNNbP8
 
 {
-   
-  
-  
-  "role": "teamLeader",
-  "status": "active"
-  
+  "newPassword": "workerPassword"
 }
 
 

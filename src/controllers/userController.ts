@@ -158,6 +158,28 @@ export const getUsers = async (
   }
 };
 
+//Get me
+
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const userDetail = req.userInfo;
+    res.json({
+      status: "success",
+      message: "Fetched user detail",
+      userDetail,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //Update User
 export const updateUser = async (
   req: Request,

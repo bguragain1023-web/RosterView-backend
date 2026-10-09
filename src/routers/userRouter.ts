@@ -7,6 +7,7 @@ import {
 import {
   changePassword,
   createUser,
+  getMe,
   getUsers,
   loginUser,
   updateUser,
@@ -29,6 +30,10 @@ router.post(
 
 // get users
 router.get("/readuser", auth, requirePermission("user", "read"), getUsers);
+
+//get me
+
+router.get("/me", auth, getMe);
 
 //update Users
 router.patch<{ id: string }>(
