@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "email": "admin@test.com",
-  "password": "Admin123!"
+  "password": "aaa"
 }
 
 ### Login as worker

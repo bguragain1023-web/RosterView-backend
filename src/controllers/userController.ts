@@ -170,10 +170,18 @@ export const getMe = async (
       throw new AppError("Unauthorized", 401);
     }
     const userDetail = req.userInfo;
+    const role = await getRoleById(userDetail.roleId.toString());
+    if (!role) {
+      throw new AppError("User role not found", 404);
+    }
+
     res.json({
       status: "success",
       message: "Fetched user detail",
-      userDetail,
+      userDetail: {
+        ...userDetail,
+        role: role.name,
+      },
     });
   } catch (error) {
     next(error);
