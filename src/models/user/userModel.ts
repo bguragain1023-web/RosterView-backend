@@ -32,8 +32,14 @@ export const getUserbyEmail = (email: string): Promise<IUser | null> => {
   return userSchema.findOne({ email });
 };
 
-export const getAllUsers = (): Promise<IUser[]> => {
-  return userSchema.find().select("-password");
+export const getAllUsers = () => {
+  return userSchema
+    .find()
+    .select("-password")
+    .populate<{
+      roleId: { _id: mongoose.Types.ObjectId; name: string } | null;
+    }>("roleId", "name")
+    .lean();
 };
 
 export const getUsersByTeam = (teamId: string): Promise<IUser[] | null> => {

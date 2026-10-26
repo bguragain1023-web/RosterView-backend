@@ -21,6 +21,6 @@ export const verifyJwt = (token: string): JwtPayload => {
   if (!secretKey) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
-
-  return jwt.verify(token, secretKey) as JwtPayload;
+  const verifyJwt = jwt.verify(token, secretKey) as JwtPayload;
+  return verifyJwt;
 };

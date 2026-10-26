@@ -21,6 +21,7 @@ export const createUser = async (
   next: NextFunction,
 ) => {
   try {
+    console.log("did we get there ");
     const tempPassword = generatePassword();
 
     const hashPassword = await hashedPassword(tempPassword);
@@ -146,7 +147,13 @@ export const getUsers = async (
   next: NextFunction,
 ) => {
   try {
-    const allUsers = await getAllUsers();
+    const users = await getAllUsers();
+    console.log(users[0]);
+
+    const allUsers = users.map(({ roleId, ...rest }) => {
+      console.log("MAP RUNNING, role is", roleId?.name);
+      return { ...rest, roleId: roleId?._id, role: roleId?.name };
+    });
 
     res.json({
       status: "success",

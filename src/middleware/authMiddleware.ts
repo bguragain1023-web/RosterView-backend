@@ -5,6 +5,7 @@ import { getUserById } from "../models/user/userModel";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log("did we get to authstart? ");
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       return res.status(403).json({ error: "unauthorized" });
