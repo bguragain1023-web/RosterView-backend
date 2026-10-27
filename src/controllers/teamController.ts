@@ -69,44 +69,35 @@ export const fetchAllTeams = async (
       throw new AppError("User Role not found", 403);
     }
 
+    let teams = [];
+
     if (role.name === "admin") {
-      const allTeams = await getAllTeams();
-      return res.json({
-        status: "success",
-        message:
-          allTeams.length === 0
-            ? "No teams available now "
-            : " Team fetched successfully",
-        allTeams,
-      });
-    }
-
-    if (role.name === "coordinator") {
-      const activeTeams = await getActiveTeams();
-      return res.json({
-        status: "success",
-        message:
-          activeTeams.length === 0
-            ? "No teams available now "
-            : " Team fetched successfully",
-        activeTeams,
-      });
-    }
-
-    if (role.name === "teamLeader" || role.name === "worker") {
+      teams = await getAllTeams();
+    } else if (role.name === "coordinator") {
+      teams = await getActiveTeams();
+    } else if (role.name === "teamLeader" || role.name === "worker") {
       if (!teamId) {
-        throw new AppError("you are not assigned to team yet", 401);
+        throw new AppError("You are not assigned to a team yet", 403);
       }
       const ownTeam = await getTeamById(teamId.toString());
+
       if (!ownTeam) {
-        throw new AppError("You are not assigned to any Team yet", 401);
+        throw new AppError("Team not found", 404);
       }
-      return res.json({
-        status: "success",
-        message: "Team fetched ",
-        ownTeam,
-      });
+
+      teams = [ownTeam];
+    } else {
+      throw new AppError("Role is not permitted to access teams", 403);
     }
+
+    return res.json({
+      status: "success",
+      message:
+        teams.length === 0
+          ? "No teams available"
+          : "Teams fetched successfully",
+      teams,
+    });
   } catch (error) {
     next(error);
   }
