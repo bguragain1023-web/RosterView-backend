@@ -36,6 +36,21 @@ export const assignLeader = (teamId: string, userId: string) => {
   });
 };
 
+export interface TeamUpdate {
+  name?: string;
+  normalizedName?: string;
+  description?: string;
+  isActive?: boolean;
+  teamLeaderId?: string | null;
+}
+
+export const updateTeamById = (
+  teamId: string,
+  data: TeamUpdate,
+): Promise<ITeam | null> => {
+  return teamSchema.findByIdAndUpdate(teamId, { $set: data }, { new: true });
+};
+
 export const getTeamByLeaderId = (userId: string): Promise<ITeam | null> => {
   return teamSchema.findOne({ teamLeaderId: userId });
 };

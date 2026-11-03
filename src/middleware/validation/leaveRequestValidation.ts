@@ -64,7 +64,7 @@ export const reviewLeaveRequestValidation = (
   next: NextFunction,
 ) => {
   try {
-    const { status, reviewComment } = req.body;
+    const { status, reviewComment, unassignShifts } = req.body;
 
     if (
       typeof status !== "string" ||
@@ -75,6 +75,10 @@ export const reviewLeaveRequestValidation = (
 
     if (reviewComment !== undefined && typeof reviewComment !== "string") {
       throw new AppError("Review comment must be a string", 400);
+    }
+
+    if (unassignShifts !== undefined && typeof unassignShifts !== "boolean") {
+      throw new AppError("unassignShifts must be true or false", 400);
     }
 
     next();

@@ -27,8 +27,12 @@ export const addLeaveRequest = (
   return new leaveRequestSchema(addObj).save();
 };
 
+// Lists fill in worker/reviewer names and come newest first.
 export const getAllLeaveRequest = (): Promise<ILeaveRequest[]> => {
-  return leaveRequestSchema.find();
+  return leaveRequestSchema
+    .find()
+    .populate("workerId reviewedBy", "name")
+    .sort({ createdAt: -1 });
 };
 
 export const getSingleLeaveRequest = (
@@ -48,9 +52,10 @@ export const updateLeaveRequest = (requestId: string, status: LeaveStatus) => {
 export const getLeaveRequestsByWorkers = (
   workerIds: string[],
 ): Promise<ILeaveRequest[]> => {
-  return leaveRequestSchema.find({
-    workerId: { $in: workerIds },
-  });
+  return leaveRequestSchema
+    .find({ workerId: { $in: workerIds } })
+    .populate("workerId reviewedBy", "name")
+    .sort({ createdAt: -1 });
 };
 
 export const reviewLeaveRequest = (

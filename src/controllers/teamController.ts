@@ -6,11 +6,19 @@ import {
   getActiveTeams,
   getAllTeams,
   getTeamById,
+  getTeamByLeaderId,
   getTeamByName,
+  updateTeamById,
+  type TeamUpdate,
 } from "../models/team/teamModel";
 import { AppError } from "../utlis/AppError";
 import { getRoleById } from "../models/role/roleModel";
-import { getUserById, updateUserDetailById } from "../models/user/userModel";
+import {
+  clearUserTeam,
+  getTeamMembers,
+  getUserById,
+  updateUserDetailById,
+} from "../models/user/userModel";
 
 export const createTeam = async (
   req: Request,
@@ -132,28 +140,157 @@ export const getSingleTeam = async (
       }
     }
 
-    if (role.name === "coordinator") {
-      const activeTeam = await getActiveTeamById(teamId);
-      if (!activeTeam) {
-        throw new AppError(" Team doesn't exist or not active", 404);
-      }
-
-      return res.json({
-        status: "success",
-        message: "Requested Team found",
-        activeTeam,
-      });
-    }
-    const team = await getTeamById(teamId);
+    // Coordinators only see active teams.
+    const team =
+      role.name === "coordinator"
+        ? await getActiveTeamById(teamId)
+        : await getTeamById(teamId);
 
     if (!team) {
-      throw new AppError("Team doesn't exist", 404);
+      throw new AppError(
+        role.name === "coordinator"
+          ? "Team doesn't exist or not active"
+          : "Team doesn't exist",
+        404,
+      );
     }
 
-    res.status(200).json({
+    const [leader, members] = await Promise.all([
+      team.teamLeaderId ? getUserById(team.teamLeaderId.toString()) : null,
+      getTeamMembers(teamId),
+    ]);
+
+    res.json({
       status: "success",
       message: "Requested Team found",
-      team,
+      team: {
+        ...team.toObject(),
+        teamLeader: leader ? { _id: leader._id, name: leader.name } : null,
+        members: members.map((m) => ({
+          _id: m._id,
+          name: m.name,
+          role: m.roleId?.name ?? null,
+          status: m.status,
+        })),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /teams/:teamId  { name?, description?, isActive?, teamLeaderId? }
+// teamLeaderId: a user id, or null to remove the leader.
+export const updateTeam = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const teamId = req.params.teamId as string;
+    const team = await getTeamById(teamId);
+    if (!team) throw new AppError("Team doesn't exist", 404);
+
+    const { name, description, isActive, teamLeaderId } = req.body;
+    const update: TeamUpdate = {};
+
+    if (name !== undefined) {
+      const trimmed = name.trim();
+      if (trimmed.toLowerCase() !== team.normalizedName) {
+        const existing = await getTeamByName(trimmed);
+        if (existing && existing._id.toString() !== teamId) {
+          throw new AppError("A team with that name already exists", 409);
+        }
+      }
+      update.name = trimmed;
+      update.normalizedName = trimmed.toLowerCase();
+    }
+    if (description !== undefined) update.description = description.trim();
+    if (isActive !== undefined) update.isActive = isActive;
+
+    // Leader change. Keep both sides in sync: team.teamLeaderId (used by
+    // leave review) and user.teamId (used by availability and swaps).
+    const oldLeaderId = team.teamLeaderId?.toString() ?? null;
+    const newLeaderId: string | null | undefined = teamLeaderId;
+    const leaderChanging =
+      newLeaderId !== undefined && newLeaderId !== oldLeaderId;
+
+    if (leaderChanging && newLeaderId) {
+      const newLeader = await getUserById(newLeaderId);
+      if (!newLeader) throw new AppError("User not found", 404);
+      if (newLeader.status !== "active") {
+        throw new AppError(`${newLeader.name} is not active`, 409);
+      }
+
+      const role = await getRoleById(newLeader.roleId.toString());
+      if (role?.name !== "teamLeader") {
+        throw new AppError("The new leader must have the Team Leader role", 400);
+      }
+
+      const leading = await getTeamByLeaderId(newLeaderId);
+      if (leading && leading._id.toString() !== teamId) {
+        throw new AppError(
+          `${newLeader.name} already leads ${leading.name}`,
+          409,
+        );
+      }
+      if (newLeader.teamId && newLeader.teamId.toString() !== teamId) {
+        throw new AppError(
+          `${newLeader.name} already belongs to another team`,
+          409,
+        );
+      }
+    }
+    if (leaderChanging) update.teamLeaderId = newLeaderId;
+
+    const updated = await updateTeamById(teamId, update);
+    if (!updated) throw new AppError("Team doesn't exist", 404);
+
+    if (leaderChanging) {
+      if (oldLeaderId) await clearUserTeam(oldLeaderId);
+      if (newLeaderId) await updateUserDetailById(newLeaderId, { teamId });
+    }
+
+    res.json({ status: "success", message: "Team updated", team: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE /teams/:teamId/members/:userId
+export const removeTeamMember = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const teamId = req.params.teamId as string;
+    const userId = req.params.userId as string;
+
+    const team = await getTeamById(teamId);
+    if (!team) throw new AppError("Team doesn't exist", 404);
+
+    const user = await getUserById(userId);
+    if (!user) throw new AppError("User not found", 404);
+
+    if (user.teamId?.toString() !== teamId) {
+      throw new AppError(`${user.name} isn't in ${team.name}`, 409);
+    }
+
+    // The leader is changed in Edit team, so team.teamLeaderId and the
+    // user's teamId stay in sync.
+    if (team.teamLeaderId?.toString() === userId) {
+      throw new AppError(
+        `${user.name} leads this team. Change or remove the leader in Edit team first.`,
+        409,
+      );
+    }
+
+    await clearUserTeam(userId);
+
+    res.json({
+      status: "success",
+      message: `${user.name} removed from ${team.name}`,
     });
   } catch (error) {
     next(error);

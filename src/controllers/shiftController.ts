@@ -21,6 +21,28 @@ import { getRoleById } from "../models/role/roleModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 import { DATE_ONLY_REGEX, toUtcMidnight } from "../helper/dateOnly";
+import { getUsersByTeam } from "../models/user/userModel";
+import { IUser } from "../models/user/userSchema";
+
+// Which workers' shifts may this user see?
+// undefined = all shifts; a list = only shifts worked by those workers.
+const getVisibleWorkerIds = async (
+  user: IUser,
+): Promise<string[] | undefined> => {
+  const role = await getRoleById(user.roleId.toString());
+  if (!role) throw new AppError("Role not found", 403);
+
+  if (role.name === "admin" || role.name === "coordinator") return undefined;
+
+  if (role.name === "teamLeader") {
+    if (!user.teamId) return [];
+    const members = (await getUsersByTeam(user.teamId.toString())) ?? [];
+    return members.map((m) => m._id.toString());
+  }
+
+  // worker, or any role added later: only their own shifts
+  return [user._id.toString()];
+};
 
 export const createShift = async (
   req: Request,
@@ -130,9 +152,13 @@ export const fetchAllShifts = async (
     const from = parseDate(req.query.from, "from");
     const to = parseDate(req.query.to, "to");
 
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const workerIds = await getVisibleWorkerIds(req.userInfo);
+
     const allShifts = await getAllShifts({
       ...(from ? { from } : {}),
       ...(to ? { to } : {}),
+      ...(workerIds ? { workerIds } : {}),
     });
     res.json({
       status: "success",
@@ -150,10 +176,18 @@ export const getSingleShift = async (
   next: NextFunction,
 ) => {
   try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
     const { id } = req.params;
     const shift = await getShiftById(id);
 
-    if (!shift) {
+    // "Not yours" gets the same answer as "not there", so nothing leaks.
+    const workerIds = await getVisibleWorkerIds(req.userInfo);
+    const canSee =
+      !workerIds ||
+      (shift?.workerId != null &&
+        workerIds.includes(shift.workerId.toString()));
+
+    if (!shift || !canSee) {
       throw new AppError("Shift doesn't exist", 404);
     }
 

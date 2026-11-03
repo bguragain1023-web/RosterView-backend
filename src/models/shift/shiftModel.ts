@@ -32,18 +32,27 @@ export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
   return new shiftSchema(shiftObj).save();
 };
 
-// Optional date range; both ends inclusive. Sorted by date, then start time.
+// Optional date range (both ends inclusive) and optional worker filter.
+// Sorted by date, then start time.
 export const getAllShifts = ({
   from,
   to,
-}: { from?: Date; to?: Date } = {}): Promise<IShift[]> => {
+  workerIds,
+}: { from?: Date; to?: Date; workerIds?: string[] } = {}): Promise<
+  IShift[]
+> => {
+  const query: Record<string, unknown> = {};
+
   const date: Record<string, Date> = {};
   if (from) date.$gte = from;
   if (to) date.$lt = addUtcDays(to, 1);
+  if (Object.keys(date).length) query.date = date;
 
-  return shiftSchema
-    .find(Object.keys(date).length ? { date } : {})
-    .sort({ date: 1, startTime: 1 });
+  // undefined  = no worker filter (everyone)
+  // [] or [..] = only shifts worked by these workers ([] matches nothing)
+  if (workerIds) query.workerId = { $in: workerIds };
+
+  return shiftSchema.find(query).sort({ date: 1, startTime: 1 });
 };
 
 export const getShiftById = (id: string): Promise<IShift | null> => {
@@ -86,6 +95,23 @@ export const reinstateShiftById = (
       $unset: { cancelledAt: 1, cancelledBy: 1, cancelReason: 1 },
     },
     { new: true },
+  );
+};
+
+// Unassign a worker from their assigned shifts between two dates (inclusive),
+// e.g. when their leave is approved. Cancelled/completed shifts are untouched.
+export const unassignWorkerShiftsInRange = (
+  workerId: string,
+  from: Date,
+  to: Date,
+) => {
+  return shiftSchema.updateMany(
+    {
+      workerId,
+      status: "assigned",
+      date: { $gte: from, $lt: addUtcDays(to, 1) },
+    },
+    { $set: { workerId: null, status: "unassigned" } },
   );
 };
 

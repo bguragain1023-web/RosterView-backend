@@ -14,6 +14,7 @@ import { LeaveStatus } from "../models/user/leaveRequestSchema";
 import { getTeamByLeaderId } from "../models/team/teamModel";
 import { getUserById, getUsersByTeam } from "../models/user/userModel";
 import { toUtcMidnight } from "../helper/dateOnly";
+import { unassignWorkerShiftsInRange } from "../models/shift/shiftModel";
 
 export const createLeaveRequest = async (
   req: Request,
@@ -254,10 +255,23 @@ export const reviewLeaveRequests = async (
       reviewComment,
     });
 
+    // Optionally free up the worker's shifts during the leave so they can be
+    // covered by someone else.
+    let unassignedShifts = 0;
+    if (status === "approved" && req.body.unassignShifts === true) {
+      const result = await unassignWorkerShiftsInRange(
+        leaveRequest.workerId.toString(),
+        leaveRequest.startDate,
+        leaveRequest.endDate,
+      );
+      unassignedShifts = result.modifiedCount;
+    }
+
     res.json({
       status: "success",
       message: `Leave request ${status} successfully`,
       leaveRequest: reviewedRequest,
+      unassignedShifts,
     });
   } catch (error) {
     next(error);

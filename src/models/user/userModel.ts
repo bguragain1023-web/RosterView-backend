@@ -4,7 +4,7 @@ import userSchema, { IUser } from "./userSchema";
 //create
 interface UpdatePayLoad {
   roleId?: mongoose.Types.ObjectId;
-  teamId?: mongoose.Types.ObjectId;
+  teamId?: mongoose.Types.ObjectId | string;
   email?: string;
   phone?: string;
   status?: string;
@@ -49,6 +49,23 @@ export const getUsersByTeam = (teamId: string): Promise<IUser[] | null> => {
   return userSchema.find({
     teamId,
   });
+};
+
+// Team members with their role name (for the team detail page).
+export const getTeamMembers = (teamId: string) => {
+  return userSchema
+    .find({ teamId })
+    .select("name status roleId")
+    .populate<{
+      roleId: { _id: mongoose.Types.ObjectId; name: string } | null;
+    }>("roleId", "name")
+    .sort({ name: 1 })
+    .lean();
+};
+
+// Take a user out of whatever team they're in.
+export const clearUserTeam = (userId: string) => {
+  return userSchema.updateOne({ _id: userId }, { $unset: { teamId: 1 } });
 };
 
 export const updateUserDetailById = (id: string, data: UpdatePayLoad) => {
