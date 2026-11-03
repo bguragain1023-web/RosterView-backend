@@ -21,27 +21,26 @@ export const createUser = async (
   next: NextFunction,
 ) => {
   try {
-    console.log("did we get there ");
     const tempPassword = generatePassword();
 
     const hashPassword = await hashedPassword(tempPassword);
 
     const userRole = await getRoleByName(req.body.role);
-    console.log(userRole);
     if (!userRole) {
       throw new AppError("Role Not Found", 404);
     }
-    const { role, ...rest } = req.body;
-    console.log(rest);
+    // Only take the fields the form sends; everything else is set here.
+    const { name, email, phone } = req.body;
     const userObj = {
-      ...rest,
+      name,
+      email,
+      phone,
       password: hashPassword,
       roleId: userRole._id,
       mustChangePassword: true,
       additionalPermissions: [],
     };
     const user = await addUser(userObj);
-    console.log(user);
 
     const { password, ...userDetail } = user.toObject();
     res.json({
@@ -56,54 +55,54 @@ export const createUser = async (
 };
 
 //Login User
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { email, password } = req.body;
 
-    if (email && password) {
-      const user = await getUserbyEmail(email);
-      if (user) {
-        const isMatched: boolean = await comparePassword(
-          password,
-          user.password,
-        );
-
-        if (isMatched) {
-          const accessJWT: string = signJwt({
-            email: user.email,
-            id: user._id.toString(),
-            roleId: user.roleId.toString(),
-          });
-          const role = await getRoleById(user.roleId.toString());
-
-          if (!role) {
-            throw new AppError("role not found", 404);
-          }
-
-          const { password, ...userDetail } = user.toObject();
-          res.json({
-            status: "success",
-            message: " login successfull",
-            userDetail: {
-              ...userDetail,
-              role: role.name,
-            },
-
-            accessJWT,
-          });
-          return;
-        }
-      }
+    if (!email || !password) {
+      throw new AppError("Email and password are required", 400);
     }
+
+    const user = await getUserbyEmail(email);
+    const isMatched = user
+      ? await comparePassword(password, user.password)
+      : false;
+
+    if (!user || !isMatched) {
+      throw new AppError("Email or password didn't match", 401);
+    }
+
+    if (user.status !== "active") {
+      throw new AppError("Your account is inactive", 403);
+    }
+
+    const role = await getRoleById(user.roleId.toString());
+    if (!role) {
+      throw new AppError("role not found", 404);
+    }
+
+    const accessJWT: string = signJwt({
+      email: user.email,
+      id: user._id.toString(),
+      roleId: user.roleId.toString(),
+    });
+
+    const { password: _password, ...userDetail } = user.toObject();
     res.json({
-      status: "error",
-      message: "Email or password didn't match",
+      status: "success",
+      message: " login successfull",
+      userDetail: {
+        ...userDetail,
+        role: role.name,
+      },
+      accessJWT,
     });
   } catch (error) {
-    res.json({
-      status: "error",
-      message: error,
-    });
+    next(error);
   }
 };
 
@@ -148,10 +147,8 @@ export const getUsers = async (
 ) => {
   try {
     const users = await getAllUsers();
-    console.log(users[0]);
 
     const allUsers = users.map(({ roleId, ...rest }) => {
-      console.log("MAP RUNNING, role is", roleId?.name);
       return { ...rest, roleId: roleId?._id, role: roleId?.name };
     });
 

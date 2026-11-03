@@ -22,10 +22,8 @@ export const fetchSwapEligibleWorker = async (
     if (!req.userInfo)
       throw new AppError("Not authorized to request swapShift", 404);
     const { _id } = req.userInfo;
-    console.log(requestedShiftId);
 
     const requestedShift = await getShiftById(requestedShiftId);
-    console.log(requestedShift);
     if (!requestedShift) throw new AppError("Shift doesn't exist", 404);
 
     if (
@@ -89,8 +87,6 @@ export const createSwapShift = async (
 
     const requestedShift = await getShiftById(requestedShiftId);
     const targetedShift = await getShiftById(targetedShiftId);
-    console.log("requestedShift", requestedShift);
-    console.log("targetedShift", targetedShift);
 
     if (!requestedShift) throw new AppError("Shift Doesn't exist", 404);
 
@@ -335,7 +331,7 @@ export const shiftReviewByManagers = async (
           500,
         );
       }
-      res.json({
+      return res.json({
         status: "success",
         message: "swap request rejected",
       });
@@ -360,22 +356,13 @@ export const shiftReviewByManagers = async (
           500,
         );
       }
-      res.json({
+      return res.json({
         status: "success",
         message: "Swap request approved and shift swapped successfully ",
       });
     }
 
-    const status = action === "accept" ? "accepted" : "rejected";
-
-    const result = await reviewSwapShift(swapShiftId, status, user._id);
-    if (!result) {
-      throw new AppError("Something went while performing the action", 500);
-    }
-    res.json({
-      status: "success",
-      message: "shift updated",
-    });
+    throw new AppError("Action must be accept or reject", 400);
   } catch (error) {
     next(error);
   }

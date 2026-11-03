@@ -42,7 +42,7 @@ router.patch(
 router.delete(
   "/",
   auth,
-  requirePermission("shift", "update"),
+  requirePermission("shift", "delete"),
   deleteShiftValidation,
   deleteShift,
 );

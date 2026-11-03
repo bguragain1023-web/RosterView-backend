@@ -39,11 +39,6 @@ router.patch(
   "/assignteamleader",
   auth,
   requirePermission("team", "create"),
-
-  (req, res, next) => {
-    console.log("🔥 permission passed");
-    next();
-  },
   assignTeamValidation,
   assignTeamLeader,
 );
@@ -54,11 +49,6 @@ router.patch(
   "/assignworkerteam",
   auth,
   requirePermission("team", "create"),
-
-  (req, res, next) => {
-    console.log("🔥 permission passed");
-    next();
-  },
   assignTeamValidation,
   assignWorkerTeam,
 );

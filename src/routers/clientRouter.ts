@@ -19,19 +19,19 @@ const router = express.Router();
 router.post(
   "/createclient",
   auth,
-  requirePermission("user", "create"),
+  requirePermission("client", "create"),
   validateCreateClient,
   createClient,
 );
 
-router.get("/", auth, requirePermission("user", "read"), getClients);
+router.get("/", auth, requirePermission("client", "read"), getClients);
 
-router.get("/:id", auth, requirePermission("user", "read"), getSingleClient);
+router.get("/:id", auth, requirePermission("client", "read"), getSingleClient);
 
 router.patch(
   "/updateclient/:id",
   auth,
-  requirePermission("user", "update"),
+  requirePermission("client", "update"),
   ValidateUpdateClient,
   updateClient,
 );

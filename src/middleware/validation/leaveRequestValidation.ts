@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../../utlis/AppError";
+import { DATE_ONLY_REGEX } from "../../helper/dateOnly";
 
 export const createLeaveRequestValidation = (
   req: Request,
@@ -13,6 +14,10 @@ export const createLeaveRequestValidation = (
       throw new AppError("Start date is required", 400);
     }
 
+    if (typeof startDate !== "string" || !DATE_ONLY_REGEX.test(startDate)) {
+      throw new AppError("Start date must be in YYYY-MM-DD format", 400);
+    }
+
     const parsedStartDate = new Date(startDate);
 
     if (Number.isNaN(parsedStartDate.getTime())) {
@@ -21,6 +26,10 @@ export const createLeaveRequestValidation = (
 
     if (!endDate) {
       throw new AppError("End date is required", 400);
+    }
+
+    if (typeof endDate !== "string" || !DATE_ONLY_REGEX.test(endDate)) {
+      throw new AppError("End date must be in YYYY-MM-DD format", 400);
     }
 
     const parsedEndDate = new Date(endDate);

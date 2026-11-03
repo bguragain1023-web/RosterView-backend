@@ -13,15 +13,10 @@ interface SwapCreate {
   requestedTo: mongoose.Types.ObjectId;
 }
 
-export const addSwaprequest = async (
+export const addSwaprequest = (
   swapRequestObj: SwapCreate,
 ): Promise<IShiftSwap> => {
-  try {
-    return new shiftSwapSchema(swapRequestObj).save();
-  } catch (error) {
-    console.error("SWAP SAVE ERROR:", error);
-    throw error;
-  }
+  return new shiftSwapSchema(swapRequestObj).save();
 };
 
 export const findPendingSwap = async (
@@ -70,10 +65,67 @@ export const reviewSwapShift = async (
   );
 };
 
+// Transactions only work on a replica set or mongos, not a standalone mongod.
+// Check once and cache the result.
+let transactionsSupported: boolean | undefined;
+
+const supportsTransactions = async (): Promise<boolean> => {
+  if (transactionsSupported !== undefined) return transactionsSupported;
+  const db = mongoose.connection.db;
+  if (!db) return false;
+  const hello = await db.admin().command({ hello: 1 });
+  transactionsSupported = Boolean(hello.setName) || hello.msg === "isdbgrid";
+  return transactionsSupported;
+};
+
+// Fallback for standalone MongoDB: each update only applies if the shift
+// still has the worker we read, so a concurrent change can't be overwritten.
+const swapWorkersWithoutTransaction = async (
+  requestedShiftId: string,
+  targetedShiftId: string,
+) => {
+  const requestedShift = await shiftSchema.findById(requestedShiftId);
+  const targetedShift = await shiftSchema.findById(targetedShiftId);
+  if (!requestedShift || !targetedShift) {
+    throw new AppError("One or both shifts no longer exist", 404);
+  }
+  const requestedWorkerId = requestedShift.workerId;
+  const targetedWorkerId = targetedShift.workerId;
+
+  const first = await shiftSchema.updateOne(
+    { _id: requestedShiftId, workerId: requestedWorkerId },
+    { $set: { workerId: targetedWorkerId } },
+  );
+  if (first.modifiedCount !== 1) {
+    throw new AppError("Shift changed while swapping, please try again", 409);
+  }
+
+  const second = await shiftSchema.updateOne(
+    { _id: targetedShiftId, workerId: targetedWorkerId },
+    { $set: { workerId: requestedWorkerId } },
+  );
+  if (second.modifiedCount !== 1) {
+    // Roll back the first update.
+    await shiftSchema.updateOne(
+      { _id: requestedShiftId, workerId: targetedWorkerId },
+      { $set: { workerId: requestedWorkerId } },
+    );
+    throw new AppError("Shift changed while swapping, please try again", 409);
+  }
+
+  requestedShift.workerId = targetedWorkerId;
+  targetedShift.workerId = requestedWorkerId;
+  return { requestedShift, targetedShift };
+};
+
 export const swapWorkersBetweenShifts = async (
   requestedShiftId: string,
   targetedShiftId: string,
 ) => {
+  if (!(await supportsTransactions())) {
+    return swapWorkersWithoutTransaction(requestedShiftId, targetedShiftId);
+  }
+
   const session = await mongoose.startSession();
   try {
     session.startTransaction();

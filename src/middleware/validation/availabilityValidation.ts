@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../../utlis/AppError";
 import mongoose from "mongoose";
+import { DATE_ONLY_REGEX } from "../../helper/dateOnly";
 
 export const createAvailabilityValidation = (
   req: Request,
@@ -58,6 +59,10 @@ export const createAvailabilityValidation = (
   if (type === "specific") {
     if (date === undefined) {
       throw new AppError("Date is required for specific availability", 400);
+    }
+
+    if (typeof date !== "string" || !DATE_ONLY_REGEX.test(date)) {
+      throw new AppError("Date must be in YYYY-MM-DD format", 400);
     }
 
     const parsedDate = new Date(date);

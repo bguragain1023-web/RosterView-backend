@@ -14,6 +14,7 @@ import {
 } from "../models/user/availabilityModel";
 import { getRoleById } from "../models/role/roleModel";
 import { getUsersByTeam } from "../models/user/userModel";
+import { toUtcMidnight } from "../helper/dateOnly";
 
 export const createAvailability = async (
   req: Request,
@@ -55,8 +56,7 @@ export const createAvailability = async (
           400,
         );
       }
-      const availabilityDate = new Date(date);
-      availabilityDate.setHours(0, 0, 0, 0);
+      const availabilityDate = toUtcMidnight(date);
 
       const existAvailability = await getAvailabilityByDate(
         workerId.toString(),

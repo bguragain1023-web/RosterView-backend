@@ -3,22 +3,22 @@ import { AppError } from "../utlis/AppError";
 import {
   calculateTotalHours,
   calculateWeeklyHours,
+  hasShiftConflict,
 } from "../helper/calculation";
 import {
   addNewShift,
   deleteManyShifts,
   getAllShifts,
   getShiftById,
-  getWorkerShiftsOnDate,
   updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
 import { getUserById } from "../models/user/userModel";
 import { getClientById } from "../models/client/clientModel";
 import { getRoleById } from "../models/role/roleModel";
-import { fetchAvailabilityByUserId } from "../models/user/availabilityModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
+import { toUtcMidnight } from "../helper/dateOnly";
 
 export const createShift = async (
   req: Request,
@@ -52,21 +52,19 @@ export const createShift = async (
 
       const approvedLeave = await getApprovedLeaveOnDate(
         workerId,
-        new Date(date),
+        toUtcMidnight(date),
       );
 
       if (approvedLeave) {
         throw new AppError("The worker is on approved leave on this day", 400);
       }
 
-      const existingShifts = await getWorkerShiftsOnDate(workerId, date);
-
-      const newStart = startTime;
-      const newEnd = endTime;
-
-      const hasConflict = existingShifts.some((shift) => {
-        return newStart < shift.endTime && newEnd > shift.startTime;
-      });
+      const hasConflict = await hasShiftConflict(
+        workerId,
+        date,
+        startTime,
+        endTime,
+      );
 
       if (hasConflict) {
         throw new AppError(
@@ -120,13 +118,11 @@ export const fetchAllShifts = async (
 ) => {
   try {
     const allShifts = await getAllShifts();
-    if (allShifts) {
-      res.json({
-        status: "successs",
-        message: " All shift fetched successfully",
-        allShifts,
-      });
-    }
+    res.json({
+      status: "success",
+      message: "All shifts fetched successfully",
+      allShifts,
+    });
   } catch (error) {
     next(error);
   }
@@ -142,10 +138,10 @@ export const getSingleShift = async (
     const shift = await getShiftById(id);
 
     if (!shift) {
-      throw new AppError("Shift doesn't exist", 400);
+      throw new AppError("Shift doesn't exist", 404);
     }
 
-    res.status(201).json({
+    res.json({
       status: "success",
       message: "Shift detail fetched successfully",
       shift,
@@ -176,7 +172,8 @@ export const updateShift = async (
       breakMinutes,
       notes,
     } = req.body;
-    if (workerId !== undefined) {
+    // workerId: null means "unassign this shift"
+    if (workerId !== undefined && workerId !== null) {
       const existWorker = await getUserById(workerId);
       if (!existWorker) throw new AppError("worker doesn't exist", 400);
       if (existWorker.status !== "active")
@@ -207,7 +204,7 @@ export const updateShift = async (
     if (finalWorker && (workerId !== undefined || date !== undefined)) {
       const approvedLeave = await getApprovedLeaveOnDate(
         finalWorker.toString(),
-        new Date(finalDate),
+        toUtcMidnight(finalDate),
       );
 
       if (approvedLeave) {
@@ -215,7 +212,7 @@ export const updateShift = async (
       }
     }
 
-    if ((finalWorker && workerId !== undefined) || date !== undefined) {
+    if (finalWorker && (workerId !== undefined || date !== undefined)) {
       const isAvailable = await checkWorkerAvailability(
         finalWorker.toString(),
         finalDate,
@@ -237,18 +234,13 @@ export const updateShift = async (
       const finalEndTime =
         endTime === undefined ? shiftToUpdate.endTime : endTime;
 
-      const existingShifts = await getWorkerShiftsOnDate(
+      const hasConflict = await hasShiftConflict(
         finalWorker.toString(),
         finalDate,
+        finalStartTime,
+        finalEndTime,
+        id,
       );
-
-      const hasConflict = existingShifts.some((shift) => {
-        if (shift._id.toString() === id) {
-          return false;
-        }
-
-        return finalStartTime < shift.endTime && finalEndTime > shift.startTime;
-      });
 
       if (hasConflict) {
         throw new AppError(
@@ -257,13 +249,13 @@ export const updateShift = async (
         );
       }
 
-      const weeklyHoursBefore = await calculateWeeklyHours(
+      // Exclude this shift by id, so its old hours are only removed when it
+      // was actually counted in this worker's week.
+      const weeklyHoursWithoutCurrentShift = await calculateWeeklyHours(
         finalWorker.toString(),
         finalDate,
+        id,
       );
-
-      const weeklyHoursWithoutCurrentShift =
-        weeklyHoursBefore - shiftToUpdate.totalHours;
 
       weeklyHoursAfter = weeklyHoursWithoutCurrentShift + totalHours;
 
@@ -310,9 +302,7 @@ export const deleteShift = async (
 ) => {
   try {
     const { shiftIds } = req.body;
-    console.log(shiftIds);
     const result = await deleteManyShifts(shiftIds);
-    console.log("successfully");
     if (result.deletedCount !== shiftIds.length) {
       throw new AppError("One or more shifts don't exist", 404);
     }

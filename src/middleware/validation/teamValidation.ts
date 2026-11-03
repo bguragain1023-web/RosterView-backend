@@ -36,9 +36,7 @@ export const assignTeamValidation = async (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log("🔥 VALIDATION HIT");
   const { teamId, userId } = req.body;
-  console.log(teamId, userId);
 
   if (typeof teamId !== "string" || !mongoose.isValidObjectId(teamId)) {
     throw new AppError("teamId is not valid", 400);
@@ -48,7 +46,6 @@ export const assignTeamValidation = async (
     throw new AppError("teamId is not valid", 400);
   }
 
-  console.log("validation completed");
 
   next();
 };

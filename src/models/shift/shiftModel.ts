@@ -15,7 +15,7 @@ export interface ShiftInput {
   createdBy: mongoose.Types.ObjectId;
 }
 export interface updateShiftPayLoad {
-  workerId: string;
+  workerId: string | mongoose.Types.ObjectId | null;
   clientId: string;
   location: string;
   date: Date;
@@ -35,13 +35,8 @@ export const getAllShifts = (): Promise<IShift[]> => {
   return shiftSchema.find();
 };
 
-export const getShiftById = async (id: string): Promise<IShift | null> => {
-  console.log("ID received by getShiftById:", id);
-  console.log("Database:", mongoose.connection.name);
-  console.log("Collection:", shiftSchema.collection.name);
-  const shift = await shiftSchema.findById(id);
-  console.log("Result:", shift);
-  return shift;
+export const getShiftById = (id: string): Promise<IShift | null> => {
+  return shiftSchema.findById(id);
 };
 
 export const updateShiftById = async (id: string, data: updateShiftPayLoad) => {
@@ -84,22 +79,19 @@ export const getTargetShifts = async (
   });
 };
 
-export const getWorkerShiftsOnDate = async (
+// Active (non-cancelled) shifts for a worker with date in [from, to).
+// Pass excludeShiftId to leave out the shift currently being edited.
+export const getWorkerShiftsInRange = async (
   workerId: string,
-  date: Date,
+  from: Date,
+  to: Date,
+  excludeShiftId?: string,
 ): Promise<IShift[]> => {
-  const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setHours(23, 59, 59, 999);
-
   return shiftSchema.find({
     workerId,
-    date: {
-      $gte: startOfDay,
-      $lte: endOfDay,
-    },
+    status: { $ne: "cancelled" },
+    date: { $gte: from, $lt: to },
+    ...(excludeShiftId ? { _id: { $ne: excludeShiftId } } : {}),
   });
 };
 
@@ -107,12 +99,15 @@ export const getWorkerShiftsForWeek = async (
   workerId: string,
   weekStart: Date,
   weekEnd: Date,
+  excludeShiftId?: string,
 ): Promise<IShift[]> => {
   return shiftSchema.find({
     workerId,
+    status: { $ne: "cancelled" },
     date: {
       $gte: weekStart,
       $lte: weekEnd,
     },
+    ...(excludeShiftId ? { _id: { $ne: excludeShiftId } } : {}),
   });
 };

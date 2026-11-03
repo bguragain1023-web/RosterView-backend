@@ -13,15 +13,18 @@ interface UpdatePayLoad {
   passwordChangedAt?: Date;
 }
 
-export const addUser = async (userObj: IUser): Promise<IUser> => {
-  try {
-    const user = await new userSchema(userObj).save();
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  roleId: mongoose.Types.ObjectId;
+  mustChangePassword: boolean;
+  additionalPermissions: mongoose.Types.ObjectId[];
+}
 
-    return user;
-  } catch (error) {
-    console.log("ADD USER ERROR:", error);
-    throw error;
-  }
+export const addUser = (userObj: CreateUserInput): Promise<IUser> => {
+  return new userSchema(userObj).save();
 };
 
 export const getUserById = (id: string): Promise<IUser | null> => {
@@ -49,20 +52,7 @@ export const getUsersByTeam = (teamId: string): Promise<IUser[] | null> => {
 };
 
 export const updateUserDetailById = (id: string, data: UpdatePayLoad) => {
-  try {
-    const updatedUser = userSchema.updateOne(
-      {
-        _id: id,
-      },
-      {
-        $set: data,
-      },
-    );
-    return updatedUser;
-  } catch (error) {
-    console.log("Update user error:", error);
-    throw error;
-  }
+  return userSchema.updateOne({ _id: id }, { $set: data });
 };
 
 export const updateAdditionalPermission = (

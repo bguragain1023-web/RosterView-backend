@@ -17,15 +17,7 @@ const router = express.Router();
 
 router.post(
   "/addavailability",
-  (req, res, next) => {
-    console.log("authStarted");
-    next();
-  },
   auth,
-  (req, res, next) => {
-    console.log("authPassed");
-    next();
-  },
   requirePermission("availability", "update"),
   createAvailabilityValidation,
   createAvailability,
@@ -41,16 +33,8 @@ router.get(
 router.patch(
   "/:availabilityId",
   auth,
-  (req, res, next) => {
-    console.log("authPassed");
-    next();
-  },
   requirePermission("availability", "update"),
   updateAvailabilityValidation,
-  (req, res, next) => {
-    console.log("Validation passed");
-    next();
-  },
   updateAvailability,
 );
 

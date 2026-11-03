@@ -184,14 +184,12 @@ export const updateShiftValidation = async (
     notes,
   } = req.body;
 
-  console.log("workerid validation start");
-  if (workerId !== undefined) {
+  // null is allowed and unassigns the shift
+  if (workerId !== undefined && workerId !== null) {
     if (typeof workerId !== "string" || !mongoose.isValidObjectId(workerId)) {
       throw new AppError("Invalid worker ID", 400);
     }
   }
-
-  console.log("workerid validation passed");
 
   if (clientId !== undefined) {
     if (typeof clientId !== "string" || !mongoose.isValidObjectId(clientId)) {
@@ -294,6 +292,5 @@ export const deleteShiftValidation = async (
       throw new AppError("One of more shifts doesn't exist ", 404);
     }
   }
-  console.log("Delete validation passsed");
   next();
 };

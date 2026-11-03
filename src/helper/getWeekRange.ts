@@ -1,17 +1,14 @@
-export const getWeekRange = (date: Date) => {
-  const currentDate = new Date(date);
+import { addUtcDays, toUtcMidnight } from "./dateOnly";
 
-  const day = currentDate.getDay();
+// Monday 00:00 UTC to Sunday 23:59:59.999 UTC of the week containing `date`.
+export const getWeekRange = (date: Date | string) => {
+  const day = toUtcMidnight(date);
+  const weekday = day.getUTCDay();
+  const diffToMonday = weekday === 0 ? -6 : 1 - weekday;
 
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-
-  const monday = new Date(currentDate);
-  monday.setDate(currentDate.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  const monday = addUtcDays(day, diffToMonday);
+  const sunday = addUtcDays(monday, 6);
+  sunday.setUTCHours(23, 59, 59, 999);
 
   return {
     weekStart: monday,

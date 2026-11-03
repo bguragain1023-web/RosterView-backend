@@ -147,7 +147,7 @@ export const getSingleTeam = async (
     const team = await getTeamById(teamId);
 
     if (!team) {
-      throw new AppError("Team doesn't exist", 400);
+      throw new AppError("Team doesn't exist", 404);
     }
 
     res.status(200).json({

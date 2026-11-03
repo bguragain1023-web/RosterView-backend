@@ -10,10 +10,10 @@ import {
   reviewLeaveRequest,
   updateLeaveRequest,
 } from "../models/user/leaveRequestModel";
-``;
 import { LeaveStatus } from "../models/user/leaveRequestSchema";
 import { getTeamByLeaderId } from "../models/team/teamModel";
 import { getUserById, getUsersByTeam } from "../models/user/userModel";
+import { toUtcMidnight } from "../helper/dateOnly";
 
 export const createLeaveRequest = async (
   req: Request,
@@ -27,10 +27,8 @@ export const createLeaveRequest = async (
     const { type, reason } = req.body;
     const userId = req.userInfo._id;
 
-    const startDate = new Date(req.body.startDate);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(req.body.endDate);
-    endDate.setHours(0, 0, 0, 0);
+    const startDate = toUtcMidnight(req.body.startDate);
+    const endDate = toUtcMidnight(req.body.endDate);
     if (startDate > endDate) {
       throw new AppError(
         "Please make sure start date is before end date ",

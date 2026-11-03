@@ -59,7 +59,7 @@ export const ValidateUpdateClient = (
     throw new AppError("Unepected field(s) are requested for update", 400);
   }
 
-  const { name, email, phone, status, address } = req.body;
+  const { name, email, phone, isActive, address, notes } = req.body;
   if (name !== undefined && typeof name !== "string")
     throw new AppError("Name format didn't match ", 400);
 
@@ -69,8 +69,8 @@ export const ValidateUpdateClient = (
     }
   }
 
-  if (status !== undefined && status !== "active" && status !== "inactive") {
-    throw new AppError("Status format didn't match ", 400);
+  if (isActive !== undefined && typeof isActive !== "boolean") {
+    throw new AppError("isActive must be true or false", 400);
   }
 
   if (phone !== undefined) {
@@ -88,6 +88,10 @@ export const ValidateUpdateClient = (
 
   if (address !== undefined && typeof address !== "string") {
     throw new AppError("Please provide valid address", 400);
+  }
+
+  if (notes !== undefined && typeof notes !== "string") {
+    throw new AppError("Notes must be a string", 400);
   }
 
   next();

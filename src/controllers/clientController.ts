@@ -66,10 +66,10 @@ export const getSingleClient = async (
     const client = await getClientById(id);
 
     if (!client) {
-      throw new AppError("Client doesn't exist", 400);
+      throw new AppError("Client doesn't exist", 404);
     }
 
-    res.status(201).json({
+    res.json({
       status: "success",
       message: "Client detail fetched successfully",
       client,
@@ -91,7 +91,7 @@ export const updateClient = async (
 
     const result = await updateClientById(id, updatePayload);
 
-    if (result.matchedCount === 0) throw new AppError("User not found ", 404);
+    if (result.matchedCount === 0) throw new AppError("Client not found", 404);
 
     res.json({
       status: "success",

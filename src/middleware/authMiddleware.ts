@@ -1,36 +1,47 @@
 import type { Request, Response, NextFunction } from "express";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 import { verifyJwt } from "../utlis/jwt";
 import { getUserById } from "../models/user/userModel";
+import { AppError } from "../utlis/AppError";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log("did we get to authstart? ");
     const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(403).json({ error: "unauthorized" });
-    }
-    const token = authHeader.split(" ")[1];
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice("Bearer ".length).trim()
+      : undefined;
 
     if (!token) {
-      return res.status(403).json({ error: "unauthorized" });
-    }
-    const result = verifyJwt(token);
-    if (result?.id) {
-      const user = await getUserById(result.id);
-      if (user?._id) {
-        const { password, ...rest } = user.toObject();
-        req.userInfo = rest;
-        return next();
-      }
+      throw new AppError("Unauthorized", 401);
     }
 
-    res.status(403).json({
-      error: "unauthorized",
-    });
+    let payload;
+    try {
+      payload = verifyJwt(token);
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new AppError("Session expired, please log in again", 401);
+      }
+      if (error instanceof JsonWebTokenError) {
+        throw new AppError("Invalid token", 401);
+      }
+      throw error; // e.g. JWT_SECRET missing: a server problem, not the client's
+    }
+
+    const user = payload?.id ? await getUserById(payload.id) : null;
+    if (!user) {
+      throw new AppError("Unauthorized", 401);
+    }
+
+    if (user.status !== "active") {
+      throw new AppError("Your account is inactive", 403);
+    }
+
+    const { password, ...rest } = user.toObject();
+    req.userInfo = rest;
+    next();
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong";
-    res.status(500).json({ error: message });
+    next(error);
   }
 };

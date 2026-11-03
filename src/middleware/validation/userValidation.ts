@@ -22,7 +22,6 @@ export const validateCreateUser = (
   if (!email.includes("@"))
     throw new AppError("Please provide valid email", 400);
 
-  console.log(" create user validation completed");
   next();
 };
 

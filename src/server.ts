@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "./types/express";
 import express from "express";
 import cors from "cors";
@@ -17,9 +18,6 @@ const PORT = process.env.PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
-// connect mongodb
-connectDB();
-
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/clients", clientRouter);
 app.use("/api/v1/shifts", shiftRouter);
@@ -29,6 +27,17 @@ app.use("/api/v1/availability", availabilityRouter);
 app.use("/api/v1/leaverequest", leaveRequestRouter);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-});
+// Only accept requests once the database is connected.
+const start = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to connect to MongoDB, server not started:", error);
+    process.exit(1);
+  }
+};
+
+start();

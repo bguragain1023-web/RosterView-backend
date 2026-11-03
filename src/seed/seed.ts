@@ -77,6 +77,12 @@ const permissions: PermissisonInput[] = [
     description: "Assign staff to shift",
   },
   {
+    name: "roster:delete",
+    resource: "shift",
+    action: "delete",
+    description: "Permanently delete shifts",
+  },
+  {
     name: "availability:read",
     resource: "availability",
     action: "read",
@@ -133,6 +139,24 @@ const permissions: PermissisonInput[] = [
     action: "approve",
     description: "Approve/Reject shift swap request",
   },
+  {
+    name: "client:create",
+    resource: "client",
+    action: "create",
+    description: "Add a new client",
+  },
+  {
+    name: "client:read",
+    resource: "client",
+    action: "read",
+    description: "View client details",
+  },
+  {
+    name: "client:update",
+    resource: "client",
+    action: "update",
+    description: "Update client details or deactivate a client",
+  },
 ];
 const roles: RoleSeedInput[] = [
   {
@@ -148,12 +172,15 @@ const roles: RoleSeedInput[] = [
     permissions: [
       "user:read",
 
+      "client:read",
+
       "team:read",
 
       "roster:read",
       "roster:create",
       "roster:update",
       "roster:assign",
+      "roster:delete",
 
       "availability:read",
 
