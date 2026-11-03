@@ -15,13 +15,13 @@ import {
   updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
-import { getUserById } from "../models/user/userModel";
+import { getUserById, getUsersByTeam } from "../models/user/userModel";
 import { getClientById } from "../models/client/clientModel";
+import { withNames } from "../helper/shiftNames";
 import { getRoleById } from "../models/role/roleModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 import { DATE_ONLY_REGEX, toUtcMidnight } from "../helper/dateOnly";
-import { getUsersByTeam } from "../models/user/userModel";
 import { IUser } from "../models/user/userSchema";
 
 // Which workers' shifts may this user see?
@@ -163,7 +163,7 @@ export const fetchAllShifts = async (
     res.json({
       status: "success",
       message: "All shifts fetched successfully",
-      allShifts,
+      allShifts: await withNames(allShifts),
     });
   } catch (error) {
     next(error);
@@ -191,10 +191,11 @@ export const getSingleShift = async (
       throw new AppError("Shift doesn't exist", 404);
     }
 
+    const [shiftWithNames] = await withNames([shift]);
     res.json({
       status: "success",
       message: "Shift detail fetched successfully",
-      shift,
+      shift: shiftWithNames,
     });
   } catch (error) {
     next(error);
@@ -391,7 +392,11 @@ export const cancelShift = async (
       throw new AppError("Shift changed meanwhile, please try again", 409);
     }
 
-    res.json({ status: "success", message: "Shift cancelled", shift: cancelled });
+    res.json({
+      status: "success",
+      message: "Shift cancelled",
+      shift: cancelled,
+    });
   } catch (error) {
     next(error);
   }
@@ -415,7 +420,8 @@ export const reinstateShift = async (
     }
 
     const workerId = unassign ? null : shift.workerId;
-    const tryUnassigned = " Tick 'Reinstate without a worker' to reinstate it unassigned.";
+    const tryUnassigned =
+      " Tick 'Reinstate without a worker' to reinstate it unassigned.";
 
     // The worker's week may have changed while the shift was cancelled.
     if (workerId) {

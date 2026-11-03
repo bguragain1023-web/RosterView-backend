@@ -119,10 +119,13 @@ export const deleteManyShifts = async (ids: string[]) => {
   return shiftSchema.deleteMany({ _id: { $in: ids } });
 };
 
+// teammateIds: only these workers' shifts may be offered (swaps are
+// team-only, so other teams' shifts are never returned).
 export const getTargetShifts = async (
   workerId: string,
   requestedDate: string,
   targetedDate: string,
+  teammateIds: string[],
 ): Promise<IShift[]> => {
   const requestedStart = new Date(`${requestedDate}T00:00:00.000Z`);
   const requestedEnd = new Date(`${requestedDate}T23:59:59.999Z`);
@@ -143,8 +146,10 @@ export const getTargetShifts = async (
 
   // Find target-date shifts belonging to eligible workers. Only active,
   // assigned shifts can be swapped.
+  // $in and $nin on the same field: must be a teammate AND not busy/not me.
   return shiftSchema.find({
     workerId: {
+      $in: teammateIds,
       $nin: [...workersOnRequestedDate, new mongoose.Types.ObjectId(workerId)],
     },
     status: "assigned",

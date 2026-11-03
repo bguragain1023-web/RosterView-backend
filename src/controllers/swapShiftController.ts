@@ -19,6 +19,7 @@ import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { hasShiftConflict } from "../helper/calculation";
 import { toUtcMidnight } from "../helper/dateOnly";
+import { withNames } from "../helper/shiftNames";
 
 const SWAP_STATUSES: ShiftSwapStatus[] = [
   "pending",
@@ -129,7 +130,12 @@ export const fetchSwapEligibleWorker = async (
     const { requestedShiftId, targetedDate } = req.body;
     if (!req.userInfo)
       throw new AppError("Not authorized to request swapShift", 404);
-    const { _id } = req.userInfo;
+    const { _id, teamId } = req.userInfo;
+
+    // Swaps are only allowed within a team.
+    if (!teamId) {
+      throw new AppError("You need to be in a team to swap shifts", 409);
+    }
 
     const requestedShift = await getShiftById(requestedShiftId);
     if (!requestedShift) throw new AppError("Shift doesn't exist", 404);
@@ -163,10 +169,17 @@ export const fetchSwapEligibleWorker = async (
       );
     }
 
+    // Teammates only (not myself), so other teams' shifts are never offered.
+    const teamMembers = (await getUsersByTeam(teamId.toString())) ?? [];
+    const teammateIds = teamMembers
+      .map((m) => m._id.toString())
+      .filter((id) => id !== _id.toString());
+
     const result = await getTargetShifts(
       _id.toString(),
       requestedDate,
       targetedDate,
+      teammateIds,
     );
 
     res.json({
@@ -175,7 +188,7 @@ export const fetchSwapEligibleWorker = async (
         result.length === 0
           ? "No Eligible Shifts found"
           : "Eligible Shifts fetched",
-      result,
+      result: await withNames(result),
     });
   } catch (error) {
     next(error);

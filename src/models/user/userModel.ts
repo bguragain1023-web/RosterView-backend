@@ -82,3 +82,14 @@ export const updateAdditionalPermission = (
     { new: true },
   );
 };
+
+// { id -> name } for the given user ids. Only the name is fetched.
+export const getUserNames = async (
+  ids: string[],
+): Promise<Map<string, string>> => {
+  const users = await userSchema
+    .find({ _id: { $in: ids } })
+    .select("name")
+    .lean();
+  return new Map(users.map((u) => [u._id.toString(), u.name]));
+};

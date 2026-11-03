@@ -35,3 +35,14 @@ export const updateClientById = async (
 ) => {
   return clientSchema.updateOne({ _id: id }, { $set: data });
 };
+
+// { id -> name } for the given client ids. Only the name is fetched.
+export const getClientNames = async (
+  ids: string[],
+): Promise<Map<string, string>> => {
+  const clients = await clientSchema
+    .find({ _id: { $in: ids } })
+    .select("name")
+    .lean();
+  return new Map(clients.map((c) => [c._id.toString(), c.name]));
+};
