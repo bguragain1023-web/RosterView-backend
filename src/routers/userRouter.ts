@@ -8,6 +8,7 @@ import {
   changePassword,
   createUser,
   getMe,
+  getUserDetail,
   getUsers,
   loginUser,
   updateUser,
@@ -58,5 +59,8 @@ router.patch<{ id: string }>(
 
 //login
 router.post("/login", loginUser);
+
+// get single user. Keep last so "/me" and "/readuser" match first.
+router.get("/:id", auth, requirePermission("user", "read"), getUserDetail);
 
 export default router;

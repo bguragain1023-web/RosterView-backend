@@ -6,12 +6,16 @@ import { AppError } from "../utlis/AppError";
 import {
   addUser,
   getAllUsers,
+  getUserById,
   getUserbyEmail,
   updateAdditionalPermission,
   updateUserDetailById,
 } from "../models/user/userModel";
-import { getTeamByName } from "../models/team/teamModel";
-import { getPermissionsByName } from "../models/permission/permissionModel";
+import { getTeamById, getTeamByName } from "../models/team/teamModel";
+import {
+  getPermissionById,
+  getPermissionsByName,
+} from "../models/permission/permissionModel";
 import { signJwt } from "../utlis/jwt";
 
 //Create User
@@ -240,6 +244,40 @@ export const updateUser = async (
   }
 };
 
+//Get single user, with role, team and permission names resolved
+export const getUserDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await getUserById(req.params.id as string);
+    if (!user) throw new AppError("User not found", 404);
+
+    const role = await getRoleById(user.roleId.toString());
+    const team = user.teamId ? await getTeamById(user.teamId.toString()) : null;
+    const [rolePermissions, additionalPermissions] = await Promise.all([
+      getPermissionById((role?.permissions ?? []).map(String)),
+      getPermissionById(user.additionalPermissions.map(String)),
+    ]);
+
+    const { password, ...rest } = user.toObject();
+    res.json({
+      status: "success",
+      message: "User detail fetched",
+      userDetail: {
+        ...rest,
+        role: role?.name ?? null,
+        team: team ? { _id: team._id, name: team.name } : null,
+        rolePermissions: rolePermissions.map((p) => p.name),
+        additionalPermissions: additionalPermissions.map((p) => p.name),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 //update User Permission
 export const updateUserPermission = async (
   req: Request,
@@ -248,7 +286,10 @@ export const updateUserPermission = async (
 ) => {
   try {
     const id = req.params.id as string;
-    const { permissionNames } = req.body;
+    // Remove duplicates so the "all found" count check below is accurate.
+    const permissionNames: string[] = [
+      ...new Set<string>(req.body.permissionNames),
+    ];
 
     const additionalPermissions = await getPermissionsByName(permissionNames);
     if (additionalPermissions.length !== permissionNames.length) {

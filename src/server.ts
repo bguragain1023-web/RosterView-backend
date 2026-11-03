@@ -11,6 +11,7 @@ import swapShiftRouter from "./routers/swapShiftRouter";
 import teamRouter from "./routers/teamRouter";
 import availabilityRouter from "./routers/availabilityRouter";
 import leaveRequestRouter from "./routers/leaveRequestRouter";
+import permissionRouter from "./routers/permissionRouter";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -25,6 +26,7 @@ app.use("/api/v1/swapShift", swapShiftRouter);
 app.use("/api/v1/teams", teamRouter);
 app.use("/api/v1/availability", availabilityRouter);
 app.use("/api/v1/leaverequest", leaveRequestRouter);
+app.use("/api/v1/permissions", permissionRouter);
 app.use(errorHandler);
 
 // Only accept requests once the database is connected.

@@ -11,26 +11,8 @@ export const validatePermissions = (
   next: NextFunction,
 ) => {
   try {
-    const permissionsAvailable: string[] = [
-      "user:create",
-      "user:read",
-      "user:update",
-      "roster:read",
-      "roster:create",
-      "roster:update",
-      "roster:assign",
-      "availability:read",
-      "availability:update",
-      "leave:create",
-      "leave:read",
-      "leave:approve",
-      "swap:create",
-      "swap:read",
-      "swap:approve",
-      "incident:create",
-      "incident:read",
-      "incident:review",
-    ];
+    // Whether each name actually exists is checked against the database in
+    // the controller, so there's no hard-coded list to keep in sync here.
     const { permissionNames } = req.body;
 
     if (!Array.isArray(permissionNames)) {
@@ -41,14 +23,6 @@ export const validatePermissions = (
       !permissionNames.every((permission) => typeof permission === "string")
     ) {
       throw new AppError("Every permission must be a string", 400);
-    }
-
-    const hasPermission = permissionNames.every((p) =>
-      permissionsAvailable.includes(p),
-    );
-
-    if (!hasPermission) {
-      throw new AppError("Invalid permission found", 400);
     }
 
     next();

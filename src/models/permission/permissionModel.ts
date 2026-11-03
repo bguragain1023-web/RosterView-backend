@@ -27,3 +27,10 @@ export const getPermissionById = (ids: string[]) => {
 export const getPermissionsByName = (name: string[]) => {
   return permissionSchema.find({ name: { $in: name } });
 };
+
+export const getAllPermissions = () => {
+  return permissionSchema
+    .find()
+    .select("name resource action description")
+    .sort({ name: 1 });
+};
