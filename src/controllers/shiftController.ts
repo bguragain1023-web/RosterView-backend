@@ -7,9 +7,11 @@ import {
 } from "../helper/calculation";
 import {
   addNewShift,
+  cancelShiftById,
   deleteManyShifts,
   getAllShifts,
   getShiftById,
+  reinstateShiftById,
   updateShiftById,
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
@@ -18,7 +20,7 @@ import { getClientById } from "../models/client/clientModel";
 import { getRoleById } from "../models/role/roleModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
-import { toUtcMidnight } from "../helper/dateOnly";
+import { DATE_ONLY_REGEX, toUtcMidnight } from "../helper/dateOnly";
 
 export const createShift = async (
   req: Request,
@@ -117,7 +119,21 @@ export const fetchAllShifts = async (
   next: NextFunction,
 ) => {
   try {
-    const allShifts = await getAllShifts();
+    // Optional ?from=YYYY-MM-DD&to=YYYY-MM-DD (both inclusive)
+    const parseDate = (value: unknown, name: string) => {
+      if (value === undefined) return undefined;
+      if (typeof value !== "string" || !DATE_ONLY_REGEX.test(value)) {
+        throw new AppError(`${name} must be YYYY-MM-DD`, 400);
+      }
+      return toUtcMidnight(value);
+    };
+    const from = parseDate(req.query.from, "from");
+    const to = parseDate(req.query.to, "to");
+
+    const allShifts = await getAllShifts({
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
+    });
     res.json({
       status: "success",
       message: "All shifts fetched successfully",
@@ -161,6 +177,17 @@ export const updateShift = async (
     const id = req.params.id as string;
     const shiftToUpdate = await getShiftById(id);
     if (!shiftToUpdate) throw new AppError("shift doesn't exist", 404);
+
+    // Editing would otherwise reset the status below and bring these back.
+    if (shiftToUpdate.status === "cancelled") {
+      throw new AppError(
+        "Cancelled shifts can't be edited. Reinstate it first.",
+        409,
+      );
+    }
+    if (shiftToUpdate.status === "completed") {
+      throw new AppError("Completed shifts can't be edited", 409);
+    }
 
     const {
       workerId,
@@ -289,6 +316,132 @@ export const updateShift = async (
       weeklyHours: weeklyHoursAfter,
       normalHours,
       overtimeHours,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cancelShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const id = req.params.id as string;
+
+    const { reason } = req.body ?? {};
+    if (reason !== undefined && typeof reason !== "string") {
+      throw new AppError("Reason must be text", 400);
+    }
+    if (typeof reason === "string" && reason.length > 500) {
+      throw new AppError("Reason must be 500 characters or fewer", 400);
+    }
+
+    const shift = await getShiftById(id);
+    if (!shift) throw new AppError("Shift doesn't exist", 404);
+    if (shift.status !== "assigned" && shift.status !== "unassigned") {
+      throw new AppError(
+        `Only active shifts can be cancelled (this one is ${shift.status})`,
+        409,
+      );
+    }
+
+    const cancelled = await cancelShiftById(
+      id,
+      req.userInfo._id,
+      (reason ?? "").trim(),
+    );
+    if (!cancelled) {
+      throw new AppError("Shift changed meanwhile, please try again", 409);
+    }
+
+    res.json({ status: "success", message: "Shift cancelled", shift: cancelled });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Body: { unassign?: boolean } - reinstate without the worker, e.g. when
+// they're no longer free at that time.
+export const reinstateShift = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = req.params.id as string;
+    const unassign = req.body?.unassign === true;
+
+    const shift = await getShiftById(id);
+    if (!shift) throw new AppError("Shift doesn't exist", 404);
+    if (shift.status !== "cancelled") {
+      throw new AppError("Only cancelled shifts can be reinstated", 409);
+    }
+
+    const workerId = unassign ? null : shift.workerId;
+    const tryUnassigned = " Tick 'Reinstate without a worker' to reinstate it unassigned.";
+
+    // The worker's week may have changed while the shift was cancelled.
+    if (workerId) {
+      const worker = await getUserById(workerId.toString());
+      if (!worker || worker.status !== "active") {
+        throw new AppError(
+          "The worker on this shift is no longer active." + tryUnassigned,
+          409,
+        );
+      }
+
+      const onLeave = await getApprovedLeaveOnDate(
+        workerId.toString(),
+        toUtcMidnight(shift.date),
+      );
+      if (onLeave) {
+        throw new AppError(
+          `${worker.name} is on approved leave that day.` + tryUnassigned,
+          409,
+        );
+      }
+
+      const isAvailable = await checkWorkerAvailability(
+        workerId.toString(),
+        shift.date,
+      );
+      if (!isAvailable) {
+        throw new AppError(
+          `${worker.name} is not available that day.` + tryUnassigned,
+          409,
+        );
+      }
+
+      const hasConflict = await hasShiftConflict(
+        workerId.toString(),
+        shift.date,
+        shift.startTime,
+        shift.endTime,
+        id,
+      );
+      if (hasConflict) {
+        throw new AppError(
+          `${worker.name} now has another shift at that time.` + tryUnassigned,
+          409,
+        );
+      }
+    }
+
+    const reinstated = await reinstateShiftById(id, {
+      status: workerId ? "assigned" : "unassigned",
+      workerId,
+    });
+    if (!reinstated) {
+      throw new AppError("Shift changed meanwhile, please try again", 409);
+    }
+
+    res.json({
+      status: "success",
+      message: "Shift reinstated",
+      shift: reinstated,
     });
   } catch (error) {
     next(error);

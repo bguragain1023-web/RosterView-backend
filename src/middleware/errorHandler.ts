@@ -21,6 +21,14 @@ export const errorHandler = (
       message: `Invalid ${error.path}`,
     });
   }
+  // Unique index violation, e.g. an email or phone already used by someone else.
+  if (error instanceof mongoose.mongo.MongoServerError && error.code === 11000) {
+    const field = Object.keys(error.keyValue ?? {})[0] ?? "value";
+    return res.status(409).json({
+      status: "error",
+      message: `That ${field} is already in use`,
+    });
+  }
   console.error("Unhandled error:", error);
   return res
     .status(500)

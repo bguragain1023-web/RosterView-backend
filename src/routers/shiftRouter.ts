@@ -7,10 +7,12 @@ import {
   updateShiftValidation,
 } from "../middleware/validation/shiftValidation";
 import {
+  cancelShift,
   createShift,
   deleteShift,
   fetchAllShifts,
   getSingleShift,
+  reinstateShift,
   updateShift,
 } from "../controllers/shiftController";
 const router = express.Router();
@@ -37,6 +39,20 @@ router.patch(
   requirePermission("shift", "update"),
   updateShiftValidation,
   updateShift,
+);
+
+router.patch(
+  "/:id/cancel",
+  auth,
+  requirePermission("shift", "update"),
+  cancelShift,
+);
+
+router.patch(
+  "/:id/reinstate",
+  auth,
+  requirePermission("shift", "update"),
+  reinstateShift,
 );
 
 router.delete(

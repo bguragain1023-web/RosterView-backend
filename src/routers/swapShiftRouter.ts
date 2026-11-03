@@ -9,11 +9,15 @@ import {
 import {
   createSwapShift,
   fetchSwapEligibleWorker,
+  fetchSwapRequests,
   shiftReviewByManagers,
   swapShiftActionByWorker,
 } from "../controllers/swapShiftController";
 
 const router = express.Router();
+
+// list swap requests (what you see depends on your role)
+router.get("/", auth, requirePermission("shiftSwap", "read"), fetchSwapRequests);
 
 //check eligibility worker
 

@@ -4,13 +4,121 @@ import { getShiftById, getTargetShifts } from "../models/shift/shiftModel";
 import {
   addSwaprequest,
   findPendingSwap,
+  getSwapRequests,
   getSwapShiftById,
   reviewSwapShift,
   swapWorkersBetweenShifts,
   updateSwapShift,
 } from "../models/shift/shiftSwapModel";
-import { getUserById } from "../models/user/userModel";
+import { ShiftSwapStatus } from "../models/shift/shiftSwapSchema";
+import { IShift } from "../models/shift/shiftSchema";
+import { getUserById, getUsersByTeam } from "../models/user/userModel";
+import { IUser } from "../models/user/userSchema";
 import { getRoleById } from "../models/role/roleModel";
+import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
+import { checkWorkerAvailability } from "../helper/checkAvailibility";
+import { hasShiftConflict } from "../helper/calculation";
+import { toUtcMidnight } from "../helper/dateOnly";
+
+const SWAP_STATUSES: ShiftSwapStatus[] = [
+  "pending",
+  "workerAccepted",
+  "accepted",
+  "rejected",
+  "cancelled",
+];
+
+const formatShiftDay = (date: Date) =>
+  date.toLocaleDateString("en-AU", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+
+// Can `worker` take over `shift`, while giving away `giveAwayShiftId`?
+// Throws a 409 explaining why not.
+const assertCanTakeShift = async (
+  worker: IUser,
+  shift: IShift,
+  giveAwayShiftId: string,
+) => {
+  const workerId = worker._id.toString();
+  const day = formatShiftDay(shift.date);
+
+  if (await getApprovedLeaveOnDate(workerId, toUtcMidnight(shift.date))) {
+    throw new AppError(`${worker.name} is on approved leave on ${day}`, 409);
+  }
+  if (!(await checkWorkerAvailability(workerId, shift.date))) {
+    throw new AppError(`${worker.name} is not available on ${day}`, 409);
+  }
+  const clash = await hasShiftConflict(
+    workerId,
+    shift.date,
+    shift.startTime,
+    shift.endTime,
+    giveAwayShiftId,
+  );
+  if (clash) {
+    throw new AppError(
+      `${worker.name} already has another shift at ${shift.startTime}–${shift.endTime} on ${day}`,
+      409,
+    );
+  }
+};
+
+// GET /swapShift?status=pending,workerAccepted
+export const fetchSwapRequests = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const user = req.userInfo;
+
+    let statuses: ShiftSwapStatus[] | undefined;
+    if (req.query.status !== undefined) {
+      if (typeof req.query.status !== "string") {
+        throw new AppError("status must be a comma-separated list", 400);
+      }
+      const requested = req.query.status.split(",").map((s) => s.trim());
+      const invalid = requested.filter(
+        (s) => !SWAP_STATUSES.includes(s as ShiftSwapStatus),
+      );
+      if (invalid.length) {
+        throw new AppError(`Unknown status: ${invalid.join(", ")}`, 400);
+      }
+      statuses = requested as ShiftSwapStatus[];
+    }
+
+    const role = await getRoleById(user.roleId.toString());
+    if (!role) throw new AppError("Role not found", 404);
+
+    // admin/coordinator: everything. teamLeader: their team. worker: their own.
+    const filter: Parameters<typeof getSwapRequests>[0] = statuses
+      ? { statuses }
+      : {};
+    if (role.name === "teamLeader") {
+      const teamUsers = user.teamId
+        ? ((await getUsersByTeam(user.teamId.toString())) ?? [])
+        : [];
+      filter.teamUserIds = teamUsers.map((u) => u._id.toString());
+    } else if (role.name !== "admin" && role.name !== "coordinator") {
+      filter.userId = user._id.toString();
+    }
+
+    const swapRequests = await getSwapRequests(filter);
+
+    res.json({
+      status: "success",
+      message: "Swap requests fetched",
+      swapRequests,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const fetchSwapEligibleWorker = async (
   req: Request,
@@ -103,6 +211,16 @@ export const createSwapShift = async (
 
     if (targetedShift.workerId.toString() === _id.toString()) {
       throw new AppError("You cannot request a swap with your own shift", 400);
+    }
+
+    if (
+      requestedShift.status !== "assigned" ||
+      targetedShift.status !== "assigned"
+    ) {
+      throw new AppError(
+        "Only active, assigned shifts can be swapped (not cancelled or completed)",
+        409,
+      );
     }
 
     const requestedWorker = await getUserById(
@@ -207,6 +325,16 @@ export const swapShiftActionByWorker = async (
     }
 
     if (
+      requestedShift.status !== "assigned" ||
+      targetedShift.status !== "assigned"
+    ) {
+      throw new AppError(
+        "One of these shifts was cancelled or completed, so it can't be swapped",
+        409,
+      );
+    }
+
+    if (
       targetedShift.workerId?.toString() !== swapShift.requestedTo.toString()
     ) {
       throw new AppError(
@@ -286,7 +414,15 @@ export const shiftReviewByManagers = async (
       );
     }
 
-    const { action } = req.body;
+    const { action, comment } = req.body;
+    if (comment !== undefined && typeof comment !== "string") {
+      throw new AppError("Comment must be text", 400);
+    }
+    if (typeof comment === "string" && comment.length > 500) {
+      throw new AppError("Comment must be 500 characters or fewer", 400);
+    }
+    const reviewComment = typeof comment === "string" ? comment.trim() : "";
+
     const swapShiftId = req.params.swapShiftId as string;
     const swapShift = await getSwapShiftById(swapShiftId);
     if (!swapShift) {
@@ -319,11 +455,25 @@ export const shiftReviewByManagers = async (
       }
     }
 
-    if (swapShift.status !== "workerAccepted") {
-      throw new AppError("Shift must be approved by both worker first", 409);
+    // Managers can reject any open request; approving needs the colleague's
+    // acceptance first.
+    if (swapShift.status !== "pending" && swapShift.status !== "workerAccepted") {
+      throw new AppError("This swap request has already been closed", 409);
     }
+    if (action === "accept" && swapShift.status !== "workerAccepted") {
+      throw new AppError(
+        "The other worker has to accept the swap before it can be approved",
+        409,
+      );
+    }
+
     if (action === "reject") {
-      const result = await reviewSwapShift(swapShiftId, "rejected", user._id);
+      const result = await reviewSwapShift(
+        swapShiftId,
+        "rejected",
+        user._id,
+        reviewComment,
+      );
 
       if (!result) {
         throw new AppError(
@@ -338,6 +488,30 @@ export const shiftReviewByManagers = async (
     }
 
     if (action === "accept") {
+      // Things may have changed since the request was made (leave, other
+      // shifts), so check both workers again before swapping.
+      const requestedShift = await getShiftById(
+        swapShift.requestedShiftId.toString(),
+      );
+      const targetedShift = await getShiftById(
+        swapShift.targetedShiftId.toString(),
+      );
+      if (!requestedShift || !targetedShift) {
+        throw new AppError("One or both shifts no longer exist", 404);
+      }
+      // requestedTo takes the requested shift and gives away the targeted one;
+      // requestedBy does the opposite.
+      await assertCanTakeShift(
+        requestedUser,
+        requestedShift,
+        targetedShift._id.toString(),
+      );
+      await assertCanTakeShift(
+        requestingUser,
+        targetedShift,
+        requestedShift._id.toString(),
+      );
+
       const swapResult = await swapWorkersBetweenShifts(
         swapShift.requestedShiftId.toString(),
         swapShift.targetedShiftId.toString(),
@@ -349,7 +523,12 @@ export const shiftReviewByManagers = async (
           500,
         );
       }
-      const result = await reviewSwapShift(swapShiftId, "accepted", user._id);
+      const result = await reviewSwapShift(
+        swapShiftId,
+        "accepted",
+        user._id,
+        reviewComment,
+      );
       if (!result) {
         throw new AppError(
           "shift were swapped but the request couldn't be updated",

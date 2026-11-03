@@ -14,6 +14,10 @@ export interface IShift extends Document {
   status: ShiftStatus;
   notes?: string;
   createdBy: mongoose.Types.ObjectId;
+  // Set while status is "cancelled"; cleared on reinstate.
+  cancelledAt?: Date;
+  cancelledBy?: mongoose.Types.ObjectId;
+  cancelReason?: string;
 }
 
 const shiftSchema = new Schema<IShift>(
@@ -67,6 +71,17 @@ const shiftSchema = new Schema<IShift>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    cancelledAt: {
+      type: Date,
+    },
+    cancelledBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    cancelReason: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true },

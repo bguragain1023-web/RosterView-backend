@@ -1,5 +1,6 @@
 import mongoose, { Types } from "mongoose";
 import shiftSchema, { IShift, ShiftStatus } from "./shiftSchema";
+import { addUtcDays } from "../../helper/dateOnly";
 
 export interface ShiftInput {
   workerId: mongoose.Types.ObjectId | null;
@@ -31,8 +32,18 @@ export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
   return new shiftSchema(shiftObj).save();
 };
 
-export const getAllShifts = (): Promise<IShift[]> => {
-  return shiftSchema.find();
+// Optional date range; both ends inclusive. Sorted by date, then start time.
+export const getAllShifts = ({
+  from,
+  to,
+}: { from?: Date; to?: Date } = {}): Promise<IShift[]> => {
+  const date: Record<string, Date> = {};
+  if (from) date.$gte = from;
+  if (to) date.$lt = addUtcDays(to, 1);
+
+  return shiftSchema
+    .find(Object.keys(date).length ? { date } : {})
+    .sort({ date: 1, startTime: 1 });
 };
 
 export const getShiftById = (id: string): Promise<IShift | null> => {
@@ -41,6 +52,41 @@ export const getShiftById = (id: string): Promise<IShift | null> => {
 
 export const updateShiftById = async (id: string, data: updateShiftPayLoad) => {
   return shiftSchema.updateOne({ _id: id }, { $set: data });
+};
+
+// Only cancels if the shift is still active, so two clicks can't race.
+export const cancelShiftById = (
+  id: string,
+  cancelledBy: mongoose.Types.ObjectId,
+  reason: string,
+) => {
+  return shiftSchema.findOneAndUpdate(
+    { _id: id, status: { $in: ["assigned", "unassigned"] } },
+    {
+      $set: {
+        status: "cancelled",
+        cancelledAt: new Date(),
+        cancelledBy,
+        cancelReason: reason,
+      },
+    },
+    { new: true },
+  );
+};
+
+// Only reinstates a shift that is still cancelled.
+export const reinstateShiftById = (
+  id: string,
+  update: { status: ShiftStatus; workerId: mongoose.Types.ObjectId | null },
+) => {
+  return shiftSchema.findOneAndUpdate(
+    { _id: id, status: "cancelled" },
+    {
+      $set: update,
+      $unset: { cancelledAt: 1, cancelledBy: 1, cancelReason: 1 },
+    },
+    { new: true },
+  );
 };
 
 export const deleteManyShifts = async (ids: string[]) => {
@@ -59,19 +105,23 @@ export const getTargetShifts = async (
   const targetedEnd = new Date(`${targetedDate}T23:59:59.999Z`);
 
   // Workers who already have a shift on the requested date
+  // (cancelled shifts don't count: that worker is free)
   const workersOnRequestedDate = await shiftSchema.distinct("workerId", {
     workerId: { $ne: null },
+    status: { $ne: "cancelled" },
     date: {
       $gte: requestedStart,
       $lte: requestedEnd,
     },
   });
 
-  // Find target-date shifts belonging to eligible workers
+  // Find target-date shifts belonging to eligible workers. Only active,
+  // assigned shifts can be swapped.
   return shiftSchema.find({
     workerId: {
       $nin: [...workersOnRequestedDate, new mongoose.Types.ObjectId(workerId)],
     },
+    status: "assigned",
     date: {
       $gte: targetedStart,
       $lte: targetedEnd,

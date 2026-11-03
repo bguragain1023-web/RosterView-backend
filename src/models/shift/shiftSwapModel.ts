@@ -30,6 +30,37 @@ export const findPendingSwap = async (
   });
 };
 
+// List swap requests, newest first, with shift details and names filled in.
+// teamUserIds: only requests where BOTH workers are in this list (team leader).
+// userId: only requests this user made or received (worker).
+export const getSwapRequests = ({
+  statuses,
+  teamUserIds,
+  userId,
+}: {
+  statuses?: ShiftSwapStatus[];
+  teamUserIds?: string[];
+  userId?: string;
+} = {}) => {
+  const query: Record<string, unknown> = {};
+  if (statuses?.length) query.status = { $in: statuses };
+  if (teamUserIds) {
+    query.requestedBy = { $in: teamUserIds };
+    query.requestedTo = { $in: teamUserIds };
+  }
+  if (userId) query.$or = [{ requestedBy: userId }, { requestedTo: userId }];
+
+  return shiftSwapSchema
+    .find(query)
+    .populate(
+      "requestedShiftId targetedShiftId",
+      "date startTime endTime location clientId status",
+    )
+    .populate("requestedBy requestedTo reviewedBy", "name")
+    .sort({ createdAt: -1 })
+    .lean();
+};
+
 export const getSwapShiftById = async (
   id: string,
 ): Promise<IShiftSwap | null> => {
@@ -78,6 +109,22 @@ const supportsTransactions = async (): Promise<boolean> => {
   return transactionsSupported;
 };
 
+// Only active, assigned shifts can be swapped (not cancelled or completed).
+const assertSwappable = (
+  requestedShift: { status: string },
+  targetedShift: { status: string },
+) => {
+  if (
+    requestedShift.status !== "assigned" ||
+    targetedShift.status !== "assigned"
+  ) {
+    throw new AppError(
+      "Both shifts must still be assigned (not cancelled or completed) to swap",
+      409,
+    );
+  }
+};
+
 // Fallback for standalone MongoDB: each update only applies if the shift
 // still has the worker we read, so a concurrent change can't be overwritten.
 const swapWorkersWithoutTransaction = async (
@@ -89,11 +136,12 @@ const swapWorkersWithoutTransaction = async (
   if (!requestedShift || !targetedShift) {
     throw new AppError("One or both shifts no longer exist", 404);
   }
+  assertSwappable(requestedShift, targetedShift);
   const requestedWorkerId = requestedShift.workerId;
   const targetedWorkerId = targetedShift.workerId;
 
   const first = await shiftSchema.updateOne(
-    { _id: requestedShiftId, workerId: requestedWorkerId },
+    { _id: requestedShiftId, workerId: requestedWorkerId, status: "assigned" },
     { $set: { workerId: targetedWorkerId } },
   );
   if (first.modifiedCount !== 1) {
@@ -101,7 +149,7 @@ const swapWorkersWithoutTransaction = async (
   }
 
   const second = await shiftSchema.updateOne(
-    { _id: targetedShiftId, workerId: targetedWorkerId },
+    { _id: targetedShiftId, workerId: targetedWorkerId, status: "assigned" },
     { $set: { workerId: requestedWorkerId } },
   );
   if (second.modifiedCount !== 1) {
@@ -138,6 +186,7 @@ export const swapWorkersBetweenShifts = async (
     if (!requestedShift || !targetedShift) {
       throw new AppError("One or both shifts no longer exist", 404);
     }
+    assertSwappable(requestedShift, targetedShift);
     const requestedWorkerId = requestedShift.workerId;
     const targetedWorkerId = targetedShift.workerId;
     requestedShift.workerId = targetedWorkerId;
