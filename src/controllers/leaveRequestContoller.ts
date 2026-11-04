@@ -3,6 +3,7 @@ import { AppError } from "../utlis/AppError";
 import { getRoleById } from "../models/role/roleModel";
 import {
   addLeaveRequest,
+  cancelApprovedLeave,
   getAllLeaveRequest,
   getLeaveRequestsByWorkers,
   getOverlappingLeaveRequest,
@@ -35,6 +36,11 @@ export const createLeaveRequest = async (
         "Please make sure start date is before end date ",
         400,
       );
+    }
+    // Both sides are UTC midnight, so this compares whole days.
+    // (Only the start needs checking: start <= end is already ensured above.)
+    if (startDate < toUtcMidnight(new Date())) {
+      throw new AppError("Leave can't start in the past", 400);
     }
 
     const role = await getRoleById(req.userInfo.roleId.toString());
@@ -177,6 +183,56 @@ export const cancelLeaveRequest = async (
       status: "success",
       message: "Leave request cancelled successfully",
       leaveRequest: cancelledRequest,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /leaverequest/:id/cancel-approved   { reason? }
+// Admin/coordinator only (leave:delete permission). Keeps the record as
+// "cancelled", so the worker is available on those days again.
+export const cancelApprovedLeaveRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const requestId = req.params.id as string;
+
+    const { reason } = req.body ?? {};
+    if (reason !== undefined && typeof reason !== "string") {
+      throw new AppError("Reason must be text", 400);
+    }
+    if (typeof reason === "string" && reason.length > 500) {
+      throw new AppError("Reason must be 500 characters or fewer", 400);
+    }
+
+    const leaveRequest = await getSingleLeaveRequest(requestId);
+    if (!leaveRequest) {
+      throw new AppError("Leave request not found", 404);
+    }
+    if (leaveRequest.status !== "approved") {
+      throw new AppError("Only approved leave can be cancelled here", 400);
+    }
+
+    const cancelled = await cancelApprovedLeave(
+      requestId,
+      req.userInfo._id,
+      (reason ?? "").trim(),
+    );
+    if (!cancelled) {
+      throw new AppError("This leave changed meanwhile, please try again", 409);
+    }
+
+    res.json({
+      status: "success",
+      message:
+        "Approved leave cancelled. The worker is available on those days again.",
+      leaveRequest: cancelled,
     });
   } catch (error) {
     next(error);

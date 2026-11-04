@@ -122,6 +122,12 @@ const permissions: PermissisonInput[] = [
     description: "Approve Leave Request",
   },
   {
+    name: "leave:delete",
+    resource: "leaveRequest",
+    action: "delete",
+    description: "Cancel leave that was already approved",
+  },
+  {
     name: "swap:create",
     resource: "shiftSwap",
     action: "create",
@@ -186,6 +192,7 @@ const roles: RoleSeedInput[] = [
 
       "leave:read",
       "leave:approve",
+      "leave:delete",
 
       "swap:read",
       "swap:approve",

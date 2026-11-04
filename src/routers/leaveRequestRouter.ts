@@ -6,6 +6,7 @@ import {
   reviewLeaveRequestValidation,
 } from "../middleware/validation/leaveRequestValidation";
 import {
+  cancelApprovedLeaveRequest,
   cancelLeaveRequest,
   createLeaveRequest,
   getLeaveRequests,
@@ -42,6 +43,14 @@ router.patch(
   requirePermission("leaveRequest", "approve"),
   reviewLeaveRequestValidation,
   reviewLeaveRequests,
+);
+
+// cancel APPROVED leave: admin + coordinator only (leave:delete)
+router.patch(
+  "/:id/cancel-approved",
+  auth,
+  requirePermission("leaveRequest", "delete"),
+  cancelApprovedLeaveRequest,
 );
 
 export default router;

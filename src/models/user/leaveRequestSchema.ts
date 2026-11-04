@@ -15,6 +15,10 @@ export interface ILeaveRequest extends Document {
   reviewedBy?: mongoose.Types.ObjectId;
   reviewedAt?: Date;
   reviewComment?: string;
+  // Set when an admin/coordinator cancels APPROVED leave.
+  cancelledAt?: Date;
+  cancelledBy?: mongoose.Types.ObjectId;
+  cancelReason?: string;
 }
 
 const leaveRequestSchema = new Schema<ILeaveRequest>(
@@ -66,6 +70,20 @@ const leaveRequestSchema = new Schema<ILeaveRequest>(
       type: String,
       trim: true,
       default: "",
+    },
+
+    cancelledAt: {
+      type: Date,
+    },
+
+    cancelledBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    cancelReason: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true },

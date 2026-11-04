@@ -67,6 +67,27 @@ export const reviewLeaveRequest = (
   });
 };
 
+// Cancel an APPROVED leave. Only succeeds if it's still approved, so two
+// clicks (or two managers) can't both "cancel" it. Returns null otherwise.
+export const cancelApprovedLeave = (
+  requestId: string,
+  cancelledBy: mongoose.Types.ObjectId,
+  reason: string,
+) => {
+  return leaveRequestSchema.findOneAndUpdate(
+    { _id: requestId, status: "approved" },
+    {
+      $set: {
+        status: "cancelled",
+        cancelledAt: new Date(),
+        cancelledBy,
+        cancelReason: reason,
+      },
+    },
+    { new: true },
+  );
+};
+
 export const getOverlappingLeaveRequest = (
   workerId: string,
   startDate: Date,
