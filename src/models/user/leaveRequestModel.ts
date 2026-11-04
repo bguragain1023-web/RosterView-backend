@@ -31,7 +31,7 @@ export const addLeaveRequest = (
 export const getAllLeaveRequest = (): Promise<ILeaveRequest[]> => {
   return leaveRequestSchema
     .find()
-    .populate("workerId reviewedBy", "name")
+    .populate("workerId reviewedBy cancelledBy", "name")
     .sort({ createdAt: -1 });
 };
 
@@ -54,7 +54,7 @@ export const getLeaveRequestsByWorkers = (
 ): Promise<ILeaveRequest[]> => {
   return leaveRequestSchema
     .find({ workerId: { $in: workerIds } })
-    .populate("workerId reviewedBy", "name")
+    .populate("workerId reviewedBy cancelledBy", "name")
     .sort({ createdAt: -1 });
 };
 
