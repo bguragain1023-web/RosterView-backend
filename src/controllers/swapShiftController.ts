@@ -3,6 +3,7 @@ import { AppError } from "../utlis/AppError";
 import { getShiftById, getTargetShifts } from "../models/shift/shiftModel";
 import {
   addSwaprequest,
+  cancelSwapByRequester,
   findPendingSwap,
   getSwapRequests,
   getSwapShiftById,
@@ -397,6 +398,42 @@ export const swapShiftActionByWorker = async (
         action === "accept"
           ? "Swap request accepted! waiting from managers approval"
           : "swap request reejected",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /swapShift/:swapShiftId/cancel
+// The worker who sent a swap request can take it back until a manager decides.
+export const cancelSwapRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const { _id } = req.userInfo;
+    const swapShiftId = req.params.swapShiftId as string;
+
+    const swapShift = await getSwapShiftById(swapShiftId);
+    if (!swapShift) throw new AppError("Swap request not found", 404);
+
+    if (swapShift.requestedBy.toString() !== _id.toString()) {
+      throw new AppError("You can only cancel swap requests you sent", 403);
+    }
+
+    const cancelled = await cancelSwapByRequester(swapShiftId, _id);
+    if (!cancelled) {
+      throw new AppError(
+        "This swap request has already been decided and can't be cancelled",
+        409,
+      );
+    }
+
+    res.json({
+      status: "success",
+      message: "Swap request cancelled",
     });
   } catch (error) {
     next(error);

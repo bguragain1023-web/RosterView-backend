@@ -7,6 +7,7 @@ import {
   swapShiftActionValidation,
 } from "../middleware/validation/shiftSwapValidation";
 import {
+  cancelSwapRequest,
   createSwapShift,
   fetchSwapEligibleWorker,
   fetchSwapRequests,
@@ -46,6 +47,14 @@ router.patch(
   requirePermission("shiftSwap", "read"),
   swapShiftActionValidation,
   swapShiftActionByWorker,
+);
+
+// cancel a swap request I sent (until a manager decides)
+router.patch(
+  "/:swapShiftId/cancel",
+  auth,
+  requirePermission("shiftSwap", "create"),
+  cancelSwapRequest,
 );
 
 router.patch(

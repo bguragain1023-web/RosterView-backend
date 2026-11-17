@@ -96,6 +96,27 @@ export const reviewSwapShift = async (
   );
 };
 
+// Swaps the sender can still take back: nobody has made a final decision.
+const CANCELLABLE_STATUSES: ShiftSwapStatus[] = ["pending", "workerAccepted"];
+
+// Cancel a swap request, but only if this user sent it and it's still open.
+// Both checks are in the filter, so if a manager approves at the same moment,
+// only one of the two updates can win. Returns null if nothing matched.
+export const cancelSwapByRequester = (
+  shiftSwapId: string,
+  requestedBy: mongoose.Types.ObjectId,
+) => {
+  return shiftSwapSchema.findOneAndUpdate(
+    {
+      _id: shiftSwapId,
+      requestedBy,
+      status: { $in: CANCELLABLE_STATUSES },
+    },
+    { $set: { status: "cancelled" } },
+    { new: true },
+  );
+};
+
 // Transactions only work on a replica set or mongos, not a standalone mongod.
 // Check once and cache the result.
 let transactionsSupported: boolean | undefined;
