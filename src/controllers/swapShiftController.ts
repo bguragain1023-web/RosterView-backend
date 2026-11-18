@@ -20,6 +20,7 @@ import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { hasShiftConflict } from "../helper/calculation";
 import { toUtcMidnight } from "../helper/dateOnly";
+import { getWeekRange } from "../helper/getWeekRange";
 import { withNames } from "../helper/shiftNames";
 
 const SWAP_STATUSES: ShiftSwapStatus[] = [
@@ -37,6 +38,28 @@ const formatShiftDay = (date: Date) =>
     day: "numeric",
     month: "short",
   });
+
+// A swap must stay inside one pay cycle. For now a pay cycle is one week,
+// Monday–Sunday: the same weeks as the weekly-hours calculation.
+// The other shift also can't be on a day that has already passed.
+const assertSwapDateAllowed = (
+  myShiftDate: Date | string,
+  otherDate: Date | string,
+) => {
+  const otherDay = toUtcMidnight(otherDate);
+
+  if (otherDay < toUtcMidnight(new Date())) {
+    throw new AppError("You can't swap with a shift on a past date", 400);
+  }
+
+  const { weekStart, weekEnd } = getWeekRange(myShiftDate);
+  if (otherDay < weekStart || otherDay > weekEnd) {
+    throw new AppError(
+      "You can only swap with a shift in the same week (Monday–Sunday) as yours",
+      400,
+    );
+  }
+};
 
 // Can `worker` take over `shift`, while giving away `giveAwayShiftId`?
 // Throws a 409 explaining why not.
@@ -152,23 +175,7 @@ export const fetchSwapEligibleWorker = async (
     if (!requestedDate)
       throw new AppError("Shift date could not be determined", 400);
 
-    const requestedDateObj = new Date(`${requestedDate}T00:00:00`);
-
-    const targetedDateObj = new Date(`${targetedDate}T00:00:00`);
-
-    const maxDate = new Date(requestedDateObj);
-    maxDate.setDate(maxDate.getDate() + 15);
-
-    if (targetedDateObj < requestedDateObj) {
-      throw new AppError("Shift date cannot be in the past", 400);
-    }
-
-    if (targetedDateObj > maxDate) {
-      throw new AppError(
-        "Cannot swap a shift for more than 15 days difference",
-        400,
-      );
-    }
+    assertSwapDateAllowed(requestedShift.date, targetedDate);
 
     // Teammates only (not myself), so other teams' shifts are never offered.
     const teamMembers = (await getUsersByTeam(teamId.toString())) ?? [];
@@ -236,6 +243,8 @@ export const createSwapShift = async (
         409,
       );
     }
+
+    assertSwapDateAllowed(requestedShift.date, targetedShift.date);
 
     const requestedWorker = await getUserById(
       requestedShift.workerId.toString(),
