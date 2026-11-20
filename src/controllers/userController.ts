@@ -11,7 +11,11 @@ import {
   updateAdditionalPermission,
   updateUserDetailById,
 } from "../models/user/userModel";
-import { getTeamById, getTeamByName } from "../models/team/teamModel";
+import {
+  getTeamById,
+  getTeamByLeaderId,
+  getTeamByName,
+} from "../models/team/teamModel";
 import {
   getPermissionById,
   getPermissionsByName,
@@ -209,6 +213,45 @@ export const updateUser = async (
     let updateObj = { ...rest };
     if (!id) {
       throw new AppError("User id not found", 404);
+    }
+
+    // A team has one leader, set in Edit team (which keeps team.teamLeaderId
+    // and the leader's teamId in sync). Block changes here that would
+    // create a second leader or leave a team pointing at a non-leader.
+    const user = await getUserById(id);
+    if (!user) throw new AppError("User not found", 404);
+
+    const currentRole = await getRoleById(user.roleId.toString());
+    const isLeaderNow = currentRole?.name === "teamLeader";
+    // The role after this save: the new one if sent, otherwise the current one.
+    const willBeLeader = role ? role === "teamLeader" : isLeaderNow;
+
+    // 1. A team leader's team is set through Edit team, not here.
+    if (team && willBeLeader) {
+      throw new AppError(
+        "Team leaders are assigned to a team in Edit team (Leader)",
+        400,
+      );
+    }
+
+    // 2. Becoming a team leader while already a member of a team.
+    if (role === "teamLeader" && !isLeaderNow && user.teamId) {
+      const currentTeam = await getTeamById(user.teamId.toString());
+      throw new AppError(
+        `${user.name} is a member of ${currentTeam?.name ?? "a team"}. Remove them from the team first, then make them the leader in Edit team`,
+        409,
+      );
+    }
+
+    // 3. Stopping being a team leader while still leading a team.
+    if (role && role !== "teamLeader" && isLeaderNow) {
+      const leading = await getTeamByLeaderId(id);
+      if (leading) {
+        throw new AppError(
+          `${user.name} leads ${leading.name}. Change the leader in Edit team first`,
+          409,
+        );
+      }
     }
 
     if (role) {
