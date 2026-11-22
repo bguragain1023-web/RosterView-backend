@@ -23,6 +23,45 @@ import { checkWorkerAvailability } from "../helper/checkAvailibility";
 import { getApprovedLeaveOnDate } from "../models/user/leaveRequestModel";
 import { DATE_ONLY_REGEX, toUtcMidnight } from "../helper/dateOnly";
 import { IUser } from "../models/user/userSchema";
+import { getTeamById } from "../models/team/teamModel";
+
+// Area rule: a worker can only work for clients in their own team.
+// `suffix` lets reinstate add its "reinstate without a worker" hint.
+const assertWorkerInClientTeam = async (
+  workerId: string,
+  clientId: string,
+  suffix = "",
+) => {
+  const [worker, client] = await Promise.all([
+    getUserById(workerId),
+    getClientById(clientId),
+  ]);
+  if (!worker) throw new AppError("Worker doesn't exist", 404);
+  if (!client) throw new AppError("Client doesn't exist", 404);
+
+  if (!client.teamId) {
+    throw new AppError(
+      `${client.name} has no team (area) yet. Set the client's team before assigning a worker.` +
+        suffix,
+      409,
+    );
+  }
+  if (!worker.teamId) {
+    throw new AppError(
+      `${worker.name} isn't in a team, so they can't be assigned to shifts.` +
+        suffix,
+      409,
+    );
+  }
+  if (worker.teamId.toString() !== client.teamId.toString()) {
+    const team = await getTeamById(client.teamId.toString());
+    throw new AppError(
+      `${worker.name} is in a different team. Only ${team?.name ?? "this area's"} workers can work for ${client.name}.` +
+        suffix,
+      409,
+    );
+  }
+};
 
 // Which workers' shifts may this user see?
 // undefined = all shifts; a list = only shifts worked by those workers.
@@ -69,6 +108,8 @@ export const createShift = async (
     let normalHours = 0;
 
     if (workerId) {
+      await assertWorkerInClientTeam(workerId, clientId);
+
       const isAvailable = await checkWorkerAvailability(workerId, date);
       if (!isAvailable) {
         throw new AppError("The worker is not available on this day", 400);
@@ -262,6 +303,16 @@ export const updateShift = async (
       workerId === undefined ? shiftToUpdate.workerId : workerId;
 
     const finalDate = date === undefined ? shiftToUpdate.date : date;
+    const finalClient =
+      clientId === undefined ? shiftToUpdate.clientId : clientId;
+
+    // A new worker, or a new client (maybe in another area), must still match.
+    if (finalWorker && (workerId !== undefined || clientId !== undefined)) {
+      await assertWorkerInClientTeam(
+        finalWorker.toString(),
+        finalClient.toString(),
+      );
+    }
 
     if (finalWorker && (workerId !== undefined || date !== undefined)) {
       const approvedLeave = await getApprovedLeaveOnDate(
@@ -425,6 +476,12 @@ export const reinstateShift = async (
 
     // The worker's week may have changed while the shift was cancelled.
     if (workerId) {
+      await assertWorkerInClientTeam(
+        workerId.toString(),
+        shift.clientId.toString(),
+        tryUnassigned,
+      );
+
       const worker = await getUserById(workerId.toString());
       if (!worker || worker.status !== "active") {
         throw new AppError(

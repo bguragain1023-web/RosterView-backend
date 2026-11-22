@@ -5,16 +5,19 @@ interface ClientInput {
   name: string;
   address: string;
   phone: string;
+  email: string;
+  teamId: string; // required for new clients
   createdBy: mongoose.Types.ObjectId;
   notes?: string;
 }
 interface updateClientPayload {
-  name: string;
-  address: string;
-  phone: string;
-  email: string;
-  notes: string;
-  status: string;
+  name?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  notes?: string;
+  isActive?: boolean;
+  teamId?: string;
 }
 
 export const addClient = async (clientObj: ClientInput): Promise<IClient> => {

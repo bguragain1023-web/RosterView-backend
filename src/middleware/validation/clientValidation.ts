@@ -6,7 +6,7 @@ export const validateCreateClient = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { name, phone, address, email } = req.body;
+  const { name, phone, address, email, teamId } = req.body;
 
   if (!name || typeof name !== "string" || !name.trim()) {
     throw new AppError("Please provide a valid name", 400);
@@ -30,6 +30,11 @@ export const validateCreateClient = (
     throw new AppError("Please provide a valid email", 400);
   }
 
+  // Every new client belongs to an area (team).
+  if (!teamId || typeof teamId !== "string") {
+    throw new AppError("Please choose a team (area) for this client", 400);
+  }
+
   next();
 };
 
@@ -48,6 +53,7 @@ export const ValidateUpdateClient = (
     "isActive",
     "address",
     "notes",
+    "teamId", // lets an admin set or change the client's area
   ];
   const requestedFields = Object.keys(req.body);
 
@@ -59,7 +65,7 @@ export const ValidateUpdateClient = (
     throw new AppError("Unepected field(s) are requested for update", 400);
   }
 
-  const { name, email, phone, isActive, address, notes } = req.body;
+  const { name, email, phone, isActive, address, notes, teamId } = req.body;
   if (name !== undefined && typeof name !== "string")
     throw new AppError("Name format didn't match ", 400);
 
@@ -92,6 +98,10 @@ export const ValidateUpdateClient = (
 
   if (notes !== undefined && typeof notes !== "string") {
     throw new AppError("Notes must be a string", 400);
+  }
+
+  if (teamId !== undefined && (typeof teamId !== "string" || !teamId)) {
+    throw new AppError("Please choose a valid team (area)", 400);
   }
 
   next();

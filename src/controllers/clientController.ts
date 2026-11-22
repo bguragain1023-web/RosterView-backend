@@ -6,6 +6,16 @@ import {
   getClientById,
   updateClientById,
 } from "../models/client/clientModel";
+import { getTeamById } from "../models/team/teamModel";
+
+// A client's area must be a real, active team.
+const assertActiveTeam = async (teamId: string) => {
+  const team = await getTeamById(teamId);
+  if (!team) throw new AppError("Team not found", 404);
+  if (!team.isActive) {
+    throw new AppError(`${team.name} is not active`, 409);
+  }
+};
 
 export const createClient = async (
   req: Request,
@@ -16,7 +26,8 @@ export const createClient = async (
     if (!req.userInfo) {
       throw new AppError("Unauthorized", 401);
     }
-    const { name, address, phone, email, notes } = req.body;
+    const { name, address, phone, email, notes, teamId } = req.body;
+    await assertActiveTeam(teamId);
 
     const obj = {
       name,
@@ -24,6 +35,7 @@ export const createClient = async (
       phone,
       email,
       notes,
+      teamId,
       createdBy: req.userInfo._id,
     };
 
@@ -88,6 +100,9 @@ export const updateClient = async (
     const id = req.params.id as string;
 
     const updatePayload = req.body;
+    if (updatePayload.teamId !== undefined) {
+      await assertActiveTeam(updatePayload.teamId);
+    }
 
     const result = await updateClientById(id, updatePayload);
 
