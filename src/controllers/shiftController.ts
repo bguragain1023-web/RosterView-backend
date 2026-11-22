@@ -16,7 +16,10 @@ import {
 } from "../models/shift/shiftModel";
 import { ShiftStatus } from "../models/shift/shiftSchema";
 import { getUserById, getUsersByTeam } from "../models/user/userModel";
-import { getClientById } from "../models/client/clientModel";
+import {
+  getClientById,
+  getClientIdsByTeam,
+} from "../models/client/clientModel";
 import { withNames } from "../helper/shiftNames";
 import { getRoleById } from "../models/role/roleModel";
 import { checkWorkerAvailability } from "../helper/checkAvailibility";
@@ -63,24 +66,67 @@ const assertWorkerInClientTeam = async (
   }
 };
 
-// Which workers' shifts may this user see?
-// undefined = all shifts; a list = only shifts worked by those workers.
-const getVisibleWorkerIds = async (
-  user: IUser,
-): Promise<string[] | undefined> => {
+// Team leaders may only manage shifts for clients in their own team (area).
+// Admin and coordinator manage every area.
+const assertCanManageClient = async (user: IUser, clientId: string) => {
+  const role = await getRoleById(user.roleId.toString());
+  if (role?.name !== "teamLeader") return;
+
+  const client = await getClientById(clientId);
+  if (
+    !user.teamId ||
+    !client?.teamId ||
+    client.teamId.toString() !== user.teamId.toString()
+  ) {
+    throw new AppError(
+      "You can only manage shifts for your team's clients",
+      403,
+    );
+  }
+};
+
+// Which shifts may this user see?
+//   undefined = all shifts (admin, coordinator)
+//   otherwise = shifts matching workerIds OR clientIds
+type ShiftScope = { workerIds?: string[]; clientIds?: string[] } | undefined;
+
+const getShiftScope = async (user: IUser): Promise<ShiftScope> => {
   const role = await getRoleById(user.roleId.toString());
   if (!role) throw new AppError("Role not found", 403);
 
   if (role.name === "admin" || role.name === "coordinator") return undefined;
 
   if (role.name === "teamLeader") {
-    if (!user.teamId) return [];
-    const members = (await getUsersByTeam(user.teamId.toString())) ?? [];
-    return members.map((m) => m._id.toString());
+    if (!user.teamId) return { workerIds: [] }; // no team: nothing
+    const teamId = user.teamId.toString();
+    const [members, clientIds] = await Promise.all([
+      getUsersByTeam(teamId),
+      getClientIdsByTeam(teamId),
+    ]);
+    return {
+      // members' shifts (also older ones for clients without a team)
+      workerIds: (members ?? []).map((m) => m._id.toString()),
+      // all shifts of the area's clients, including unassigned ones
+      clientIds,
+    };
   }
 
   // worker, or any role added later: only their own shifts
-  return [user._id.toString()];
+  return { workerIds: [user._id.toString()] };
+};
+
+// Is this one shift inside the scope?
+const isInScope = (
+  shift: { workerId?: unknown; clientId: unknown },
+  scope: ShiftScope,
+) => {
+  if (!scope) return true;
+  const workerId = shift.workerId ? String(shift.workerId) : null;
+  const clientId = String(shift.clientId);
+  return (
+    (workerId !== null && (scope.workerIds ?? []).includes(workerId)) ||
+    (scope.clientIds ?? []).includes(clientId)
+  );
 };
 
 export const createShift = async (
@@ -100,6 +146,7 @@ export const createShift = async (
       notes,
     } = req.body;
     if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    await assertCanManageClient(req.userInfo, clientId);
     const createdBy = req.userInfo._id;
     const totalHours = calculateTotalHours(startTime, endTime, breakMinutes);
 
@@ -194,12 +241,12 @@ export const fetchAllShifts = async (
     const to = parseDate(req.query.to, "to");
 
     if (!req.userInfo) throw new AppError("Unauthorized", 401);
-    const workerIds = await getVisibleWorkerIds(req.userInfo);
+    const scope = await getShiftScope(req.userInfo);
 
     const allShifts = await getAllShifts({
       ...(from ? { from } : {}),
       ...(to ? { to } : {}),
-      ...(workerIds ? { workerIds } : {}),
+      ...scope, // workerIds / clientIds, or nothing for admin/coordinator
     });
     res.json({
       status: "success",
@@ -222,13 +269,9 @@ export const getSingleShift = async (
     const shift = await getShiftById(id);
 
     // "Not yours" gets the same answer as "not there", so nothing leaks.
-    const workerIds = await getVisibleWorkerIds(req.userInfo);
-    const canSee =
-      !workerIds ||
-      (shift?.workerId != null &&
-        workerIds.includes(shift.workerId.toString()));
+    const scope = await getShiftScope(req.userInfo);
 
-    if (!shift || !canSee) {
+    if (!shift || !isInScope(shift, scope)) {
       throw new AppError("Shift doesn't exist", 404);
     }
 
@@ -265,6 +308,12 @@ export const updateShift = async (
       throw new AppError("Completed shifts can't be edited", 409);
     }
 
+    // The shift as it is now must be in the team leader's area...
+    await assertCanManageClient(
+      req.userInfo,
+      shiftToUpdate.clientId.toString(),
+    );
+
     const {
       workerId,
       clientId,
@@ -288,6 +337,8 @@ export const updateShift = async (
     }
 
     if (clientId !== undefined) {
+      // ...and so must a new client, if the edit changes it.
+      await assertCanManageClient(req.userInfo, clientId);
       const existClient = await getClientById(clientId);
       if (!existClient) throw new AppError("Client doesn't exist", 400);
       if (!existClient.isActive)
@@ -427,6 +478,7 @@ export const cancelShift = async (
 
     const shift = await getShiftById(id);
     if (!shift) throw new AppError("Shift doesn't exist", 404);
+    await assertCanManageClient(req.userInfo, shift.clientId.toString());
     if (shift.status !== "assigned" && shift.status !== "unassigned") {
       throw new AppError(
         `Only active shifts can be cancelled (this one is ${shift.status})`,
@@ -461,11 +513,13 @@ export const reinstateShift = async (
   next: NextFunction,
 ) => {
   try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
     const id = req.params.id as string;
     const unassign = req.body?.unassign === true;
 
     const shift = await getShiftById(id);
     if (!shift) throw new AppError("Shift doesn't exist", 404);
+    await assertCanManageClient(req.userInfo, shift.clientId.toString());
     if (shift.status !== "cancelled") {
       throw new AppError("Only cancelled shifts can be reinstated", 409);
     }

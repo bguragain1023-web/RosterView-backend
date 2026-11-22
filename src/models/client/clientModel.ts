@@ -49,3 +49,14 @@ export const getClientNames = async (
     .lean();
   return new Map(clients.map((c) => [c._id.toString(), c.name]));
 };
+
+// All clients in a team (area), e.g. a team leader's client list.
+export const getClientsByTeam = (teamId: string): Promise<IClient[]> => {
+  return clientSchema.find({ teamId });
+};
+
+// Ids of all clients in a team (area), e.g. for a team leader's roster.
+export const getClientIdsByTeam = async (teamId: string): Promise<string[]> => {
+  const clients = await clientSchema.find({ teamId }).select("_id").lean();
+  return clients.map((c) => c._id.toString());
+};

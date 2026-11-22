@@ -34,13 +34,21 @@ export const addNewShift = (shiftObj: ShiftInput): Promise<IShift> => {
 
 // Optional date range (both ends inclusive) and optional worker filter.
 // Sorted by date, then start time.
+// Whose shifts to return:
+//   workerIds / clientIds both undefined = everyone
+//   one given  = only shifts matching that list ([] matches nothing)
+//   both given = shifts matching EITHER list (team leader: area clients or members)
 export const getAllShifts = ({
   from,
   to,
   workerIds,
-}: { from?: Date; to?: Date; workerIds?: string[] } = {}): Promise<
-  IShift[]
-> => {
+  clientIds,
+}: {
+  from?: Date;
+  to?: Date;
+  workerIds?: string[];
+  clientIds?: string[];
+} = {}): Promise<IShift[]> => {
   const query: Record<string, unknown> = {};
 
   const date: Record<string, Date> = {};
@@ -48,9 +56,11 @@ export const getAllShifts = ({
   if (to) date.$lt = addUtcDays(to, 1);
   if (Object.keys(date).length) query.date = date;
 
-  // undefined  = no worker filter (everyone)
-  // [] or [..] = only shifts worked by these workers ([] matches nothing)
-  if (workerIds) query.workerId = { $in: workerIds };
+  const who: Record<string, unknown>[] = [];
+  if (workerIds) who.push({ workerId: { $in: workerIds } });
+  if (clientIds) who.push({ clientId: { $in: clientIds } });
+  if (who.length === 1) Object.assign(query, who[0]);
+  if (who.length === 2) query.$or = who;
 
   return shiftSchema.find(query).sort({ date: 1, startTime: 1 });
 };

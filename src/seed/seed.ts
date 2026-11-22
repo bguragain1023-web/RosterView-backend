@@ -201,9 +201,15 @@ const roles: RoleSeedInput[] = [
 
   {
     name: "teamLeader",
-    description: "Manages workers within their assigned team",
+    description:
+      "Runs their team's area: roster, swaps and leave for their clients and workers",
     permissions: [
       "roster:read",
+      "roster:create", // create shifts for their area's clients
+      "roster:update", // edit, assign, cancel, reinstate (own area only)
+      "roster:assign",
+
+      "client:read", // their area's clients
 
       "availability:read",
 

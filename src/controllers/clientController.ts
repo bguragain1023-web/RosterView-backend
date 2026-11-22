@@ -4,9 +4,21 @@ import {
   addClient,
   getAllClients,
   getClientById,
+  getClientsByTeam,
   updateClientById,
 } from "../models/client/clientModel";
 import { getTeamById } from "../models/team/teamModel";
+import { getRoleById } from "../models/role/roleModel";
+import { IUser } from "../models/user/userSchema";
+
+// Which clients may this user see? undefined = all; otherwise only this team's.
+const getClientTeamScope = async (
+  user: IUser,
+): Promise<{ teamId: string | null } | undefined> => {
+  const role = await getRoleById(user.roleId.toString());
+  if (role?.name !== "teamLeader") return undefined;
+  return { teamId: user.teamId ? user.teamId.toString() : null };
+};
 
 // A client's area must be a real, active team.
 const assertActiveTeam = async (teamId: string) => {
@@ -56,7 +68,14 @@ export const getClients = async (
   next: NextFunction,
 ) => {
   try {
-    const clients = await getAllClients();
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
+    const scope = await getClientTeamScope(req.userInfo);
+
+    const clients = !scope
+      ? await getAllClients()
+      : scope.teamId
+        ? await getClientsByTeam(scope.teamId)
+        : []; // team leader without a team: no clients
 
     res.json({
       status: "success",
@@ -74,10 +93,16 @@ export const getSingleClient = async (
   next: NextFunction,
 ) => {
   try {
+    if (!req.userInfo) throw new AppError("Unauthorized", 401);
     const { id } = req.params;
     const client = await getClientById(id);
+    const scope = await getClientTeamScope(req.userInfo);
 
-    if (!client) {
+    // "Not yours" gets the same answer as "not there", so nothing leaks.
+    const canSee =
+      !scope ||
+      (scope.teamId !== null && client?.teamId?.toString() === scope.teamId);
+    if (!client || !canSee) {
       throw new AppError("Client doesn't exist", 404);
     }
 
