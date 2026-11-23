@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
 import shiftSchema, { IShift, ShiftStatus } from "./shiftSchema";
-import { addUtcDays } from "../../helper/dateOnly";
+import { addUtcDays, toUtcMidnight } from "../../helper/dateOnly";
 
 export interface ShiftInput {
   workerId: mongoose.Types.ObjectId | null;
@@ -63,6 +63,37 @@ export const getAllShifts = ({
   if (who.length === 2) query.$or = who;
 
   return shiftSchema.find(query).sort({ date: 1, startTime: 1 });
+};
+
+// How many shifts from today onwards is this worker still assigned to?
+// Used to stop moving a worker out of their team while they have work there.
+export const countUpcomingAssignedShifts = (workerId: string) => {
+  return shiftSchema.countDocuments({
+    workerId,
+    status: "assigned",
+    date: { $gte: toUtcMidnight(new Date()) },
+  });
+};
+
+// Mark assigned shifts whose day is over as completed.
+// Overnight shifts (end time before start time) finish the next morning,
+// so they wait one extra day.
+export const completePastShifts = () => {
+  const today = toUtcMidnight(new Date());
+  const yesterday = addUtcDays(today, -1);
+
+  return shiftSchema.updateMany(
+    {
+      status: "assigned",
+      $or: [
+        // a normal shift from before today
+        { date: { $lt: today }, $expr: { $gte: ["$endTime", "$startTime"] } },
+        // an overnight shift from before yesterday
+        { date: { $lt: yesterday } },
+      ],
+    },
+    { $set: { status: "completed" } },
+  );
 };
 
 export const getShiftById = (id: string): Promise<IShift | null> => {
