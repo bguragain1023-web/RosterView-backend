@@ -21,6 +21,20 @@ import {
   getPermissionsByName,
 } from "../models/permission/permissionModel";
 import { signJwt } from "../utlis/jwt";
+import { countUpcomingAssignedShifts } from "../models/shift/shiftModel";
+import type { IUser } from "../models/user/userSchema";
+
+// Stop a change that would break a worker's upcoming shifts.
+const assertNoUpcomingShifts = async (user: IUser, action: string) => {
+  const count = await countUpcomingAssignedShifts(user._id.toString());
+  if (count > 0) {
+    throw new AppError(
+      `${user.name} has ${count} upcoming shift${count === 1 ? "" : "s"}. ` +
+        `Unassign or reassign ${count === 1 ? "it" : "them"} before ${action}.`,
+      409,
+    );
+  }
+};
 
 //Create User
 export const createUser = async (
@@ -269,7 +283,20 @@ export const updateUser = async (
         throw new AppError("Team not found ", 404);
       }
 
+      // Moving to a different team would leave their upcoming shifts with
+      // clients outside their new area.
+      const changingTeam =
+        !!user.teamId && user.teamId.toString() !== teamUpdate._id.toString();
+      if (changingTeam) {
+        await assertNoUpcomingShifts(user, "moving them to another team");
+      }
+
       updateObj.teamId = teamUpdate._id;
+    }
+
+    // Only workers can be on shifts, so a role change must not leave any behind.
+    if (role && role !== "worker" && currentRole?.name === "worker") {
+      await assertNoUpcomingShifts(user, "changing their role");
     }
 
     const result = await updateUserDetailById(id, updateObj);

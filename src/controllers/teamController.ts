@@ -19,6 +19,7 @@ import {
   getUserById,
   updateUserDetailById,
 } from "../models/user/userModel";
+import { countUpcomingAssignedShifts } from "../models/shift/shiftModel";
 
 export const createTeam = async (
   req: Request,
@@ -282,6 +283,17 @@ export const removeTeamMember = async (
     if (team.teamLeaderId?.toString() === userId) {
       throw new AppError(
         `${user.name} leads this team. Change or remove the leader in Edit team first.`,
+        409,
+      );
+    }
+
+    // Without a team they can't work this area's shifts, so those must be
+    // moved first.
+    const upcoming = await countUpcomingAssignedShifts(userId);
+    if (upcoming > 0) {
+      throw new AppError(
+        `${user.name} has ${upcoming} upcoming shift${upcoming === 1 ? "" : "s"}. ` +
+          `Unassign or reassign ${upcoming === 1 ? "it" : "them"} before removing them from the team.`,
         409,
       );
     }
