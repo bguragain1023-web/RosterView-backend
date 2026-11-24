@@ -22,20 +22,6 @@ export const getTeamById = (teamId: string): Promise<ITeam | null> => {
   return teamSchema.findById(teamId);
 };
 
-export const getActiveTeams = (): Promise<ITeam[]> => {
-  return teamSchema.find({ isActive: true });
-};
-
-export const getActiveTeamById = (teamId: string): Promise<ITeam | null> => {
-  return teamSchema.findOne({ _id: teamId, isActive: true });
-};
-
-export const assignLeader = (teamId: string, userId: string) => {
-  return teamSchema.findByIdAndUpdate(teamId, {
-    teamLeaderId: userId,
-  });
-};
-
 export interface TeamUpdate {
   name?: string;
   normalizedName?: string;

@@ -8,7 +8,6 @@ import {
   updateTeamValidation,
 } from "../middleware/validation/teamValidation";
 import {
-  assignTeamLeader,
   assignWorkerTeam,
   createTeam,
   fetchAllTeams,
@@ -35,16 +34,6 @@ router.get(
   requirePermission("team", "read"),
 
   getSingleTeam,
-);
-
-//assign teamleader
-
-router.patch(
-  "/assignteamleader",
-  auth,
-  requirePermission("team", "create"),
-  assignTeamValidation,
-  assignTeamLeader,
 );
 
 //assign team to worker

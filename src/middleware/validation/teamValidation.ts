@@ -64,7 +64,8 @@ export const updateTeamValidation = (
   if (
     teamLeaderId !== undefined &&
     teamLeaderId !== null &&
-    (typeof teamLeaderId !== "string" || !mongoose.isValidObjectId(teamLeaderId))
+    (typeof teamLeaderId !== "string" ||
+      !mongoose.isValidObjectId(teamLeaderId))
   ) {
     throw new AppError("Invalid team leader id", 400);
   }
@@ -99,9 +100,8 @@ export const assignTeamValidation = async (
   }
 
   if (typeof userId !== "string" || !mongoose.isValidObjectId(userId)) {
-    throw new AppError("teamId is not valid", 400);
+    throw new AppError("userId is not valid", 400);
   }
-
 
   next();
 };
