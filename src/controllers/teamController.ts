@@ -20,6 +20,7 @@ import {
   updateUserDetailById,
 } from "../models/user/userModel";
 import { countUpcomingAssignedShifts } from "../models/shift/shiftModel";
+import { getClientsByTeam } from "../models/client/clientModel";
 
 export const createTeam = async (
   req: Request,
@@ -207,6 +208,23 @@ export const updateTeam = async (
       update.normalizedName = trimmed.toLowerCase();
     }
     if (description !== undefined) update.description = description.trim();
+
+    // A client's area must be active, so move its clients out first.
+    if (isActive === false && team.isActive) {
+      const activeClients = (await getClientsByTeam(teamId)).filter(
+        (c) => c.isActive,
+      );
+      if (activeClients.length > 0) {
+        const names = activeClients.map((c) => c.name).join(", ");
+        throw new AppError(
+          `${team.name} still has ${activeClients.length} active client` +
+            `${activeClients.length === 1 ? "" : "s"} (${names}). ` +
+            `Move them to another team or deactivate them first.`,
+          409,
+        );
+      }
+    }
+
     if (isActive !== undefined) update.isActive = isActive;
 
     // Leader change. Keep both sides in sync: team.teamLeaderId (used by
