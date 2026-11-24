@@ -4,8 +4,10 @@ import {
   PermissisonInput,
 } from "../models/permission/permissionModel";
 import dotenv from "dotenv";
-import { addRoles } from "../models/role/roleModel";
+import { addRoles, getRoleByName } from "../models/role/roleModel";
 import Permission from "../models/permission/permissionSchema";
+import { addUser, getUserbyEmail } from "../models/user/userModel";
+import { hashedPassword } from "../utlis/bcrypt";
 
 interface RoleSeedInput {
   name: string;
@@ -295,11 +297,42 @@ const seedRoles = async () => {
   }
 };
 
+// First admin, so a fresh database has someone who can log in.
+// Details come from .env; skipped if not set or if the user already exists.
+const seedAdmin = async () => {
+  const email = process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!email || !password) {
+    console.log(
+      "SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set, no admin created",
+    );
+    return;
+  }
+  if (await getUserbyEmail(email)) {
+    console.log(`Admin ${email} already exists`);
+    return;
+  }
+  const adminRole = await getRoleByName("admin");
+  if (!adminRole) throw new Error("Admin role missing: seed roles first");
+
+  await addUser({
+    name: "Admin",
+    email,
+    phone: "0000000000",
+    password: await hashedPassword(password),
+    roleId: adminRole._id,
+    mustChangePassword: true, // forced to pick their own on first login
+    additionalPermissions: [],
+  });
+  console.log(`Admin ${email} created`);
+};
+
 const seed = async () => {
   try {
     await connectDB();
     await seedPermissions();
     await seedRoles();
+    await seedAdmin();
 
     console.log("Database seeding completed");
     process.exit(0);
