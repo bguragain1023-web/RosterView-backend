@@ -1,3 +1,5 @@
 node_modules/
 dist/
 .env
+# local API test requests (may hold test passwords)
+src/rest.http
