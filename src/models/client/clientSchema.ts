@@ -8,8 +8,8 @@ export interface IClient extends Document {
   notes?: string;
   isActive: boolean;
   // The area (team) this client belongs to. Only workers in this team can be
-  // assigned to the client's shifts. null = not set yet (older clients).
-  teamId: mongoose.Types.ObjectId | null;
+  // assigned to the client's shifts.
+  teamId: mongoose.Types.ObjectId;
   createdBy: mongoose.Types.ObjectId;
 }
 
@@ -52,7 +52,7 @@ const clientSchema = new Schema<IClient>(
     teamId: {
       type: Schema.Types.ObjectId,
       ref: "Team",
-      default: null,
+      required: true,
     },
     createdBy: {
       type: Schema.Types.ObjectId,

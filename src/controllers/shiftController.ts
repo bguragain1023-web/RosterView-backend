@@ -42,13 +42,6 @@ const assertWorkerInClientTeam = async (
   if (!worker) throw new AppError("Worker doesn't exist", 404);
   if (!client) throw new AppError("Client doesn't exist", 404);
 
-  if (!client.teamId) {
-    throw new AppError(
-      `${client.name} has no team (area) yet. Set the client's team before assigning a worker.` +
-        suffix,
-      409,
-    );
-  }
   if (!worker.teamId) {
     throw new AppError(
       `${worker.name} isn't in a team, so they can't be assigned to shifts.` +
