@@ -3,7 +3,6 @@ import {
   addTeam,
   assignLeader,
   getActiveTeamById,
-  getActiveTeams,
   getAllTeams,
   getTeamById,
   getTeamByLeaderId,
@@ -81,10 +80,10 @@ export const fetchAllTeams = async (
 
     let teams = [];
 
-    if (role.name === "admin") {
+    // Admin and coordinator see every team, including inactive ones, so
+    // names still show for clients and staff in an inactive team.
+    if (role.name === "admin" || role.name === "coordinator") {
       teams = await getAllTeams();
-    } else if (role.name === "coordinator") {
-      teams = await getActiveTeams();
     } else if (role.name === "teamLeader" || role.name === "worker") {
       if (!teamId) {
         throw new AppError("You are not assigned to a team yet", 403);
