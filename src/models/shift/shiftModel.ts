@@ -75,6 +75,20 @@ export const countUpcomingAssignedShifts = (workerId: string) => {
   });
 };
 
+// How many of this client's upcoming assigned shifts have a worker who is
+// NOT in the given list? Used before moving a client to another team.
+export const countUpcomingShiftsWithOtherWorkers = (
+  clientId: string,
+  allowedWorkerIds: string[],
+) => {
+  return shiftSchema.countDocuments({
+    clientId,
+    status: "assigned",
+    date: { $gte: toUtcMidnight(new Date()) },
+    workerId: { $nin: allowedWorkerIds },
+  });
+};
+
 // Mark assigned shifts whose day is over as completed.
 // Overnight shifts (end time before start time) finish the next morning,
 // so they wait one extra day.

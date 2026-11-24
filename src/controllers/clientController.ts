@@ -10,6 +10,8 @@ import {
 import { getTeamById } from "../models/team/teamModel";
 import { getRoleById } from "../models/role/roleModel";
 import { IUser } from "../models/user/userSchema";
+import { getUsersByTeam } from "../models/user/userModel";
+import { countUpcomingShiftsWithOtherWorkers } from "../models/shift/shiftModel";
 
 // Which clients may this user see? undefined = all; otherwise only this team's.
 const getClientTeamScope = async (
@@ -27,6 +29,7 @@ const assertActiveTeam = async (teamId: string) => {
   if (!team.isActive) {
     throw new AppError(`${team.name} is not active`, 409);
   }
+  return team;
 };
 
 export const createClient = async (
@@ -126,7 +129,20 @@ export const updateClient = async (
 
     const updatePayload = req.body;
     if (updatePayload.teamId !== undefined) {
-      await assertActiveTeam(updatePayload.teamId);
+      const team = await assertActiveTeam(updatePayload.teamId);
+
+      // Every upcoming staffed shift must already have a worker from the new team.
+      const members = (await getUsersByTeam(updatePayload.teamId)) ?? [];
+      const memberIds = members.map((m) => m._id.toString());
+      const clashes = await countUpcomingShiftsWithOtherWorkers(id, memberIds);
+      if (clashes > 0) {
+        throw new AppError(
+          `This client has ${clashes} upcoming shift${clashes === 1 ? "" : "s"} ` +
+            `with workers outside ${team.name}. Unassign or reassign ` +
+            `${clashes === 1 ? "it" : "them"} before changing the client's team.`,
+          409,
+        );
+      }
     }
 
     const result = await updateClientById(id, updatePayload);
