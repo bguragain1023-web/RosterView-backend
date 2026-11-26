@@ -76,21 +76,31 @@ const SLOTS = [
 
 // ---------- Dates ----------
 
-const today = toUtcMidnight(new Date());
-const thisMonday = getWeekRange(today).weekStart;
-const lastMonday = addUtcDays(thisMonday, -7);
-const nextMonday = addUtcDays(thisMonday, 7);
 const day = (monday: Date, offset: number) => addUtcDays(monday, offset); // 0 = Mon
 
+// Worked out on every reset (not once when the file loads), so a server
+// that runs for weeks still resets to upcoming shifts.
+const getDemoDates = () => {
+  const today = toUtcMidnight(new Date());
+  const thisMonday = getWeekRange(today).weekStart;
+  const nextMonday = addUtcDays(thisMonday, 7);
+  return {
+    today,
+    lastMonday: addUtcDays(thisMonday, -7),
+    nextMonday,
+    liamDayOff: day(nextMonday, 1),
+  };
+};
+type DemoDates = ReturnType<typeof getDemoDates>;
+
 // Availability: Sam never works Saturdays; Liam is off next Tuesday.
-const liamDayOff = day(nextMonday, 1);
-const isUnavailable = (worker: DemoUser, date: Date) =>
+const isUnavailable = (worker: DemoUser, date: Date, liamDayOff: Date) =>
   (worker === users.sam && date.getUTCDay() === 6) ||
   (worker === users.liam && date.getTime() === liamDayOff.getTime());
 
 // ---------- Build ----------
 
-const buildShifts = () => {
+const buildShifts = ({ today, lastMonday, liamDayOff }: DemoDates) => {
   const shifts: {
     _id: Id;
     workerId: Id | null;
@@ -125,7 +135,7 @@ const buildShifts = () => {
         let worker: DemoUser | null = null;
         for (let t = 0; t < teamWorkers.length; t++) {
           const candidate = teamWorkers[(i + k + t) % teamWorkers.length];
-          if (candidate && !isUnavailable(candidate, date)) {
+          if (candidate && !isUnavailable(candidate, date, liamDayOff)) {
             worker = candidate;
             break;
           }
@@ -152,27 +162,33 @@ const buildShifts = () => {
   return shifts;
 };
 
-const seedDemo = async () => {
-  if (!isDemoMode()) {
-    console.error(
-      "Refusing to run: this WIPES the database. Set DEMO_MODE=true in .env to use it on a demo database.",
-    );
-    process.exit(1);
-  }
+// When the demo was last reset, kept in its own small collection (the wipe
+// below doesn't touch it).
+const demoMeta = () =>
+  mongoose.connection.collection<{ _id: string; lastResetAt: Date }>("demometa");
+const ONE_DAY = 24 * 60 * 60 * 1000;
 
-  await connectDB();
+// Wipes and refills the demo data. Needs a database connection already.
+// Used by `yarn seed:demo` and by the server's daily reset.
+export const resetDemoData = async () => {
+  if (!isDemoMode()) {
+    throw new Error(
+      "Refusing to run: this WIPES the database. Set DEMO_MODE=true to use it on a demo database.",
+    );
+  }
 
   // Second guard: DEMO_MODE doesn't choose the database, MONGO_URL does. If
   // MONGO_URL is missing it falls back to the real "Rosterview" database, so
   // only wipe a database whose name contains "demo".
   const dbName = mongoose.connection.name;
   if (!dbName.toLowerCase().includes("demo")) {
-    console.error(
+    throw new Error(
       `Refusing to run: connected to "${dbName}", not a demo database. Point MONGO_URL at a database with "demo" in its name, e.g. .../RosterviewDemo.`,
     );
-    await mongoose.disconnect();
-    process.exit(1);
   }
+
+  const dates = getDemoDates();
+  const { nextMonday, liamDayOff } = dates;
 
   // Roles come from `yarn seed`.
   const roleIds: Record<DemoUser["role"], Id> = {} as Record<DemoUser["role"], Id>;
@@ -235,7 +251,7 @@ const seedDemo = async () => {
     })),
   );
 
-  const shifts = buildShifts();
+  const shifts = buildShifts(dates);
   await Shift.insertMany(shifts);
 
   await Availability.insertMany([
@@ -315,15 +331,37 @@ const seedDemo = async () => {
   }
   await ShiftSwap.insertMany(swaps);
 
+  await demoMeta().updateOne(
+    { _id: "lastReset" },
+    { $set: { lastResetAt: new Date() } },
+    { upsert: true },
+  );
+
   console.log(
     `Demo ready: ${Object.keys(users).length} users, 2 teams, ${clients.length} clients, ` +
       `${shifts.length} shifts, ${swaps.length} swaps. Password for all: ${DEMO_PASSWORD}`,
   );
 };
 
-seedDemo()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error("Demo seeding failed:", error);
-    process.exit(1);
-  });
+// Resets only if the last reset was over a day ago (or never), so visitors'
+// changes and the dates never get more than a day stale. Returns true if it
+// reset. Does nothing when DEMO_MODE is off.
+export const resetDemoIfStale = async () => {
+  if (!isDemoMode()) return false;
+  const meta = await demoMeta().findOne({ _id: "lastReset" });
+  if (meta && Date.now() - meta.lastResetAt.getTime() < ONE_DAY) return false;
+  await resetDemoData();
+  return true;
+};
+
+// `yarn seed:demo`: only when this file is run directly, not when the server
+// imports it.
+if (require.main === module) {
+  connectDB()
+    .then(resetDemoData)
+    .then(() => process.exit(0))
+    .catch((error) => {
+      console.error("Demo seeding failed:", error instanceof Error ? error.message : error);
+      process.exit(1);
+    });
+}

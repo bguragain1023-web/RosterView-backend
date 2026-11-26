@@ -13,6 +13,8 @@ import availabilityRouter from "./routers/availabilityRouter";
 import leaveRequestRouter from "./routers/leaveRequestRouter";
 import permissionRouter from "./routers/permissionRouter";
 import { completePastShifts } from "./models/shift/shiftModel";
+import { isDemoMode } from "./helper/demoAccounts";
+import { resetDemoIfStale } from "./seed/demoSeed";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -44,10 +46,25 @@ const runCompletePastShifts = async () => {
   }
 };
 
+// Live demo only: rebuild the demo data once a day, so visitors' changes
+// are undone and there are always upcoming shifts. Checked at startup and
+// hourly, because a free host's server sleeps and a 24h timer may never fire.
+const runDemoReset = async () => {
+  try {
+    if (await resetDemoIfStale()) console.log("Demo data reset");
+  } catch (error) {
+    console.error("Demo reset failed:", error instanceof Error ? error.message : error);
+  }
+};
+
 // Only accept requests once the database is connected.
 const start = async () => {
   try {
     await connectDB();
+    if (isDemoMode()) {
+      await runDemoReset();
+      setInterval(runDemoReset, ONE_HOUR);
+    }
     // Once now (catches anything missed while the server was off), then hourly.
     await runCompletePastShifts();
     setInterval(runCompletePastShifts, ONE_HOUR);
