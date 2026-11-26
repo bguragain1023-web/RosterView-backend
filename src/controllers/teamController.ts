@@ -18,6 +18,7 @@ import {
 } from "../models/user/userModel";
 import { countUpcomingAssignedShifts } from "../models/shift/shiftModel";
 import { getClientsByTeam } from "../models/client/clientModel";
+import { assertNotDemoAccount } from "../helper/demoAccounts";
 
 export const createTeam = async (
   req: Request,
@@ -220,6 +221,12 @@ export const updateTeam = async (
     const leaderChanging =
       newLeaderId !== undefined && newLeaderId !== oldLeaderId;
 
+    // The demo team leader stays in charge of their team.
+    if (leaderChanging && oldLeaderId) {
+      const oldLeader = await getUserById(oldLeaderId);
+      if (oldLeader) assertNotDemoAccount(oldLeader.email);
+    }
+
     if (leaderChanging && newLeaderId) {
       const newLeader = await getUserById(newLeaderId);
       if (!newLeader) throw new AppError("User not found", 404);
@@ -277,6 +284,8 @@ export const removeTeamMember = async (
 
     const user = await getUserById(userId);
     if (!user) throw new AppError("User not found", 404);
+    // Demo logins stay in their team.
+    assertNotDemoAccount(user.email);
 
     if (user.teamId?.toString() !== teamId) {
       throw new AppError(`${user.name} isn't in ${team.name}`, 409);

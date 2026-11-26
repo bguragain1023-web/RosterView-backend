@@ -23,6 +23,7 @@ import {
 import { signJwt } from "../utlis/jwt";
 import { countUpcomingAssignedShifts } from "../models/shift/shiftModel";
 import type { IUser } from "../models/user/userSchema";
+import { assertNotDemoAccount } from "../helper/demoAccounts";
 
 // Stop a change that would break a worker's upcoming shifts.
 const assertNoUpcomingShifts = async (user: IUser, action: string) => {
@@ -138,6 +139,8 @@ export const changePassword = async (
       throw new AppError("Unauthorized", 401);
     }
     const userId = req.userInfo._id.toString();
+    // Demo logins keep their shared password.
+    assertNotDemoAccount(req.userInfo.email);
     const { newPassword } = req.body;
     if (!newPassword) {
       throw new AppError("New password is required", 400);
@@ -234,6 +237,8 @@ export const updateUser = async (
     // create a second leader or leave a team pointing at a non-leader.
     const user = await getUserById(id);
     if (!user) throw new AppError("User not found", 404);
+    // Demo logins keep their role, status, team and details.
+    assertNotDemoAccount(user.email);
 
     const currentRole = await getRoleById(user.roleId.toString());
     const isLeaderNow = currentRole?.name === "teamLeader";
@@ -356,6 +361,11 @@ export const updateUserPermission = async (
 ) => {
   try {
     const id = req.params.id as string;
+    // Demo logins keep their permissions.
+    const target = await getUserById(id);
+    if (!target) throw new AppError("User not found", 404);
+    assertNotDemoAccount(target.email);
+
     // Remove duplicates so the "all found" count check below is accurate.
     const permissionNames: string[] = [
       ...new Set<string>(req.body.permissionNames),
